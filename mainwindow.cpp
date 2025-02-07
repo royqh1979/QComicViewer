@@ -65,6 +65,11 @@ void MainWindow::onCurrentPageChanged()
 {
     QPixmap image = mPagesNavigator->currentImage();
     mImageWidget->setImage(image);
+    if (mPagesNavigator->pageCount()<=0)
+        ui->statusbar->clearMessage();
+    else
+        ui->statusbar->showMessage(QString("%1/%2").arg(mPagesNavigator->currentPage()+1)
+                               .arg(mPagesNavigator->pageCount()));
 }
 
 void MainWindow::on_actionShow_Double_Pages_toggled(bool arg1)
@@ -116,6 +121,7 @@ void MainWindow::on_actionOpen_triggered()
         mPagesNavigator->setBookPath("");
     }
     if (mPagesNavigator->pageCount()>0) {
+        mPagesNavigator->setDoublePagesStart(ui->actionSingle_First_Page->isChecked()?1:0);
         setWindowTitle(tr("QComicsViewer [%1]").arg(mPagesNavigator->bookTitle()));
     } else {
         setWindowTitle(tr("QComicsViewer"));
@@ -153,5 +159,13 @@ void MainWindow::on_actionFit_Page_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
     setImageFitType();
+}
+
+void MainWindow::on_actionSingle_First_Page_toggled(bool arg1)
+{
+    if (ui->actionSingle_First_Page->isChecked())
+        mPagesNavigator->setDoublePagesStart(1);
+    else
+        mPagesNavigator->setDoublePagesStart(0);
 }
 

@@ -66,7 +66,9 @@ QPixmap PagesNavigator::currentImage()
         QPixmap image = mPageList[mCurrentPage];
         return image;
     } else {
-        if (mCurrentPage+1 >= pageCount())
+        if (mCurrentPage+1 >= pageCount()
+                || mCurrentPage < mDoublePagesStart
+                || mCurrentPage >= mDoublePagesEnd)
             return QPixmap(mPageList[mCurrentPage]);
         else {
             QPixmap image1 = QPixmap(mPageList[mCurrentPage]);
@@ -174,6 +176,7 @@ void PagesNavigator::setDoublePagesStart(int newDoublePagesStart)
     if (mDoublePagesStart != newDoublePagesStart) {
         mDoublePagesStart = newDoublePagesStart;
         setCurrentPage(currentPage());
+        emit currentPageChanged();
     }
 }
 
@@ -187,6 +190,7 @@ void PagesNavigator::setDoublePagesEnd(int newDoublePagesEnd)
     if (mDoublePagesEnd != newDoublePagesEnd) {
         mDoublePagesEnd = newDoublePagesEnd;
         setCurrentPage(currentPage());
+        emit currentPageChanged();
     }
 }
 

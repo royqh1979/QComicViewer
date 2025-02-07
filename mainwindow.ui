@@ -42,6 +42,7 @@
     <addaction name="actionGoto_Page"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Double_Pages"/>
+    <addaction name="actionSingle_First_Page"/>
     <addaction name="separator"/>
     <addaction name="actionFit_Width"/>
     <addaction name="actionFit_Height"/>
@@ -157,6 +158,14 @@
    </property>
    <property name="text">
     <string>Fit Page</string>
+   </property>
+  </action>
+  <action name="actionSingle_First_Page">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Single First Page</string>
    </property>
   </action>
  </widget>
