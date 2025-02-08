@@ -43,6 +43,7 @@
     <addaction name="separator"/>
     <addaction name="actionShow_Double_Pages"/>
     <addaction name="actionSingle_First_Page"/>
+    <addaction name="actionLeft_To_Right"/>
     <addaction name="separator"/>
     <addaction name="actionFit_Width"/>
     <addaction name="actionFit_Height"/>
@@ -166,6 +167,17 @@
    </property>
    <property name="text">
     <string>Single First Page</string>
+   </property>
+  </action>
+  <action name="actionLeft_To_Right">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Left To Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>

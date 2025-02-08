@@ -8,6 +8,10 @@ class PagesNavigator : public QObject
 {
     Q_OBJECT
 public:
+    enum class BookType {
+        Folder,
+        Zip,
+    };
     explicit PagesNavigator(QObject *parent = nullptr);
 
     void gotoPage(int page);
@@ -19,7 +23,7 @@ public:
 
     QString bookTitle() const;
     const QString &bookPath() const;
-    void setBookPath(const QString &newBookPath);
+    void setBookPath(QString newBookPath);
     const QStringList &pageList() const;
     int pageCount() const;
     int currentPage() const;
@@ -32,14 +36,18 @@ public:
     int doublePagesEnd() const;
     void setDoublePagesEnd(int newDoublePagesEnd);
 
+    BookType bookType() const;
+
 signals:
-    void currentPageChanged();
+    void currentImageChanged();
 private:
+    QPixmap getPageImage(int page);
     void setCurrentPage(int newCurrentPage);
     int ensureDoublePages(int page);
 private:
     QString mBookPath;
     QStringList mPageList;
+    BookType mBookType;
     int mCurrentPage;
     int mDoublePagesStart;
     int mDoublePagesEnd;

@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mPagesNavigator = new PagesNavigator(this);
 
-    connect(mPagesNavigator, &PagesNavigator::currentPageChanged,
+    connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
             this, &MainWindow::onCurrentPageChanged);
 
     connect(mImageWidget, &ImageWidget::requestNextImage,
@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionFit_Page->setChecked(true);
 
     ui->actionShow_Double_Pages->setChecked(true);
+    ui->actionLeft_To_Right->setChecked(false);
 }
 
 MainWindow::~MainWindow()
@@ -113,10 +114,7 @@ void MainWindow::on_actionOpen_triggered()
     QString file = QFileDialog::getOpenFileName(
                 this, tr("Open File/Folder"));
     if (QFile::exists(file)) {
-        if (QFileInfo(file).isDir()) {
-            mPagesNavigator->setBookPath(file);
-        } else
-            mPagesNavigator->setBookPath(QFileInfo(file).absolutePath());
+        mPagesNavigator->setBookPath(file);
     } else {
         mPagesNavigator->setBookPath("");
     }
@@ -163,9 +161,17 @@ void MainWindow::on_actionFit_Page_toggled(bool arg1)
 
 void MainWindow::on_actionSingle_First_Page_toggled(bool arg1)
 {
+    Q_UNUSED(arg1);
     if (ui->actionSingle_First_Page->isChecked())
         mPagesNavigator->setDoublePagesStart(1);
     else
         mPagesNavigator->setDoublePagesStart(0);
+}
+
+
+void MainWindow::on_actionLeft_To_Right_toggled(bool arg1)
+{
+    Q_UNUSED(arg1);
+    mPagesNavigator->setDisplayPagesLeftToRight(ui->actionLeft_To_Right->isChecked());
 }
 

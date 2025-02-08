@@ -12,12 +12,43 @@ SOURCES += \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    pagesnavigator.cpp
+    pagesnavigator.cpp \
+    quazip\qioapi.cpp \
+    quazip\quaadler32.cpp \
+    quazip\quachecksum32.cpp \
+    quazip\quacrc32.cpp \
+    quazip\quagzipfile.cpp \
+    quazip\quaziodevice.cpp \
+    quazip\quazip.cpp \
+    quazip\quazipdir.cpp \
+    quazip\quazipfile.cpp \
+    quazip\quazipfileinfo.cpp \
+    quazip\quazipnewinfo.cpp \
+    quazip\unzip.c \
+    quazip\zip.c
 
 HEADERS += \
     imagewidget.h \
     mainwindow.h \
-    pagesnavigator.h
+    pagesnavigator.h \
+    quazip\ioapi.h \
+    quazip\minizip_crypt.h \
+    quazip\quaadler32.h \
+    quazip\quachecksum32.h \
+    quazip\quacrc32.h \
+    quazip\quagzipfile.h \
+    quazip\quaziodevice.h \
+    quazip\quazip.h \
+    quazip\quazip_global.h \
+    quazip\quazip_qt_compat.h \
+    quazip\quazipdir.h \
+    quazip\quazipfile.h \
+    quazip\quazipfileinfo.h \
+    quazip\quazipnewinfo.h \
+    quazip\unzip.h \
+    quazip\zip.h
+
+LIBS += -lz
 
 FORMS += \
     mainwindow.ui

@@ -41,6 +41,8 @@ private slots:
 
     void on_actionSingle_First_Page_toggled(bool arg1);
 
+    void on_actionLeft_To_Right_toggled(bool arg1);
+
 private:
     void setImageFitType();
     void onCurrentPageChanged();

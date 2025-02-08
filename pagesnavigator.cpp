@@ -3,24 +3,56 @@
 #include <QDir>
 #include <QPainter>
 #include <QDebug>
+#include <QSet>
+#include <QImageReader>
+#include "quazip/quazip.h"
+#include "quazip/quazipfile.h"
 
+static const QSet<QString> ImageSuffice {
+    "jpg",
+    "jpge",
+    "png"
+} ;
 
 static QStringList readDir(const QString &path)
 {
     QDir dir{path};
     QStringList result;
-    for(const QString &file : dir.entryList(QDir::Filter::Files)) {
-        result.append(dir.absoluteFilePath(file));
+    QStringList fileList = dir.entryList(QDir::Filter::Files);
+    foreach(const QString &file, dir.entryList(QDir::Filter::Files)) {
+        QFileInfo info{file};
+        QString suffix = info.suffix().toLower();
+        if (ImageSuffice.contains(suffix))
+            result.append(file);
     }
+    result.sort();
+    return result;
+}
+
+static QStringList readZip(const QString& path) {
+    QStringList result;
+    QuaZip zip{path};
+    if (zip.open(QuaZip::mdUnzip)) {
+        QStringList fileList = zip.getFileNameList();
+        foreach(const QString &file, fileList) {
+            QFileInfo info{file};
+            QString suffix = info.suffix().toLower();
+            if (ImageSuffice.contains(suffix))
+                result.append(file);
+        }
+        zip.close();
+    }
+    result.sort();
     return result;
 }
 
 PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
+    mBookType{BookType::Folder},
     mCurrentPage{-1},
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
     mDisplayDoublePages{false},
-    mDisplayPagesLeftToRight{true}
+    mDisplayPagesLeftToRight{false}
 {
 
 }
@@ -69,10 +101,10 @@ QPixmap PagesNavigator::currentImage()
         if (mCurrentPage+1 >= pageCount()
                 || mCurrentPage < mDoublePagesStart
                 || mCurrentPage >= mDoublePagesEnd)
-            return QPixmap(mPageList[mCurrentPage]);
+            return getPageImage(mCurrentPage);
         else {
-            QPixmap image1 = QPixmap(mPageList[mCurrentPage]);
-            QPixmap image2 = QPixmap(mPageList[mCurrentPage+1]);
+            QPixmap image1 = getPageImage(mCurrentPage);
+            QPixmap image2 = getPageImage(mCurrentPage+1);
             int width = image1.width()+image2.width();
             int height = std::max(image1.height(), image2.height());
             QPixmap img(width,height);
@@ -103,11 +135,23 @@ const QString &PagesNavigator::bookPath() const
     return mBookPath;
 }
 
-void PagesNavigator::setBookPath(const QString &newBookPath)
+void PagesNavigator::setBookPath(QString newBookPath)
 {
+    if (QFileInfo{newBookPath}.exists()
+            && QFileInfo{newBookPath}.isFile()
+            && !newBookPath.endsWith(".zip"))
+        newBookPath = QFileInfo{newBookPath}.absolutePath();
     if (mBookPath != newBookPath) {
         mBookPath = newBookPath;
-        mPageList = readDir(mBookPath);
+        if (QFileInfo{mBookPath}.exists()) {
+            if (QFileInfo{mBookPath}.isDir()) {
+                mPageList = readDir(mBookPath);
+                mBookType = BookType::Folder;
+            } else if (mBookPath.endsWith(".zip")) {
+                mBookType = BookType::Zip;
+                mPageList = readZip(mBookPath);
+            }
+        }
         mDoublePagesStart = 0;
         mDoublePagesEnd = pageCount();
         toFirstPage();
@@ -138,7 +182,7 @@ void PagesNavigator::setCurrentPage(int newCurrentPage)
     newCurrentPage = ensureDoublePages(newCurrentPage);
     if (newCurrentPage!=mCurrentPage) {
         mCurrentPage = newCurrentPage;
-        emit currentPageChanged();
+        emit currentImageChanged();
     }
 }
 
@@ -152,7 +196,7 @@ void PagesNavigator::setDisplayDoublePages(bool newDisplayDoublePages)
     if (mDisplayDoublePages!=newDisplayDoublePages) {
         mDisplayDoublePages = newDisplayDoublePages;
         setCurrentPage(currentPage());
-        emit currentPageChanged();
+        emit currentImageChanged();
     }
 }
 
@@ -163,7 +207,11 @@ bool PagesNavigator::displayPagesLeftToRight() const
 
 void PagesNavigator::setDisplayPagesLeftToRight(bool newDisplayPagesLeftToRight)
 {
-    mDisplayPagesLeftToRight = newDisplayPagesLeftToRight;
+    if (mDisplayPagesLeftToRight!=newDisplayPagesLeftToRight) {
+        mDisplayPagesLeftToRight = newDisplayPagesLeftToRight;
+        if (mDisplayDoublePages)
+            emit currentImageChanged();
+    }
 }
 
 int PagesNavigator::doublePagesStart() const
@@ -176,7 +224,7 @@ void PagesNavigator::setDoublePagesStart(int newDoublePagesStart)
     if (mDoublePagesStart != newDoublePagesStart) {
         mDoublePagesStart = newDoublePagesStart;
         setCurrentPage(currentPage());
-        emit currentPageChanged();
+        emit currentImageChanged();
     }
 }
 
@@ -190,7 +238,7 @@ void PagesNavigator::setDoublePagesEnd(int newDoublePagesEnd)
     if (mDoublePagesEnd != newDoublePagesEnd) {
         mDoublePagesEnd = newDoublePagesEnd;
         setCurrentPage(currentPage());
-        emit currentPageChanged();
+        emit currentImageChanged();
     }
 }
 
@@ -200,5 +248,35 @@ int PagesNavigator::ensureDoublePages(int page)
         page -= (page - mDoublePagesStart) % 2;
     }
     return page;
+}
+
+PagesNavigator::BookType PagesNavigator::bookType() const
+{
+    return mBookType;
+}
+
+QPixmap PagesNavigator::getPageImage(int page)
+{
+    if (mBookType==BookType::Folder) {
+        QDir dir{mBookPath};
+        QString imagePath = dir.absoluteFilePath(mPageList[page]);
+        return QPixmap(imagePath);
+    }
+    if (mBookType == BookType::Zip) {
+        QuaZip zip{mBookPath};
+        if (!zip.open(QuaZip::mdUnzip))
+            return QPixmap();
+        if (!zip.setCurrentFile(mPageList[page]))
+            return QPixmap();
+        QuaZipFile unzipfile(&zip);
+        if (!unzipfile.open(QIODevice::ReadOnly))
+            return QPixmap();
+        QImageReader reader{&unzipfile};
+        QPixmap result = QPixmap::fromImageReader(&reader);
+        unzipfile.close();
+        zip.close();
+        return result;
+    }
+    return QPixmap();
 }
 
