@@ -25,7 +25,22 @@ SOURCES += \
     quazip\quazipfileinfo.cpp \
     quazip\quazipnewinfo.cpp \
     quazip\unzip.c \
-    quazip\zip.c
+    quazip\zip.c \
+    quazip\zlib\adler32.c \
+    quazip\zlib\compress.c \
+    quazip\zlib\crc32.c \
+    quazip\zlib\deflate.c \
+    quazip\zlib\gzclose.c \
+    quazip\zlib\gzlib.c \
+    quazip\zlib\gzread.c \
+    quazip\zlib\gzwrite.c \
+    quazip\zlib\inflate.c \
+    quazip\zlib\infback.c \
+    quazip\zlib\inftrees.c \
+    quazip\zlib\inffast.c \
+    quazip\zlib\trees.c \
+    quazip\zlib\uncompr.c \
+    quazip\zlib\zutil.c
 
 HEADERS += \
     imagewidget.h \
@@ -47,8 +62,6 @@ HEADERS += \
     quazip\quazipnewinfo.h \
     quazip\unzip.h \
     quazip\zip.h
-
-LIBS += -lz
 
 FORMS += \
     mainwindow.ui
