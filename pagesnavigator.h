@@ -28,6 +28,7 @@ public:
     enum class BookType {
         Folder,
         Zip,
+        RAR
     };
     explicit PagesNavigator(QObject *parent = nullptr);
 

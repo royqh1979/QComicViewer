@@ -8,11 +8,70 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+DEFINES += RARDLL
+#DEFINES += _FILE_OFFSET_BITS=64
+#DEFINES += _LARGEFILE_SOURCE
+
+win32 {
+    LIBS += -lpowrprof
+}
+
 SOURCES += \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
     pagesnavigator.cpp \
+    qtrar\qtrar.cpp \
+    qtrar\qtrarfile.cpp \
+    qtrar\qtrarfileinfo.cpp \
+    qtrar\unrar\rar.cpp \
+    qtrar\unrar\strlist.cpp \
+    qtrar\unrar\strfn.cpp \
+    qtrar\unrar\pathfn.cpp \
+    qtrar\unrar\smallfn.cpp \
+    qtrar\unrar\global.cpp \
+    qtrar\unrar\file.cpp \
+    qtrar\unrar\filefn.cpp \
+    qtrar\unrar\filcreat.cpp \
+    qtrar\unrar\archive.cpp \
+    qtrar\unrar\arcread.cpp \
+    qtrar\unrar\unicode.cpp \
+    qtrar\unrar\system.cpp \
+    qtrar\unrar\isnt.cpp \
+    qtrar\unrar\crypt.cpp \
+    qtrar\unrar\crc.cpp \
+    qtrar\unrar\rawread.cpp \
+    qtrar\unrar\encname.cpp \
+    qtrar\unrar\resource.cpp \
+    qtrar\unrar\match.cpp \
+    qtrar\unrar\timefn.cpp \
+    qtrar\unrar\rdwrfn.cpp \
+    qtrar\unrar\consio.cpp \
+    qtrar\unrar\options.cpp \
+    qtrar\unrar\errhnd.cpp \
+    qtrar\unrar\rarvm.cpp \
+    qtrar\unrar\secpassword.cpp \
+    qtrar\unrar\rijndael.cpp \
+    qtrar\unrar\getbits.cpp \
+    qtrar\unrar\sha1.cpp \
+    qtrar\unrar\sha256.cpp \
+    qtrar\unrar\blake2s.cpp \
+    qtrar\unrar\hash.cpp \
+    qtrar\unrar\extinfo.cpp \
+    qtrar\unrar\extract.cpp \
+    qtrar\unrar\volume.cpp \
+    qtrar\unrar\list.cpp \
+    qtrar\unrar\find.cpp \
+    qtrar\unrar\unpack.cpp \
+    qtrar\unrar\headers.cpp \
+    qtrar\unrar\threadpool.cpp \
+    qtrar\unrar\rs16.cpp \
+    qtrar\unrar\cmddata.cpp \
+    qtrar\unrar\ui.cpp \
+    qtrar\unrar\filestr.cpp \
+    qtrar\unrar\scantree.cpp \
+    qtrar\unrar\dll.cpp \
+    qtrar\unrar\qopen.cpp \
     quazip\qioapi.cpp \
     quazip\quaadler32.cpp \
     quazip\quachecksum32.cpp \
@@ -46,6 +105,11 @@ HEADERS += \
     imagewidget.h \
     mainwindow.h \
     pagesnavigator.h \
+    qtrar\qtrar.h \
+    qtrar\qtrar_global.h \
+    qtrar\qtrarfile.h \
+    qtrar\qtrarfileinfo.h \
+    qtrar\unrar\rar.hpp \
     quazip\ioapi.h \
     quazip\minizip_crypt.h \
     quazip\quaadler32.h \

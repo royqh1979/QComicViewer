@@ -24,6 +24,8 @@
 #include <QImageReader>
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
+#include "qtrar/qtrar.h"
+#include "qtrar/qtrarfile.h"
 
 static const QSet<QString> ImageSuffice {
     "jpg",
@@ -58,6 +60,23 @@ static QStringList readZip(const QString& path) {
                 result.append(file);
         }
         zip.close();
+    }
+    result.sort();
+    return result;
+}
+
+static QStringList readRar(const QString& path) {
+    QStringList result;
+    QtRAR archive{path};
+    if (archive.open(QtRAR::OpenModeList)) {
+        QStringList fileList = archive.fileNameList();
+        foreach(const QString &file, fileList) {
+            QFileInfo info{file};
+            QString suffix = info.suffix().toLower();
+            if (ImageSuffice.contains(suffix))
+                result.append(file);
+        }
+        archive.close();
     }
     result.sort();
     return result;
@@ -154,10 +173,15 @@ const QString &PagesNavigator::bookPath() const
 
 void PagesNavigator::setBookPath(QString newBookPath)
 {
+    QString fileName;
     if (QFileInfo{newBookPath}.exists()
             && QFileInfo{newBookPath}.isFile()
-            && !newBookPath.endsWith(".zip"))
-        newBookPath = QFileInfo{newBookPath}.absolutePath();
+            && !newBookPath.endsWith(".zip")
+            && !newBookPath.endsWith(".rar")) {
+        QFileInfo info{newBookPath};
+        newBookPath = info.absolutePath();
+        fileName = info.fileName();
+    }
     if (mBookPath != newBookPath) {
         mBookPath = newBookPath;
         if (QFileInfo{mBookPath}.exists()) {
@@ -167,11 +191,21 @@ void PagesNavigator::setBookPath(QString newBookPath)
             } else if (mBookPath.endsWith(".zip")) {
                 mBookType = BookType::Zip;
                 mPageList = readZip(mBookPath);
+            } else if (mBookPath.endsWith(".rar")) {
+                mBookType = BookType::RAR;
+                mPageList = readRar(mBookPath);
             }
         }
         mDoublePagesStart = 0;
         mDoublePagesEnd = pageCount();
-        toFirstPage();
+        int page = -1;
+        if (!fileName.isEmpty()) {
+            page = mPageList.indexOf(fileName);
+        }
+        if (page == -1)
+            toFirstPage();
+        else
+            gotoPage(page);
     }
 }
 
@@ -278,8 +312,7 @@ QPixmap PagesNavigator::getPageImage(int page)
         QDir dir{mBookPath};
         QString imagePath = dir.absoluteFilePath(mPageList[page]);
         return QPixmap(imagePath);
-    }
-    if (mBookType == BookType::Zip) {
+    } else if (mBookType == BookType::Zip) {
         QuaZip zip{mBookPath};
         if (!zip.open(QuaZip::mdUnzip))
             return QPixmap();
@@ -292,6 +325,19 @@ QPixmap PagesNavigator::getPageImage(int page)
         QPixmap result = QPixmap::fromImageReader(&reader);
         unzipfile.close();
         zip.close();
+        return result;
+    } else if (mBookType == BookType::RAR) {
+        QtRAR archive{mBookPath};
+        if (!archive.open(QtRAR::OpenModeExtract))
+            return QPixmap();
+        QtRARFile unrarFile{&archive};
+        unrarFile.setFileName(mPageList[page]);
+        if (!unrarFile.open(QIODevice::ReadOnly))
+            return QPixmap();
+        QImageReader reader{&unrarFile};
+        QPixmap result = QPixmap::fromImageReader(&reader);
+        unrarFile.close();
+        archive.close();
         return result;
     }
     return QPixmap();
