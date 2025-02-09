@@ -77,6 +77,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->actionShow_Double_Pages->setChecked(true);
     ui->actionLeft_To_Right->setChecked(false);
+
+    setWindowIcon(QPixmap(":/icons/comic-book.png"));
+    setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
 }
 
 MainWindow::~MainWindow()
@@ -153,9 +156,9 @@ void MainWindow::on_actionOpen_triggered()
     }
     if (mPagesNavigator->pageCount()>0) {
         mPagesNavigator->setDoublePagesStart(ui->actionSingle_First_Page->isChecked()?1:0);
-        setWindowTitle(tr("QComicsViewer [%1]").arg(mPagesNavigator->bookTitle()));
+        setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mPagesNavigator->bookTitle()));
     } else {
-        setWindowTitle(tr("QComicsViewer"));
+        setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
     }
 }
 

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>comic-book.png</file>
+    </qresource>
+</RCC>
