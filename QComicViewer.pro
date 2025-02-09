@@ -17,6 +17,7 @@ win32 {
 }
 
 SOURCES += \
+    aboutdialog.cpp \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -102,6 +103,7 @@ SOURCES += \
     quazip\zlib\zutil.c
 
 HEADERS += \
+    aboutdialog.h \
     imagewidget.h \
     mainwindow.h \
     pagesnavigator.h \
@@ -128,6 +130,7 @@ HEADERS += \
     quazip\zip.h
 
 FORMS += \
+    aboutdialog.ui \
     mainwindow.ui
 
 TRANSLATIONS += \

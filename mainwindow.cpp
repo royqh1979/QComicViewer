@@ -23,6 +23,7 @@
 #include <QStyle>
 #include "imagewidget.h"
 #include "pagesnavigator.h"
+#include "aboutdialog.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -211,5 +212,12 @@ void MainWindow::on_actionLeft_To_Right_toggled(bool arg1)
 void MainWindow::on_actionShow_Contents_triggered()
 {
     ui->dockPages->show();
+}
+
+
+void MainWindow::on_actionAbout_triggered()
+{
+    AboutDialog dialog(this);
+    dialog.exec();
 }
 

@@ -64,6 +64,8 @@ private slots:
 
     void on_actionShow_Contents_triggered();
 
+    void on_actionAbout_triggered();
+
 private:
     void setImageFitType();
     void onCurrentPageChanged();

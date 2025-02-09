@@ -91,6 +91,7 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     if (ImageSuffice.isEmpty()) {
         foreach(const QString& type, QImageReader::supportedImageFormats())
             ImageSuffice.insert(type.toLower());
+        //qDebug()<<ImageSuffice;
     }
 }
 
