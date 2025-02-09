@@ -31,25 +31,29 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     QHBoxLayout *layout = new QHBoxLayout(ui->centralwidget);
-
+    layout->setMargin(0);
     mImageWidget = new ImageWidget(ui->centralwidget);
     layout->addWidget(mImageWidget);
-
-    mPagesNavigator = new PagesNavigator(this);
-
-    connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
-            this, &MainWindow::onCurrentPageChanged);
-
     connect(mImageWidget, &ImageWidget::requestNextImage,
             this, &MainWindow::on_actionNext_Page_triggered);
     connect(mImageWidget, &ImageWidget::requestPrevImage,
             this, &MainWindow::on_actionPrev_Page_triggered);
+
+    mPagesNavigator = new PagesNavigator(this);
+    connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
+            this, &MainWindow::onCurrentPageChanged);
+
+    mBookPagesModel = new BookPagesModel(mPagesNavigator, this);
+    ui->pagesView->setModel(mBookPagesModel);
+    connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
+            this, &MainWindow::onPageViewCurrentChanged);
+
     ui->actionOpen->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
-    ui->actionPrev_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
-    ui->actionNext_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
+    ui->actionPrev_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowBack));
+    ui->actionNext_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowForward));
     ui->actionFirst_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->actionLast_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-
+    ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DesktopIcon));
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
                                           tr("Left"),
@@ -79,8 +83,19 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    if (!current.isValid())
+        return;
+    mPagesNavigator->gotoPage(current.row());
+}
+
 void MainWindow::onCurrentPageChanged()
 {
+    QModelIndex index = mBookPagesModel->index(mPagesNavigator->currentPage(),0);
+    ui->pagesView->selectionModel()->select(index,
+                                            QItemSelectionModel::SelectionFlag::Select | QItemSelectionModel::SelectionFlag::Current);
+    ui->pagesView->scrollTo(index);
     QPixmap image = mPagesNavigator->currentImage();
     mImageWidget->setImage(image);
     if (mPagesNavigator->pageCount()<=0)
@@ -190,5 +205,11 @@ void MainWindow::on_actionLeft_To_Right_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
     mPagesNavigator->setDisplayPagesLeftToRight(ui->actionLeft_To_Right->isChecked());
+}
+
+
+void MainWindow::on_actionShow_Contents_triggered()
+{
+    ui->dockPages->show();
 }
 

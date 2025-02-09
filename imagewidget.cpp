@@ -140,14 +140,16 @@ void ImageWidget::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() == Qt::KeyboardModifier::ControlModifier
             && mFitType == AutoFitType::None) {
+        if (event->angleDelta().y()*mScrollAngle<0)
+            mScrollAngle = 0;
         mScrollAngle += event->angleDelta().y();
-        if (mScrollAngle>120) {
+        if (mScrollAngle>=120) {
             setRatio(mRatio - 0.05);
-            while (mScrollAngle > 120)
+            while (mScrollAngle >= 120)
                 mScrollAngle -= 120;
-        } else if (mScrollAngle < -120) {
+        } else if (mScrollAngle <= -120) {
             setRatio(mRatio + 0.05);
-            while (mScrollAngle < -120)
+            while (mScrollAngle <= -120)
                 mScrollAngle += 120;
         }
         return;
@@ -156,14 +158,16 @@ void ImageWidget::wheelEvent(QWheelEvent *event)
         mScrollAngle = 0;
         QAbstractScrollArea::wheelEvent(event);
     } else{
+        if (event->angleDelta().y()*mScrollAngle<0)
+            mScrollAngle = 0;
         mScrollAngle += event->angleDelta().y();
-        if (mScrollAngle>120) {
+        if (mScrollAngle>=120) {
             emit requestPrevImage();
-            while (mScrollAngle > 120)
+            while (mScrollAngle >= 120)
                 mScrollAngle -= 120;
-        } else if (mScrollAngle < -120) {
+        } else if (mScrollAngle <= -120) {
             emit requestNextImage();
-            while (mScrollAngle < -120)
+            while (mScrollAngle <= -120)
                 mScrollAngle += 120;
         }
     }

@@ -20,6 +20,27 @@
 
 #include <QObject>
 #include <QPixmap>
+#include <QAbstractListModel>
+#include <QMap>
+#include <QMutex>
+#include <QThread>
+
+class PagesNavigator;
+class BookPagesModel: public QAbstractListModel{
+    Q_OBJECT
+public:
+    BookPagesModel(PagesNavigator *bookNavigator, QObject *parent);
+
+    // QAbstractItemModel interface
+public:
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+private slots:
+    void onBookChanged(QString newBookPath);
+    void onThumbnailReady(int page);
+private:
+    PagesNavigator *mBookNavigator;
+};
 
 class PagesNavigator : public QObject
 {
@@ -31,6 +52,7 @@ public:
         RAR
     };
     explicit PagesNavigator(QObject *parent = nullptr);
+    ~PagesNavigator();
 
     void gotoPage(int page);
     void toNextPage();
@@ -38,6 +60,8 @@ public:
     void toLastPage();
     void toFirstPage();
     QPixmap currentImage();
+    void loadThumbnails();
+    QPixmap thumbnail(int page);
 
     QString bookTitle() const;
     const QString &bookPath() const;
@@ -55,9 +79,18 @@ public:
     void setDoublePagesEnd(int newDoublePagesEnd);
 
     BookType bookType() const;
+    static QPixmap getBookPageImage(QString bookPath, QString file, BookType bookType);
+    int thumbnailSize() const;
+    void setThumbnailSize(int newThumbnailSize);
 
 signals:
     void currentImageChanged();
+    void bookChanged(QString newBookPath);
+    void destoryed();
+    void thumbnailReady(int page);
+private slots:
+    void setThumbnail(QString bookPath, int page, QPixmap thumbnail);
+    void onThumbnailLoadingFinished(QString bookPath);
 private:
     QPixmap getPageImage(int page);
     void setCurrentPage(int newCurrentPage);
@@ -71,6 +104,32 @@ private:
     int mDoublePagesEnd;
     bool mDisplayDoublePages;
     bool mDisplayPagesLeftToRight;
+    int mThumbnailSize;
+    bool mLoadingThumbnail;
+    QMap<int, QPixmap> mThumbnailCache;
+    QRecursiveMutex mThumbnailMutex;
+};
+
+class PageThumbnailLoader: public QThread {
+    Q_OBJECT
+public:
+    PageThumbnailLoader(PagesNavigator *navigator, QObject* parent=nullptr);
+signals:
+    void thumbnailLoaded(QString bookPath, int page, QPixmap thumbnail);
+    void loadFinished(QString bookPath);
+private slots:
+    void onBookChanged(QString newBookPath);
+    void stopLoader();
+private:
+    QString mBookPath;
+    QStringList mPageList;
+    PagesNavigator::BookType mBookType;
+    bool mStop;
+    int mThumbnailSize;
+
+    // QThread interface
+protected:
+    void run() override;
 };
 
 #endif // PAGESNAVIGATOR_H

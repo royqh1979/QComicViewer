@@ -27,11 +27,7 @@
 #include "qtrar/qtrar.h"
 #include "qtrar/qtrarfile.h"
 
-static const QSet<QString> ImageSuffice {
-    "jpg",
-    "jpge",
-    "png"
-} ;
+static QSet<QString> ImageSuffice;
 
 static QStringList readDir(const QString &path)
 {
@@ -88,9 +84,19 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
     mDisplayDoublePages{false},
-    mDisplayPagesLeftToRight{false}
+    mDisplayPagesLeftToRight{false},
+    mThumbnailSize{256},
+    mLoadingThumbnail{false}
 {
+    if (ImageSuffice.isEmpty()) {
+        foreach(const QString& type, QImageReader::supportedImageFormats())
+            ImageSuffice.insert(type.toLower());
+    }
+}
 
+PagesNavigator::~PagesNavigator()
+{
+    emit destroyed();
 }
 
 void PagesNavigator::gotoPage(int page)
@@ -158,6 +164,28 @@ QPixmap PagesNavigator::currentImage()
     }
 }
 
+void PagesNavigator::loadThumbnails()
+{
+    PageThumbnailLoader *loader=new PageThumbnailLoader(this);
+    connect(loader, &PageThumbnailLoader::thumbnailLoaded,
+            this, &PagesNavigator::setThumbnail);
+    connect(loader, &PageThumbnailLoader::loadFinished,
+            this, &PagesNavigator::onThumbnailLoadingFinished);
+    loader->start();
+}
+
+
+QPixmap PagesNavigator::thumbnail(int page)
+{
+    QMutexLocker locker(&mThumbnailMutex);
+    if (pageCount()>0 && mThumbnailCache.isEmpty() && !mLoadingThumbnail) {
+        mLoadingThumbnail=true;
+        loadThumbnails();
+    }
+    QPixmap defaultThumb{mThumbnailSize,mThumbnailSize};
+    return mThumbnailCache.value(page, defaultThumb);
+}
+
 QString PagesNavigator::bookTitle() const
 {
     if (pageCount()<=0)
@@ -174,17 +202,22 @@ const QString &PagesNavigator::bookPath() const
 void PagesNavigator::setBookPath(QString newBookPath)
 {
     QString fileName;
-    if (QFileInfo{newBookPath}.exists()
-            && QFileInfo{newBookPath}.isFile()
+    QFileInfo info{newBookPath};
+    if (info.exists()
+            && info.isFile()
             && !newBookPath.endsWith(".zip")
             && !newBookPath.endsWith(".rar")) {
-        QFileInfo info{newBookPath};
+
         newBookPath = info.absolutePath();
         fileName = info.fileName();
     }
     if (mBookPath != newBookPath) {
         mBookPath = newBookPath;
-        if (QFileInfo{mBookPath}.exists()) {
+
+        QMutexLocker locker(&mThumbnailMutex);
+        mThumbnailCache.clear();
+
+        if (QFileInfo::exists(mBookPath)) {
             if (QFileInfo{mBookPath}.isDir()) {
                 mPageList = readDir(mBookPath);
                 mBookType = BookType::Folder;
@@ -198,6 +231,7 @@ void PagesNavigator::setBookPath(QString newBookPath)
         }
         mDoublePagesStart = 0;
         mDoublePagesEnd = pageCount();
+        emit bookChanged(mBookPath);
         int page = -1;
         if (!fileName.isEmpty()) {
             page = mPageList.indexOf(fileName);
@@ -301,22 +335,50 @@ int PagesNavigator::ensureDoublePages(int page)
     return page;
 }
 
+int PagesNavigator::thumbnailSize() const
+{
+    return mThumbnailSize;
+}
+
+void PagesNavigator::setThumbnailSize(int newThumbnailSize)
+{
+    mThumbnailSize = newThumbnailSize;
+}
+
+void PagesNavigator::setThumbnail(QString bookPath, int page, QPixmap thumbnail)
+{
+    if (mBookPath == bookPath){
+        mThumbnailCache.insert(page, thumbnail);
+        emit thumbnailReady(page);
+    }
+}
+
+void PagesNavigator::onThumbnailLoadingFinished(QString bookPath)
+{
+    QMutexLocker locker(&mThumbnailMutex);
+    if (bookPath != mBookPath) {
+        mLoadingThumbnail = true;
+        loadThumbnails();
+    } else
+        mLoadingThumbnail = false;
+}
+
 PagesNavigator::BookType PagesNavigator::bookType() const
 {
     return mBookType;
 }
 
-QPixmap PagesNavigator::getPageImage(int page)
+QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file, BookType bookType)
 {
-    if (mBookType==BookType::Folder) {
-        QDir dir{mBookPath};
-        QString imagePath = dir.absoluteFilePath(mPageList[page]);
+    if (bookType==BookType::Folder) {
+        QDir dir{bookPath};
+        QString imagePath = dir.absoluteFilePath(file);
         return QPixmap(imagePath);
-    } else if (mBookType == BookType::Zip) {
-        QuaZip zip{mBookPath};
+    } else if (bookType == BookType::Zip) {
+        QuaZip zip{bookPath};
         if (!zip.open(QuaZip::mdUnzip))
             return QPixmap();
-        if (!zip.setCurrentFile(mPageList[page]))
+        if (!zip.setCurrentFile(file))
             return QPixmap();
         QuaZipFile unzipfile(&zip);
         if (!unzipfile.open(QIODevice::ReadOnly))
@@ -326,12 +388,12 @@ QPixmap PagesNavigator::getPageImage(int page)
         unzipfile.close();
         zip.close();
         return result;
-    } else if (mBookType == BookType::RAR) {
-        QtRAR archive{mBookPath};
+    } else if (bookType == BookType::RAR) {
+        QtRAR archive{bookPath};
         if (!archive.open(QtRAR::OpenModeExtract))
             return QPixmap();
         QtRARFile unrarFile{&archive};
-        unrarFile.setFileName(mPageList[page]);
+        unrarFile.setFileName(file);
         if (!unrarFile.open(QIODevice::ReadOnly))
             return QPixmap();
         QImageReader reader{&unrarFile};
@@ -343,3 +405,100 @@ QPixmap PagesNavigator::getPageImage(int page)
     return QPixmap();
 }
 
+QPixmap PagesNavigator::getPageImage(int page)
+{
+    return getBookPageImage(mBookPath, mPageList[page], mBookType);
+}
+
+
+BookPagesModel::BookPagesModel(PagesNavigator *bookNavigator, QObject *parent):
+    QAbstractListModel{parent},
+    mBookNavigator{bookNavigator}
+{
+    connect(bookNavigator, &PagesNavigator::bookChanged,
+            this, &BookPagesModel::onBookChanged);
+    connect(bookNavigator, &PagesNavigator::thumbnailReady,
+            this, &BookPagesModel::onThumbnailReady);
+}
+
+int BookPagesModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return mBookNavigator->pageCount();
+}
+
+QVariant BookPagesModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
+        return QVariant();
+    int row =index.row();
+    if (row<0 || row>=mBookNavigator->pageCount())
+        return QVariant();
+    switch(role) {
+    case Qt::DisplayRole:
+        return row;
+    case Qt::DecorationRole:
+        return mBookNavigator->thumbnail(row);
+    }
+    return QVariant();
+}
+
+void BookPagesModel::onBookChanged(QString newBookPath)
+{
+    Q_UNUSED(newBookPath);
+    beginResetModel();
+    endResetModel();
+}
+
+void BookPagesModel::onThumbnailReady(int page)
+{
+    QModelIndex index = createIndex(page,0);
+    emit dataChanged(index,index);
+}
+
+PageThumbnailLoader::PageThumbnailLoader(PagesNavigator *navigator, QObject *parent):
+    QThread{parent}
+{
+    mBookPath = navigator->bookPath();
+    mPageList = navigator->pageList();
+    mBookType = navigator->bookType();
+    mThumbnailSize = navigator->thumbnailSize();
+    mStop = false;
+    connect(this, &QThread::finished,
+            this, &QObject::deleteLater);
+    connect(navigator, &PagesNavigator::bookChanged,
+            this, &PageThumbnailLoader::onBookChanged);
+    connect(navigator, &PagesNavigator::destoryed,
+            this, &PageThumbnailLoader::stopLoader);
+}
+
+void PageThumbnailLoader::onBookChanged(QString newBookPath)
+{
+    if (newBookPath!=mBookPath)
+        stopLoader();
+}
+
+void PageThumbnailLoader::stopLoader()
+{
+    mStop = true;
+}
+
+void PageThumbnailLoader::run()
+{
+    for(int i=0;i<mPageList.count();i++){
+        const QString& file=mPageList[i];
+        if (mStop)
+            break;
+        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, file, mBookType);
+        if (mStop)
+            break;
+        QPixmap thumbnail;
+        if (image.width()>image.height()) {
+            thumbnail = image.scaledToWidth(mThumbnailSize);
+        } else {
+            thumbnail = image.scaledToHeight(mThumbnailSize);
+        }
+        emit thumbnailLoaded(mBookPath, i, thumbnail);
+    }
+    emit loadFinished(mBookPath);
+}

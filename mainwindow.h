@@ -18,6 +18,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QListView>
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -26,6 +27,7 @@ QT_END_NAMESPACE
 
 class ImageWidget;
 class PagesNavigator;
+class BookPagesModel;
 
 class MainWindow : public QMainWindow
 {
@@ -35,7 +37,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
-
+    void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void on_actionShow_Double_Pages_toggled(bool arg1);
 
     void on_actionNext_Page_triggered();
@@ -60,6 +62,8 @@ private slots:
 
     void on_actionLeft_To_Right_toggled(bool arg1);
 
+    void on_actionShow_Contents_triggered();
+
 private:
     void setImageFitType();
     void onCurrentPageChanged();
@@ -67,5 +71,6 @@ private:
     Ui::MainWindow *ui;
     ImageWidget *mImageWidget;
     PagesNavigator *mPagesNavigator;
+    BookPagesModel *mBookPagesModel;
 };
 #endif // MAINWINDOW_H

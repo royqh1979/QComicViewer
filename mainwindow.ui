@@ -35,6 +35,8 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionShow_Contents"/>
+    <addaction name="separator"/>
     <addaction name="actionFirst_Page"/>
     <addaction name="actionLast_Page"/>
     <addaction name="actionPrev_Page"/>
@@ -69,6 +71,54 @@
    <addaction name="actionPrev_Page"/>
    <addaction name="actionNext_Page"/>
    <addaction name="actionLast_Page"/>
+   <addaction name="separator"/>
+   <addaction name="actionShow_Contents"/>
+  </widget>
+  <widget class="QDockWidget" name="dockPages">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Contents</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
+     <item>
+      <widget class="QListView" name="pagesView">
+       <property name="resizeMode">
+        <enum>QListView::Adjust</enum>
+       </property>
+       <property name="viewMode">
+        <enum>QListView::IconMode</enum>
+       </property>
+       <property name="uniformItemSizes">
+        <bool>true</bool>
+       </property>
+       <property name="itemAlignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionNext_Page">
    <property name="text">
@@ -178,6 +228,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionShow_Contents">
+   <property name="text">
+    <string>Show Contents</string>
    </property>
   </action>
  </widget>
