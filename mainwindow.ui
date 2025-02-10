@@ -164,7 +164,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Combine Two Pages</string>
+    <string>Double Page Mode</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>

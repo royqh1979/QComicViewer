@@ -213,6 +213,8 @@ void PagesNavigator::setBookPath(QString newBookPath)
     if (info.exists()
             && info.isFile()
             && !newBookPath.endsWith(".zip")
+            && !newBookPath.endsWith(".cbz")
+            && !newBookPath.endsWith(".cbr")
             && !newBookPath.endsWith(".rar")) {
 
         newBookPath = info.absolutePath();
@@ -228,10 +230,12 @@ void PagesNavigator::setBookPath(QString newBookPath)
             if (QFileInfo{mBookPath}.isDir()) {
                 mPageList = readDir(mBookPath);
                 mBookType = BookType::Folder;
-            } else if (mBookPath.endsWith(".zip")) {
+            } else if (mBookPath.endsWith(".zip")
+                       || mBookPath.endsWith(".cbz")) {
                 mBookType = BookType::Zip;
                 mPageList = readZip(mBookPath);
-            } else if (mBookPath.endsWith(".rar")) {
+            } else if (mBookPath.endsWith(".rar")
+                       ||mBookPath.endsWith(".cbr")) {
                 mBookType = BookType::RAR;
                 mPageList = readRar(mBookPath);
             }
