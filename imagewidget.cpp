@@ -76,6 +76,8 @@ void ImageWidget::setImage(const QPixmap &newImage)
         mImage = newImage;
         mWorkingFitType = mFitType;
         resetScrollBars();
+        horizontalScrollBar()->setValue(0);
+        verticalScrollBar()->setValue(0);
         emit imageChanged();
     }
 }
@@ -129,11 +131,11 @@ void ImageWidget::resetScrollBars(bool forceRatio)
             break;
         case AutoFitType::Height:
             mCacheImage = mImage.scaledToHeight(viewport()->height());
-            mRatio = mCacheImage.height() / mImage.height();
+            mRatio = (float)mCacheImage.height() / mImage.height();
             break;
         case AutoFitType::Width:
             mCacheImage = mImage.scaledToWidth(viewport()->width());
-            mRatio = mCacheImage.width() / mImage.width();
+            mRatio = (float)mCacheImage.width() / mImage.width();
             break;
         }
         verticalScrollBar()->setRange(0, mCacheImage.height()-viewport()->height());
