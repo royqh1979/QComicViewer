@@ -41,7 +41,6 @@
     <addaction name="actionLast_Page"/>
     <addaction name="actionPrev_Page"/>
     <addaction name="actionNext_Page"/>
-    <addaction name="actionGoto_Page"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Double_Pages"/>
     <addaction name="actionSingle_First_Page"/>
@@ -78,6 +77,7 @@
    <addaction name="actionPrev_Page"/>
    <addaction name="actionNext_Page"/>
    <addaction name="actionLast_Page"/>
+   <addaction name="separator"/>
    <addaction name="separator"/>
    <addaction name="actionShow_Contents"/>
   </widget>
@@ -164,18 +164,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Double Pages</string>
+    <string>Combine Two Pages</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
-   </property>
-  </action>
-  <action name="actionGoto_Page">
-   <property name="text">
-    <string>Goto Page</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="actionOpen">

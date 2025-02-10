@@ -18,8 +18,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QLabel>
 #include <QListView>
 #include <QMainWindow>
+#include <QSpinBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,7 +39,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
+    void updateStatusBar();
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
+    void onZoomFactorChanged(int value);
     void on_actionShow_Double_Pages_toggled(bool arg1);
 
     void on_actionNext_Page_triggered();
@@ -74,5 +78,9 @@ private:
     ImageWidget *mImageWidget;
     PagesNavigator *mPagesNavigator;
     BookPagesModel *mBookPagesModel;
+    QSpinBox *mZoomFactor;
+    QLabel *mImageSizeInfo;
+    QLabel *mFilenameInfo;
+    QLabel *mPageInfo;
 };
 #endif // MAINWINDOW_H

@@ -25,8 +25,10 @@ ImageWidget::ImageWidget(QWidget *parent) :
   QAbstractScrollArea{parent},
   mRatio{1.0},
   mFitType{AutoFitType::Page},
+  mWorkingFitType{AutoFitType::Page},
   mBackground{Qt::gray},
-  mScrollAngle{0}
+  mScrollAngle{0},
+  mMovingImage{false}
 {
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -42,9 +44,7 @@ void ImageWidget::setRatio(float newRatio)
     newRatio = std::max((float)0.01, newRatio);
     if (newRatio!=mRatio) {
         mRatio = newRatio;
-        qDebug()<<mRatio;
-        resetScrollBars();
-        emit ratioChanged();
+        resetScrollBars(true);
     }
 }
 
@@ -57,6 +57,7 @@ void ImageWidget::setFitType(AutoFitType newFitType)
 {
     if (mFitType!=newFitType) {
         mFitType = newFitType;
+        mWorkingFitType = mFitType;
         if (mFitType == AutoFitType::None)
             mRatio = 1;
         resetScrollBars();
@@ -73,9 +74,15 @@ void ImageWidget::setImage(const QPixmap &newImage)
 {
     if (mImage != newImage) {
         mImage = newImage;
+        mWorkingFitType = mFitType;
         resetScrollBars();
         emit imageChanged();
     }
+}
+
+QSize ImageWidget::imageSize() const
+{
+    return mImage.size();
 }
 
 void ImageWidget::resizeEvent(QResizeEvent *event)
@@ -98,10 +105,12 @@ void ImageWidget::paintEvent(QPaintEvent *event)
     }
 }
 
-void ImageWidget::resetScrollBars()
+void ImageWidget::resetScrollBars(bool forceRatio)
 {
+    if (forceRatio)
+        mWorkingFitType = AutoFitType::None;
     if (!mImage.isNull() && viewport()->width()>0 && viewport()->height()>0) {
-        switch(mFitType) {
+        switch(mWorkingFitType) {
         case AutoFitType::Page:
         {
             float r1,r2;
@@ -133,13 +142,25 @@ void ImageWidget::resetScrollBars()
         verticalScrollBar()->setRange(0,0);
         horizontalScrollBar()->setRange(0,0);
     }
+    emit ratioChanged();
     viewport()->update();
+}
+
+void ImageWidget::scrollImageByMouseMove(QMouseEvent( *event))
+{
+    if (!mMovingImage)
+        return;
+    QPoint delta = event->pos() - mOldMousePos;
+    mOldMousePos = event->pos();
+    horizontalScrollBar()->setValue(
+                horizontalScrollBar()->value() - delta.x());
+    verticalScrollBar()->setValue(
+                verticalScrollBar()->value() - delta.y());
 }
 
 void ImageWidget::wheelEvent(QWheelEvent *event)
 {
-    if (event->modifiers() == Qt::KeyboardModifier::ControlModifier
-            && mFitType == AutoFitType::None) {
+    if (event->modifiers() == Qt::KeyboardModifier::ControlModifier) {
         if (event->angleDelta().y()*mScrollAngle<0)
             mScrollAngle = 0;
         mScrollAngle += event->angleDelta().y();
@@ -170,6 +191,44 @@ void ImageWidget::wheelEvent(QWheelEvent *event)
             while (mScrollAngle <= -120)
                 mScrollAngle += 120;
         }
+    }
+}
+
+void ImageWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (mMovingImage) {
+        scrollImageByMouseMove(event);
+        event->accept();
+    }
+}
+
+void ImageWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        if (mFitType==AutoFitType::None)
+            mWorkingFitType = AutoFitType::Page;
+        else
+            mWorkingFitType = mFitType;
+        resetScrollBars();
+        event->accept();
+    }
+}
+
+void ImageWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        mOldMousePos=event->pos();
+        mMovingImage = true;
+        event->accept();
+    }
+}
+
+void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        scrollImageByMouseMove(event);
+        mMovingImage = false;
+        event->accept();
     }
 }
 

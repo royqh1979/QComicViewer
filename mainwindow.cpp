@@ -31,6 +31,21 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    mPageInfo = new QLabel(this);
+    mPageInfo->setText(" ");
+    ui->statusbar->addPermanentWidget(mPageInfo);
+    mZoomFactor = new QSpinBox(this);
+    mZoomFactor->setSuffix("%");
+    mZoomFactor->setRange(1,1000);
+    connect(mZoomFactor, qOverload<int>(&QSpinBox::valueChanged),
+            this, &MainWindow::onZoomFactorChanged);
+    ui->statusbar->addPermanentWidget(mZoomFactor);
+    mImageSizeInfo = new QLabel(this);
+    mImageSizeInfo->setText(" ");
+    ui->statusbar->addPermanentWidget(mImageSizeInfo);
+
+
     QHBoxLayout *layout = new QHBoxLayout(ui->centralwidget);
     layout->setMargin(0);
     mImageWidget = new ImageWidget(ui->centralwidget);
@@ -39,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::on_actionNext_Page_triggered);
     connect(mImageWidget, &ImageWidget::requestPrevImage,
             this, &MainWindow::on_actionPrev_Page_triggered);
+    connect(mImageWidget, &ImageWidget::ratioChanged,
+            this, &MainWindow::updateStatusBar);
 
     mPagesNavigator = new PagesNavigator(this);
     connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
@@ -64,9 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
                                           tr("PgDown"),
                                           tr("Right"),
                                           tr("Down"),
-                                          tr("Space"),
-                                          tr("Enter"),
-                                          tr("Return")
+                                          tr("Space")
                                       });
     QActionGroup *fitActionGroups = new QActionGroup(this);
     fitActionGroups->addAction(ui->actionFit_Width);
@@ -87,6 +102,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::updateStatusBar()
+{
+    if (mPagesNavigator->pageCount()<=0) {
+        mZoomFactor->blockSignals(true);
+        mZoomFactor->setValue(100);
+        mZoomFactor->blockSignals(false);
+        mImageSizeInfo->setText(" ");
+        mPageInfo->setText(" ");
+        ui->statusbar->clearMessage();
+    } else {
+        mZoomFactor->blockSignals(true);
+        mZoomFactor->setValue(mImageWidget->ratio()*100);
+        mZoomFactor->blockSignals(false);
+        mImageSizeInfo->setText(QString(" %1x%2 ").arg(mImageWidget->imageSize().width()).arg(mImageWidget->imageSize().height()));
+        mPageInfo->setText(QString("%1/%2").arg(mPagesNavigator->currentPage()+1)
+                               .arg(mPagesNavigator->pageCount()));
+        ui->statusbar->showMessage(mPagesNavigator->currentPageName());
+    }
+}
+
 void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     if (!current.isValid())
@@ -94,19 +129,22 @@ void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QMod
     mPagesNavigator->gotoPage(current.row());
 }
 
+void MainWindow::onZoomFactorChanged(int value)
+{
+    mImageWidget->setRatio(value/100.0);
+}
+
 void MainWindow::onCurrentPageChanged()
 {
-    QModelIndex index = mBookPagesModel->index(mPagesNavigator->currentPage(),0);
-    ui->pagesView->selectionModel()->select(index,
-                                            QItemSelectionModel::SelectionFlag::Select | QItemSelectionModel::SelectionFlag::Current);
-    ui->pagesView->scrollTo(index);
     QPixmap image = mPagesNavigator->currentImage();
     mImageWidget->setImage(image);
-    if (mPagesNavigator->pageCount()<=0)
-        ui->statusbar->clearMessage();
-    else
-        ui->statusbar->showMessage(QString("%1/%2").arg(mPagesNavigator->currentPage()+1)
-                               .arg(mPagesNavigator->pageCount()));
+    if (mPagesNavigator->pageCount()>0) {
+        QModelIndex index = mBookPagesModel->index(mPagesNavigator->currentPage(),0);
+        ui->pagesView->selectionModel()->select(index,
+                                                QItemSelectionModel::SelectionFlag::Select | QItemSelectionModel::SelectionFlag::Current);
+        ui->pagesView->scrollTo(index);
+    }
+    updateStatusBar();
 }
 
 void MainWindow::on_actionShow_Double_Pages_toggled(bool arg1)

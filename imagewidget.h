@@ -39,6 +39,7 @@ public:
     void setFitType(AutoFitType newFitType);
     const QPixmap &image() const;
     void setImage(const QPixmap &newImage);
+    QSize imageSize() const;
 
     const QColor &background() const;
     void setBackground(const QColor &newBackground);
@@ -50,18 +51,26 @@ signals:
     void requestPrevImage();
     void requestNextImage();
 private:
-    void resetScrollBars();
+    void resetScrollBars(bool forceRatio=false);
+    void scrollImageByMouseMove(QMouseEvent *event);
 private:
     float mRatio;
     AutoFitType mFitType;
+    AutoFitType mWorkingFitType;
     QPixmap mImage;
     QPixmap mCacheImage;
     QColor mBackground;
     int mScrollAngle;
+    QPoint mOldMousePos;
+    bool mMovingImage;
 
     // QWidget interface
 protected:
     void wheelEvent(QWheelEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 };

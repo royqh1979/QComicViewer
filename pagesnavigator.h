@@ -60,6 +60,7 @@ public:
     void toLastPage();
     void toFirstPage();
     QPixmap currentImage();
+    QString currentPageName();
     void loadThumbnails();
     QPixmap thumbnail(int page);
 

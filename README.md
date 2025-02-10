@@ -2,7 +2,7 @@
 A Light-weight Comic Viewer based on Qt
 
 ## Functions:
- - Folder/RAR/zip archives support
+ - Support folder/RAR/zip archives
  - Display two pages in one
  - Contents List
  

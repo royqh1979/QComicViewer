@@ -2,7 +2,7 @@ QT       += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
 
 APP_VERSION = 0.9
 

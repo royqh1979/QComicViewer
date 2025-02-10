@@ -40,7 +40,7 @@ static QStringList readDir(const QString &path)
         if (ImageSuffice.contains(suffix))
             result.append(file);
     }
-    result.sort();
+    result.sort(Qt::CaseInsensitive);
     return result;
 }
 
@@ -57,7 +57,7 @@ static QStringList readZip(const QString& path) {
         }
         zip.close();
     }
-    result.sort();
+    result.sort(Qt::CaseInsensitive);
     return result;
 }
 
@@ -74,7 +74,7 @@ static QStringList readRar(const QString& path) {
         }
         archive.close();
     }
-    result.sort();
+    result.sort(Qt::CaseInsensitive);
     return result;
 }
 
@@ -138,8 +138,7 @@ QPixmap PagesNavigator::currentImage()
     if (mCurrentPage == -1)
         return QPixmap();
     if (!mDisplayDoublePages) {
-        QPixmap image = mPageList[mCurrentPage];
-        return image;
+        return getPageImage(mCurrentPage);
     } else {
         if (mCurrentPage+1 >= pageCount()
                 || mCurrentPage < mDoublePagesStart
@@ -163,6 +162,13 @@ QPixmap PagesNavigator::currentImage()
             return img;
         }
     }
+}
+
+QString PagesNavigator::currentPageName()
+{
+    if (mCurrentPage<0 || mCurrentPage>=pageCount())
+        return QString();
+    return mPageList[mCurrentPage];
 }
 
 void PagesNavigator::loadThumbnails()
