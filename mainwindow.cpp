@@ -85,13 +85,20 @@ MainWindow::MainWindow(QWidget *parent)
     fitActionGroup->addAction(ui->actionFit_Height);
     fitActionGroup->addAction(ui->actionFit_Page);
     fitActionGroup->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
-    ui->actionFit_Width->setChecked(true);
+    updateImageFitType();
+    connect(ui->actionFit_Width, &QAction::triggered,
+            this, &MainWindow::updateImageFitType);
+    connect(ui->actionFit_Height, &QAction::triggered,
+            this, &MainWindow::updateImageFitType);
+    connect(ui->actionFit_Page, &QAction::triggered,
+            this, &MainWindow::updateImageFitType);
 
     QActionGroup *pageModeActionGroup = new QActionGroup(this);
     pageModeActionGroup->addAction(ui->actionSingle_Pages);
     pageModeActionGroup->addAction(ui->actionDouble_Pages);
     pageModeActionGroup->addAction(ui->actionDouble_Pages_with_Front_Cover);
     ui->actionSingle_Pages->setChecked(true);
+
     connect(ui->actionSingle_Pages, &QAction::triggered,
             this, &MainWindow::updatePageMode);
     connect(ui->actionDouble_Pages, &QAction::triggered,
@@ -220,14 +227,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 }
 
-
-void MainWindow::on_actionFit_Width_toggled(bool arg1)
-{
-    Q_UNUSED(arg1);
-    setImageFitType();
-}
-
-void MainWindow::setImageFitType()
+void MainWindow::updateImageFitType()
 {
     if (ui->actionFit_Height->isChecked())
         mImageWidget->setFitType(ImageWidget::AutoFitType::Height);
@@ -239,19 +239,6 @@ void MainWindow::setImageFitType()
         mImageWidget->setFitType(ImageWidget::AutoFitType::None);
 }
 
-
-void MainWindow::on_actionFit_Height_toggled(bool arg1)
-{
-    Q_UNUSED(arg1);
-    setImageFitType();
-}
-
-
-void MainWindow::on_actionFit_Page_toggled(bool arg1)
-{
-    Q_UNUSED(arg1);
-    setImageFitType();
-}
 
 void MainWindow::on_actionAbout_triggered()
 {
@@ -269,14 +256,12 @@ void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
 
 void MainWindow::on_dockPages_visibilityChanged(bool visible)
 {
-    ui->actionShow_Contents->blockSignals(true);
     ui->actionShow_Contents->setChecked(visible);
-    ui->actionShow_Contents->blockSignals(false);
 }
 
-
-void MainWindow::on_actionShow_Contents_toggled(bool arg1)
+void MainWindow::on_actionShow_Contents_triggered()
 {
-    ui->dockPages->setVisible(arg1);
+    ui->dockPages->setVisible(ui->actionShow_Contents->isChecked());
 }
+
 

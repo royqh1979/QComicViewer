@@ -43,6 +43,7 @@ private slots:
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void onZoomFactorChanged(int value);
     void updatePageMode();
+    void updateImageFitType();
     void on_actionNext_Page_triggered();
 
     void on_actionPrev_Page_triggered();
@@ -55,22 +56,15 @@ private slots:
 
     void on_actionOpen_triggered();
 
-    void on_actionFit_Width_toggled(bool arg1);
-
-    void on_actionFit_Height_toggled(bool arg1);
-
-    void on_actionFit_Page_toggled(bool arg1);
-
     void on_actionAbout_triggered();
 
     void on_actionRight_to_Left_toggled(bool arg1);
 
     void on_dockPages_visibilityChanged(bool visible);
 
-    void on_actionShow_Contents_toggled(bool arg1);
+    void on_actionShow_Contents_triggered();
 
 private:
-    void setImageFitType();
     void onCurrentPageChanged();
 private:
     Ui::MainWindow *ui;
