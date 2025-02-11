@@ -61,11 +61,13 @@ private slots:
 
     void on_actionFit_Page_toggled(bool arg1);
 
-    void on_actionShow_Contents_triggered();
-
     void on_actionAbout_triggered();
 
     void on_actionRight_to_Left_toggled(bool arg1);
+
+    void on_dockPages_visibilityChanged(bool visible);
+
+    void on_actionShow_Contents_toggled(bool arg1);
 
 private:
     void setImageFitType();

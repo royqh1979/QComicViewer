@@ -24,6 +24,7 @@
 #include "imagewidget.h"
 #include "pagesnavigator.h"
 #include "aboutdialog.h"
+#include <QStyleFactory>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -90,13 +91,22 @@ MainWindow::MainWindow(QWidget *parent)
     pageModeActionGroup->addAction(ui->actionSingle_Pages);
     pageModeActionGroup->addAction(ui->actionDouble_Pages);
     pageModeActionGroup->addAction(ui->actionDouble_Pages_with_Front_Cover);
-
     ui->actionSingle_Pages->setChecked(true);
+    connect(ui->actionSingle_Pages, &QAction::triggered,
+            this, &MainWindow::updatePageMode);
+    connect(ui->actionDouble_Pages, &QAction::triggered,
+            this, &MainWindow::updatePageMode);
+    connect(ui->actionDouble_Pages_with_Front_Cover, &QAction::triggered,
+            this, &MainWindow::updatePageMode);
 
     ui->actionRight_to_Left->setChecked(true);
 
     setWindowIcon(QPixmap(":/icons/comic-book.png"));
     setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
+
+    ui->actionShow_Contents->setChecked(true);
+
+    qApp->setStyle(QStyleFactory::create("fusion"));
 }
 
 MainWindow::~MainWindow()
@@ -243,12 +253,6 @@ void MainWindow::on_actionFit_Page_toggled(bool arg1)
     setImageFitType();
 }
 
-void MainWindow::on_actionShow_Contents_triggered()
-{
-    ui->dockPages->show();
-}
-
-
 void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog dialog(this);
@@ -260,5 +264,19 @@ void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
     mPagesNavigator->setDisplayPagesLeftToRight(!ui->actionRight_to_Left->isChecked());
+}
+
+
+void MainWindow::on_dockPages_visibilityChanged(bool visible)
+{
+    ui->actionShow_Contents->blockSignals(true);
+    ui->actionShow_Contents->setChecked(visible);
+    ui->actionShow_Contents->blockSignals(false);
+}
+
+
+void MainWindow::on_actionShow_Contents_toggled(bool arg1)
+{
+    ui->dockPages->setVisible(arg1);
 }
 

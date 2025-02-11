@@ -202,6 +202,9 @@
    </property>
   </action>
   <action name="actionShow_Contents">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show Contents</string>
    </property>
@@ -212,16 +215,25 @@
    </property>
   </action>
   <action name="actionSingle_Pages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Single Pages</string>
    </property>
   </action>
   <action name="actionDouble_Pages">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Double Pages</string>
    </property>
   </action>
   <action name="actionDouble_Pages_with_Front_Cover">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Double Pages with Front Cover</string>
    </property>
