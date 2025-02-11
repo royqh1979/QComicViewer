@@ -79,15 +79,21 @@ MainWindow::MainWindow(QWidget *parent)
                                           tr("PgDown"),
                                           tr("Space")
                                       });
-    QActionGroup *fitActionGroups = new QActionGroup(this);
-    fitActionGroups->addAction(ui->actionFit_Width);
-    fitActionGroups->addAction(ui->actionFit_Height);
-    fitActionGroups->addAction(ui->actionFit_Page);
-    fitActionGroups->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
+    QActionGroup *fitActionGroup = new QActionGroup(this);
+    fitActionGroup->addAction(ui->actionFit_Width);
+    fitActionGroup->addAction(ui->actionFit_Height);
+    fitActionGroup->addAction(ui->actionFit_Page);
+    fitActionGroup->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
     ui->actionFit_Width->setChecked(true);
 
-    ui->actionShow_Double_Pages->setChecked(true);
-    ui->actionLeft_To_Right->setChecked(false);
+    QActionGroup *pageModeActionGroup = new QActionGroup(this);
+    pageModeActionGroup->addAction(ui->actionSingle_Pages);
+    pageModeActionGroup->addAction(ui->actionDouble_Pages);
+    pageModeActionGroup->addAction(ui->actionDouble_Pages_with_Front_Cover);
+
+    ui->actionSingle_Pages->setChecked(true);
+
+    ui->actionRight_to_Left->setChecked(true);
 
     setWindowIcon(QPixmap(":/icons/comic-book.png"));
     setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
@@ -120,6 +126,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    Q_UNUSED(previous);
     if (!current.isValid())
         return;
     mPagesNavigator->gotoPage(current.row());
@@ -128,6 +135,19 @@ void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QMod
 void MainWindow::onZoomFactorChanged(int value)
 {
     mImageWidget->setRatio(value/100.0);
+}
+
+void MainWindow::updatePageMode()
+{
+    if (ui->actionSingle_Pages->isChecked()) {
+        mPagesNavigator->setDisplayDoublePages(false);
+    } else if (ui->actionDouble_Pages->isChecked()) {
+        mPagesNavigator->setDisplayDoublePages(true);
+        mPagesNavigator->setDoublePagesStart(0);
+    } else if (ui->actionDouble_Pages_with_Front_Cover->isChecked()) {
+        mPagesNavigator->setDisplayDoublePages(true);
+        mPagesNavigator->setDoublePagesStart(1);
+    }
 }
 
 void MainWindow::onCurrentPageChanged()
@@ -142,12 +162,6 @@ void MainWindow::onCurrentPageChanged()
     }
     updateStatusBar();
 }
-
-void MainWindow::on_actionShow_Double_Pages_toggled(bool arg1)
-{
-    mPagesNavigator->setDisplayDoublePages(arg1);
-}
-
 
 void MainWindow::on_actionNext_Page_triggered()
 {
@@ -189,7 +203,7 @@ void MainWindow::on_actionOpen_triggered()
         mPagesNavigator->setBookPath("");
     }
     if (mPagesNavigator->pageCount()>0) {
-        mPagesNavigator->setDoublePagesStart(ui->actionSingle_First_Page->isChecked()?1:0);
+        updatePageMode();
         setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mPagesNavigator->bookTitle()));
     } else {
         setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
@@ -229,23 +243,6 @@ void MainWindow::on_actionFit_Page_toggled(bool arg1)
     setImageFitType();
 }
 
-void MainWindow::on_actionSingle_First_Page_toggled(bool arg1)
-{
-    Q_UNUSED(arg1);
-    if (ui->actionSingle_First_Page->isChecked())
-        mPagesNavigator->setDoublePagesStart(1);
-    else
-        mPagesNavigator->setDoublePagesStart(0);
-}
-
-
-void MainWindow::on_actionLeft_To_Right_toggled(bool arg1)
-{
-    Q_UNUSED(arg1);
-    mPagesNavigator->setDisplayPagesLeftToRight(ui->actionLeft_To_Right->isChecked());
-}
-
-
 void MainWindow::on_actionShow_Contents_triggered()
 {
     ui->dockPages->show();
@@ -256,5 +253,12 @@ void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog dialog(this);
     dialog.exec();
+}
+
+
+void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
+{
+    Q_UNUSED(arg1);
+    mPagesNavigator->setDisplayPagesLeftToRight(!ui->actionRight_to_Left->isChecked());
 }
 

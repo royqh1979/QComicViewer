@@ -42,8 +42,7 @@ private slots:
     void updateStatusBar();
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void onZoomFactorChanged(int value);
-    void on_actionShow_Double_Pages_toggled(bool arg1);
-
+    void updatePageMode();
     void on_actionNext_Page_triggered();
 
     void on_actionPrev_Page_triggered();
@@ -62,13 +61,11 @@ private slots:
 
     void on_actionFit_Page_toggled(bool arg1);
 
-    void on_actionSingle_First_Page_toggled(bool arg1);
-
-    void on_actionLeft_To_Right_toggled(bool arg1);
-
     void on_actionShow_Contents_triggered();
 
     void on_actionAbout_triggered();
+
+    void on_actionRight_to_Left_toggled(bool arg1);
 
 private:
     void setImageFitType();

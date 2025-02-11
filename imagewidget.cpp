@@ -162,12 +162,12 @@ void ImageWidget::scrollImageByMouseMove(QMouseEvent( *event))
                 verticalScrollBar()->value() - delta.y());
 }
 
-void ImageWidget::wheelEvent(QWheelEvent *event)
+void ImageWidget::wheelEvent(QWheelEvent *e)
 {
-    if (event->modifiers() == Qt::KeyboardModifier::ControlModifier) {
-        if (event->angleDelta().y()*mScrollAngle<0)
+    if (e->modifiers() == Qt::KeyboardModifier::ControlModifier) {
+        if (e->angleDelta().y()*mScrollAngle<0)
             mScrollAngle = 0;
-        mScrollAngle += event->angleDelta().y();
+        mScrollAngle += e->angleDelta().y();
         if (mScrollAngle>=120) {
             setRatio(mRatio - 0.05);
             while (mScrollAngle >= 120)
@@ -179,22 +179,26 @@ void ImageWidget::wheelEvent(QWheelEvent *event)
         }
         return;
     }
-    if (verticalScrollBar()->isVisible()) {
-        mScrollAngle = 0;
-        QAbstractScrollArea::wheelEvent(event);
-    } else{
-        if (event->angleDelta().y()*mScrollAngle<0)
+
+    if (std::abs(e->angleDelta().y())>std::abs(e->angleDelta().x())) {
+        if (e->angleDelta().y()*mScrollAngle<0)
             mScrollAngle = 0;
-        mScrollAngle += event->angleDelta().y();
+        mScrollAngle += e->angleDelta().y();
         if (mScrollAngle>=120) {
-            emit requestPrevImage();
-            while (mScrollAngle >= 120)
-                mScrollAngle -= 120;
+            if (verticalScrollBar()->value()==verticalScrollBar()->minimum())
+                emit requestPrevImage();
+            else
+                verticalScrollBar()->setValue(verticalScrollBar()->value()-verticalScrollBar()->singleStep());
+            mScrollAngle %= 120;
         } else if (mScrollAngle <= -120) {
-            emit requestNextImage();
-            while (mScrollAngle <= -120)
-                mScrollAngle += 120;
+            if (verticalScrollBar()->value()==verticalScrollBar()->maximum())
+                emit requestNextImage();
+            else
+                verticalScrollBar()->setValue(verticalScrollBar()->value()+verticalScrollBar()->singleStep());
+            mScrollAngle = - ((-mScrollAngle) % 120);
         }
+    } else {
+        QAbstractScrollArea::wheelEvent(e);
     }
 }
 

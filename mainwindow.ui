@@ -42,9 +42,11 @@
     <addaction name="actionPrev_Page"/>
     <addaction name="actionNext_Page"/>
     <addaction name="separator"/>
-    <addaction name="actionShow_Double_Pages"/>
-    <addaction name="actionSingle_First_Page"/>
-    <addaction name="actionLeft_To_Right"/>
+    <addaction name="actionSingle_Pages"/>
+    <addaction name="actionDouble_Pages"/>
+    <addaction name="actionDouble_Pages_with_Front_Cover"/>
+    <addaction name="separator"/>
+    <addaction name="actionRight_to_Left"/>
     <addaction name="separator"/>
     <addaction name="actionFit_Width"/>
     <addaction name="actionFit_Height"/>
@@ -159,17 +161,6 @@
     <string>Home</string>
    </property>
   </action>
-  <action name="actionShow_Double_Pages">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Double Page Mode</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+D</string>
-   </property>
-  </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open...</string>
@@ -210,25 +201,6 @@
     <string>Fit Page</string>
    </property>
   </action>
-  <action name="actionSingle_First_Page">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Single First Page</string>
-   </property>
-  </action>
-  <action name="actionLeft_To_Right">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Left To Right</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+L</string>
-   </property>
-  </action>
   <action name="actionShow_Contents">
    <property name="text">
     <string>Show Contents</string>
@@ -237,6 +209,26 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="actionSingle_Pages">
+   <property name="text">
+    <string>Single Pages</string>
+   </property>
+  </action>
+  <action name="actionDouble_Pages">
+   <property name="text">
+    <string>Double Pages</string>
+   </property>
+  </action>
+  <action name="actionDouble_Pages_with_Front_Cover">
+   <property name="text">
+    <string>Double Pages with Front Cover</string>
+   </property>
+  </action>
+  <action name="actionRight_to_Left">
+   <property name="text">
+    <string>Right to Left</string>
    </property>
   </action>
  </widget>
