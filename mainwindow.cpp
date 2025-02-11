@@ -74,13 +74,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DesktopIcon));
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
-                                          tr("Left"),
-                                          tr("Up")
                                       });
     ui->actionNext_Page->setShortcuts({
                                           tr("PgDown"),
-                                          tr("Right"),
-                                          tr("Down"),
                                           tr("Space")
                                       });
     QActionGroup *fitActionGroups = new QActionGroup(this);
@@ -88,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     fitActionGroups->addAction(ui->actionFit_Height);
     fitActionGroups->addAction(ui->actionFit_Page);
     fitActionGroups->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
-    ui->actionFit_Page->setChecked(true);
+    ui->actionFit_Width->setChecked(true);
 
     ui->actionShow_Double_Pages->setChecked(true);
     ui->actionLeft_To_Right->setChecked(false);

@@ -140,6 +140,8 @@ void ImageWidget::resetScrollBars(bool forceRatio)
         }
         verticalScrollBar()->setRange(0, mCacheImage.height()-viewport()->height());
         horizontalScrollBar()->setRange(0, mCacheImage.width()-viewport()->width());
+        verticalScrollBar()->setSingleStep(mCacheImage.height()/10);
+        horizontalScrollBar()->setSingleStep(mCacheImage.width()/10);
     } else {
         verticalScrollBar()->setRange(0,0);
         horizontalScrollBar()->setRange(0,0);
@@ -221,6 +223,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         mOldMousePos=event->pos();
         mMovingImage = true;
+        setCursor(Qt::CursorShape::SizeAllCursor);
         event->accept();
     }
 }
@@ -230,6 +233,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         scrollImageByMouseMove(event);
         mMovingImage = false;
+        setCursor(Qt::CursorShape::ArrowCursor);
         event->accept();
     }
 }
