@@ -24,7 +24,9 @@
 #include <QMap>
 #include <QMutex>
 #include <QThread>
+#include <memory>
 
+class ArchiveReader;
 class PagesNavigator;
 class BookPagesModel: public QAbstractListModel{
     Q_OBJECT
@@ -46,11 +48,6 @@ class PagesNavigator : public QObject
 {
     Q_OBJECT
 public:
-    enum class BookType {
-        Folder,
-        Zip,
-        RAR
-    };
     explicit PagesNavigator(QObject *parent = nullptr);
     ~PagesNavigator();
 
@@ -79,8 +76,7 @@ public:
     int doublePagesEnd() const;
     void setDoublePagesEnd(int newDoublePagesEnd);
 
-    BookType bookType() const;
-    static QPixmap getBookPageImage(QString bookPath, QString file, BookType bookType);
+    static QPixmap getBookPageImage(QString bookPath, QString file);
     int thumbnailSize() const;
     void setThumbnailSize(int newThumbnailSize);
 
@@ -99,7 +95,6 @@ private:
 private:
     QString mBookPath;
     QStringList mPageList;
-    BookType mBookType;
     int mCurrentPage;
     int mDoublePagesStart;
     int mDoublePagesEnd;
@@ -109,6 +104,8 @@ private:
     bool mLoadingThumbnail;
     QMap<int, QPixmap> mThumbnailCache;
     QRecursiveMutex mThumbnailMutex;
+    static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
+    static QSet<QString> mImageSuffice;
 };
 
 class PageThumbnailLoader: public QThread {
@@ -124,7 +121,6 @@ private slots:
 private:
     QString mBookPath;
     QStringList mPageList;
-    PagesNavigator::BookType mBookType;
     bool mStop;
     int mThumbnailSize;
 

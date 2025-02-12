@@ -22,64 +22,14 @@
 #include <QDebug>
 #include <QSet>
 #include <QImageReader>
-#include "quazip/quazip.h"
-#include "quazip/quazipfile.h"
-#include "qtrar/qtrar.h"
-#include "qtrar/qtrarfile.h"
+#include "folderarchivereader.h"
+#include "ziparchivereader.h"
+#include "rararchivereader.h"
 
-static QSet<QString> ImageSuffice;
-
-static QStringList readDir(const QString &path)
-{
-    QDir dir{path};
-    QStringList result;
-    QStringList fileList = dir.entryList(QDir::Filter::Files);
-    foreach(const QString &file, dir.entryList(QDir::Filter::Files)) {
-        QFileInfo info{file};
-        QString suffix = info.suffix().toLower();
-        if (ImageSuffice.contains(suffix))
-            result.append(file);
-    }
-    result.sort(Qt::CaseInsensitive);
-    return result;
-}
-
-static QStringList readZip(const QString& path) {
-    QStringList result;
-    QuaZip zip{path};
-    if (zip.open(QuaZip::mdUnzip)) {
-        QStringList fileList = zip.getFileNameList();
-        foreach(const QString &file, fileList) {
-            QFileInfo info{file};
-            QString suffix = info.suffix().toLower();
-            if (ImageSuffice.contains(suffix))
-                result.append(file);
-        }
-        zip.close();
-    }
-    result.sort(Qt::CaseInsensitive);
-    return result;
-}
-
-static QStringList readRar(const QString& path) {
-    QStringList result;
-    QtRAR archive{path};
-    if (archive.open(QtRAR::OpenModeList)) {
-        QStringList fileList = archive.fileNameList();
-        foreach(const QString &file, fileList) {
-            QFileInfo info{file};
-            QString suffix = info.suffix().toLower();
-            if (ImageSuffice.contains(suffix))
-                result.append(file);
-        }
-        archive.close();
-    }
-    result.sort(Qt::CaseInsensitive);
-    return result;
-}
+QList<std::shared_ptr<ArchiveReader>> PagesNavigator::mArchiveReaders;
+QSet<QString> PagesNavigator::mImageSuffice;
 
 PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
-    mBookType{BookType::Folder},
     mCurrentPage{-1},
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
@@ -88,10 +38,13 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     mThumbnailSize{256},
     mLoadingThumbnail{false}
 {
-    if (ImageSuffice.isEmpty()) {
+    if (mImageSuffice.isEmpty()) {
         foreach(const QString& type, QImageReader::supportedImageFormats())
-            ImageSuffice.insert(type.toLower());
+            mImageSuffice.insert(type.toLower());
         //qDebug()<<ImageSuffice;
+        mArchiveReaders.append(std::make_shared<FolderArchiveReader>());
+        mArchiveReaders.append(std::make_shared<RarArchiveReader>());
+        mArchiveReaders.append(std::make_shared<ZipArchiveReader>());
     }
 }
 
@@ -210,13 +163,16 @@ void PagesNavigator::setBookPath(QString newBookPath)
 {
     QString fileName;
     QFileInfo info{newBookPath};
-    if (info.exists()
-            && info.isFile()
-            && !newBookPath.endsWith(".zip")
-            && !newBookPath.endsWith(".cbz")
-            && !newBookPath.endsWith(".cbr")
-            && !newBookPath.endsWith(".rar")) {
-
+    bool supportPath = false;
+    if (!info.exists())
+        return;
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(newBookPath)) {
+            supportPath = true;
+            break;
+        }
+    }
+    if (!supportPath) {
         newBookPath = info.absolutePath();
         fileName = info.fileName();
     }
@@ -226,20 +182,12 @@ void PagesNavigator::setBookPath(QString newBookPath)
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
 
-        if (QFileInfo::exists(mBookPath)) {
-            if (QFileInfo{mBookPath}.isDir()) {
-                mPageList = readDir(mBookPath);
-                mBookType = BookType::Folder;
-            } else if (mBookPath.endsWith(".zip")
-                       || mBookPath.endsWith(".cbz")) {
-                mBookType = BookType::Zip;
-                mPageList = readZip(mBookPath);
-            } else if (mBookPath.endsWith(".rar")
-                       ||mBookPath.endsWith(".cbr")) {
-                mBookType = BookType::RAR;
-                mPageList = readRar(mBookPath);
+        foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+            if (archiveReader->supportArchive(newBookPath)) {
+                mPageList = archiveReader->pageList(newBookPath, mImageSuffice);
             }
         }
+
         mDoublePagesStart = 0;
         mDoublePagesEnd = pageCount();
         emit bookChanged(mBookPath);
@@ -247,10 +195,13 @@ void PagesNavigator::setBookPath(QString newBookPath)
         if (!fileName.isEmpty()) {
             page = mPageList.indexOf(fileName);
         }
+        int oldPage = mCurrentPage;
         if (page == -1)
             toFirstPage();
         else
             gotoPage(page);
+        if (oldPage == mCurrentPage)
+            emit currentImageChanged();
     }
 }
 
@@ -374,51 +325,19 @@ void PagesNavigator::onThumbnailLoadingFinished(QString bookPath)
         mLoadingThumbnail = false;
 }
 
-PagesNavigator::BookType PagesNavigator::bookType() const
+QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file)
 {
-    return mBookType;
-}
-
-QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file, BookType bookType)
-{
-    if (bookType==BookType::Folder) {
-        QDir dir{bookPath};
-        QString imagePath = dir.absoluteFilePath(file);
-        return QPixmap(imagePath);
-    } else if (bookType == BookType::Zip) {
-        QuaZip zip{bookPath};
-        if (!zip.open(QuaZip::mdUnzip))
-            return QPixmap();
-        if (!zip.setCurrentFile(file))
-            return QPixmap();
-        QuaZipFile unzipfile(&zip);
-        if (!unzipfile.open(QIODevice::ReadOnly))
-            return QPixmap();
-        QImageReader reader{&unzipfile};
-        QPixmap result = QPixmap::fromImageReader(&reader);
-        unzipfile.close();
-        zip.close();
-        return result;
-    } else if (bookType == BookType::RAR) {
-        QtRAR archive{bookPath};
-        if (!archive.open(QtRAR::OpenModeExtract))
-            return QPixmap();
-        QtRARFile unrarFile{&archive};
-        unrarFile.setFileName(file);
-        if (!unrarFile.open(QIODevice::ReadOnly))
-            return QPixmap();
-        QImageReader reader{&unrarFile};
-        QPixmap result = QPixmap::fromImageReader(&reader);
-        unrarFile.close();
-        archive.close();
-        return result;
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(bookPath)) {
+            return archiveReader->pageImage(bookPath, file);
+        }
     }
     return QPixmap();
 }
 
 QPixmap PagesNavigator::getPageImage(int page)
 {
-    return getBookPageImage(mBookPath, mPageList[page], mBookType);
+    return getBookPageImage(mBookPath, mPageList[page]);
 }
 
 
@@ -447,7 +366,7 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
         return QVariant();
     switch(role) {
     case Qt::DisplayRole:
-        return row;
+        return row+1;
     case Qt::DecorationRole:
         return mBookNavigator->thumbnail(row);
     }
@@ -472,7 +391,6 @@ PageThumbnailLoader::PageThumbnailLoader(PagesNavigator *navigator, QObject *par
 {
     mBookPath = navigator->bookPath();
     mPageList = navigator->pageList();
-    mBookType = navigator->bookType();
     mThumbnailSize = navigator->thumbnailSize();
     mStop = false;
     connect(this, &QThread::finished,
@@ -500,7 +418,7 @@ void PageThumbnailLoader::run()
         const QString& file=mPageList[i];
         if (mStop)
             break;
-        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, file, mBookType);
+        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, file);
         if (mStop)
             break;
         QPixmap thumbnail;

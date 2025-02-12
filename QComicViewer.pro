@@ -21,6 +21,8 @@ win32 {
 
 SOURCES += \
     aboutdialog.cpp \
+    archivereader.cpp \
+    folderarchivereader.cpp \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -103,10 +105,14 @@ SOURCES += \
     quazip\zlib\inffast.c \
     quazip\zlib\trees.c \
     quazip\zlib\uncompr.c \
-    quazip\zlib\zutil.c
+    quazip\zlib\zutil.c \
+    rararchivereader.cpp \
+    ziparchivereader.cpp
 
 HEADERS += \
     aboutdialog.h \
+    archivereader.h \
+    folderarchivereader.h \
     imagewidget.h \
     mainwindow.h \
     pagesnavigator.h \
@@ -130,7 +136,9 @@ HEADERS += \
     quazip\quazipfileinfo.h \
     quazip\quazipnewinfo.h \
     quazip\unzip.h \
-    quazip\zip.h
+    quazip\zip.h \
+    rararchivereader.h \
+    ziparchivereader.h
 
 FORMS += \
     aboutdialog.ui \
