@@ -67,12 +67,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onPageViewCurrentChanged);
 
-    ui->actionOpen->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
+    ui->actionOpen->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
     ui->actionPrev_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowBack));
     ui->actionNext_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowForward));
     ui->actionFirst_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->actionLast_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DesktopIcon));
+    ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
                                       });
