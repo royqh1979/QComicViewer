@@ -44,12 +44,17 @@ public:
     const QColor &background() const;
     void setBackground(const QColor &newBackground);
 
+    bool swapLeftRightWhenTurnPage() const;
+    void setSwapLeftRightWhenTurnPage(bool newSwapLeftRightWhenTurnPage);
+
 signals:
     void ratioChanged();
     void fitTypeChanged();
     void imageChanged();
     void requestPrevImage();
     void requestNextImage();
+    void swapLeftRightWhenTurnPageChanged();
+
 private:
     void resetScrollBars(bool forceRatio=false);
     void scrollImageByMouseMove(QMouseEvent *event);
@@ -60,11 +65,15 @@ private:
     QPixmap mImage;
     QPixmap mCacheImage;
     QColor mBackground;
-    int mScrollAngle;
+    int mScrollAngleX;
+    int mScrollAngleY;
     QPoint mOldMousePos;
     bool mMovingImage;
+    bool mSwapLeftRightWhenTurnPage;
 
     // QWidget interface
+    Q_PROPERTY(bool swapLeftRightWhenTurnPage READ swapLeftRightWhenTurnPage WRITE setSwapLeftRightWhenTurnPage NOTIFY swapLeftRightWhenTurnPageChanged)
+
 protected:
     void wheelEvent(QWheelEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -73,6 +82,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 };
 
 #endif // IMAGEWIDGET_H

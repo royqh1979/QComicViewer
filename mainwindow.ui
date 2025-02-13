@@ -45,8 +45,9 @@
     <addaction name="actionSingle_Pages"/>
     <addaction name="actionDouble_Pages"/>
     <addaction name="actionDouble_Pages_with_Front_Cover"/>
-    <addaction name="separator"/>
     <addaction name="actionRight_to_Left"/>
+    <addaction name="separator"/>
+    <addaction name="actionSwap_Left_Right_Key"/>
     <addaction name="separator"/>
     <addaction name="actionFit_Width"/>
     <addaction name="actionFit_Height"/>
@@ -253,12 +254,20 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Right to Left</string>
+    <string>Right to Left Layout</string>
    </property>
   </action>
   <action name="actionOptions">
    <property name="text">
     <string>Options...</string>
+   </property>
+  </action>
+  <action name="actionSwap_Left_Right_Key">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Swap Left/Right Key</string>
    </property>
   </action>
  </widget>

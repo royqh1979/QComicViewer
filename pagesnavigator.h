@@ -69,8 +69,8 @@ public:
     int currentPage() const;
     bool displayDoublePages() const;
     void setDisplayDoublePages(bool newDisplayDoublePages);
-    bool displayPagesLeftToRight() const;
-    void setDisplayPagesLeftToRight(bool newDisplayPagesLeftToRight);
+    bool doublePagesRightToLeft() const;
+    void setDoublePagesRightToLeft(bool newValue);
     int doublePagesStart() const;
     void setDoublePagesStart(int newDoublePagesStart);
     int doublePagesEnd() const;
@@ -99,7 +99,7 @@ private:
     int mDoublePagesStart;
     int mDoublePagesEnd;
     bool mDisplayDoublePages;
-    bool mDisplayPagesLeftToRight;
+    bool mDoublePagesRightToLeft;
     int mThumbnailSize;
     bool mLoadingThumbnail;
     QMap<int, QPixmap> mThumbnailCache;

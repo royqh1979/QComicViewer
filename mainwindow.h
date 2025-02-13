@@ -68,6 +68,8 @@ private slots:
 
     void on_actionOptions_triggered();
 
+    void on_actionSwap_Left_Right_Key_toggled(bool arg1);
+
 private:
     void onCurrentPageChanged();
 private:

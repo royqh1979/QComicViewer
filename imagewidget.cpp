@@ -27,8 +27,10 @@ ImageWidget::ImageWidget(QWidget *parent) :
   mFitType{AutoFitType::Page},
   mWorkingFitType{AutoFitType::Page},
   mBackground{Qt::gray},
-  mScrollAngle{0},
-  mMovingImage{false}
+  mScrollAngleX{0},
+  mScrollAngleY{0},
+  mMovingImage{false},
+  mSwapLeftRightWhenTurnPage{false}
 {
     setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -107,6 +109,48 @@ void ImageWidget::paintEvent(QPaintEvent *event)
     }
 }
 
+void ImageWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Down
+            && verticalScrollBar()->value()==verticalScrollBar()->maximum()) {
+        emit requestNextImage();
+        event->accept();
+        return;
+    }
+    if (event->key() == Qt::Key_Up
+            && verticalScrollBar()->value()==verticalScrollBar()->minimum()) {
+        emit requestPrevImage();
+        event->accept();
+        return;
+    }
+    if (event->key() == Qt::Key_Left) {
+        if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum()) {
+            emit requestPrevImage();
+            event->accept();
+            return;
+        }
+        if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum()) {
+            emit requestNextImage();
+            event->accept();
+            return;
+        }
+    }
+    if (event->key() == Qt::Key_Right) {
+        if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum()) {
+            emit requestNextImage();
+            event->accept();
+            return;
+        }
+        if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum()) {
+            emit requestPrevImage();
+            event->accept();
+            return;
+        }
+
+    }
+    QAbstractScrollArea::keyReleaseEvent(event);
+}
+
 void ImageWidget::resetScrollBars(bool forceRatio)
 {
     if (forceRatio)
@@ -162,43 +206,78 @@ void ImageWidget::scrollImageByMouseMove(QMouseEvent( *event))
                 verticalScrollBar()->value() - delta.y());
 }
 
+bool ImageWidget::swapLeftRightWhenTurnPage() const
+{
+    return mSwapLeftRightWhenTurnPage;
+}
+
+void ImageWidget::setSwapLeftRightWhenTurnPage(bool newSwapLeftRightWhenTurnPage)
+{
+    if (mSwapLeftRightWhenTurnPage == newSwapLeftRightWhenTurnPage)
+        return;
+    mSwapLeftRightWhenTurnPage = newSwapLeftRightWhenTurnPage;
+    emit swapLeftRightWhenTurnPageChanged();
+}
+
 void ImageWidget::wheelEvent(QWheelEvent *e)
 {
     if (e->modifiers() == Qt::KeyboardModifier::ControlModifier) {
-        if (e->angleDelta().y()*mScrollAngle<0)
-            mScrollAngle = 0;
-        mScrollAngle += e->angleDelta().y();
-        if (mScrollAngle>=120) {
+        if (e->angleDelta().y()*mScrollAngleY<0)
+            mScrollAngleY = 0;
+        mScrollAngleY += e->angleDelta().y();
+        if (mScrollAngleY>=120) {
             setRatio(mRatio - 0.05);
-            while (mScrollAngle >= 120)
-                mScrollAngle -= 120;
-        } else if (mScrollAngle <= -120) {
+            while (mScrollAngleY >= 120)
+                mScrollAngleY -= 120;
+        } else if (mScrollAngleY <= -120) {
             setRatio(mRatio + 0.05);
-            while (mScrollAngle <= -120)
-                mScrollAngle += 120;
+            while (mScrollAngleY <= -120)
+                mScrollAngleY += 120;
         }
+        e->accept();
         return;
     }
 
-    if (std::abs(e->angleDelta().y())>std::abs(e->angleDelta().x())) {
-        if (e->angleDelta().y()*mScrollAngle<0)
-            mScrollAngle = 0;
-        mScrollAngle += e->angleDelta().y();
-        if (mScrollAngle>=120) {
+    if (std::abs(e->angleDelta().y())>=std::abs(e->angleDelta().x())) {
+        if (e->angleDelta().y()*mScrollAngleY<0)
+            mScrollAngleY = 0;
+        mScrollAngleY += e->angleDelta().y();
+        if (mScrollAngleY>=120) {
             if (verticalScrollBar()->value()==verticalScrollBar()->minimum())
                 emit requestPrevImage();
             else
                 verticalScrollBar()->setValue(verticalScrollBar()->value()-verticalScrollBar()->singleStep());
-            mScrollAngle %= 120;
-        } else if (mScrollAngle <= -120) {
+            mScrollAngleY %= 120;
+        } else if (mScrollAngleY <= -120) {
             if (verticalScrollBar()->value()==verticalScrollBar()->maximum())
                 emit requestNextImage();
             else
                 verticalScrollBar()->setValue(verticalScrollBar()->value()+verticalScrollBar()->singleStep());
-            mScrollAngle = - ((-mScrollAngle) % 120);
+            mScrollAngleY = - ((-mScrollAngleY) % 120);
         }
+        e->accept();
     } else {
-        QAbstractScrollArea::wheelEvent(e);
+        if (e->angleDelta().x()*mScrollAngleX<0)
+            mScrollAngleX = 0;
+        mScrollAngleX += e->angleDelta().y();
+        if (mScrollAngleX>=120) {
+            if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum())
+                emit requestPrevImage();
+            else if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum())
+                emit requestNextImage();
+            else
+                horizontalScrollBar()->setValue(horizontalScrollBar()->value()-verticalScrollBar()->singleStep());
+            mScrollAngleX %= 120;
+        } else if (mScrollAngleX <= -120) {
+            if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum())
+                emit requestNextImage();
+            else if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum())
+                emit requestPrevImage();
+            else
+                horizontalScrollBar()->setValue(horizontalScrollBar()->value()+verticalScrollBar()->singleStep());
+            mScrollAngleX = - ((-mScrollAngleX) % 120);
+        }
+        e->accept();
     }
 }
 

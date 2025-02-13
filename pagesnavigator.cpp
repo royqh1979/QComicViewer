@@ -34,7 +34,7 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
     mDisplayDoublePages{false},
-    mDisplayPagesLeftToRight{false},
+    mDoublePagesRightToLeft{false},
     mThumbnailSize{256},
     mLoadingThumbnail{false}
 {
@@ -105,12 +105,12 @@ QPixmap PagesNavigator::currentImage()
             QPixmap img(width,height);
             QPainter painter(&img);
             painter.fillRect(0, 0, width, height, Qt::transparent);
-            if (mDisplayPagesLeftToRight) {
-                painter.drawPixmap(0,0,image1);
-                painter.drawPixmap(image1.width(),0,image2);
-            } else {
+            if (mDoublePagesRightToLeft) {
                 painter.drawPixmap(0,0,image2);
                 painter.drawPixmap(image2.width(),0,image1);
+            } else {
+                painter.drawPixmap(0,0,image1);
+                painter.drawPixmap(image1.width(),0,image2);
             }
             return img;
         }
@@ -247,15 +247,15 @@ void PagesNavigator::setDisplayDoublePages(bool newDisplayDoublePages)
     }
 }
 
-bool PagesNavigator::displayPagesLeftToRight() const
+bool PagesNavigator::doublePagesRightToLeft() const
 {
-    return mDisplayPagesLeftToRight;
+    return mDoublePagesRightToLeft;
 }
 
-void PagesNavigator::setDisplayPagesLeftToRight(bool newDisplayPagesLeftToRight)
+void PagesNavigator::setDoublePagesRightToLeft(bool newRightToLeft)
 {
-    if (mDisplayPagesLeftToRight!=newDisplayPagesLeftToRight) {
-        mDisplayPagesLeftToRight = newDisplayPagesLeftToRight;
+    if (mDoublePagesRightToLeft!=newRightToLeft) {
+        mDoublePagesRightToLeft = newRightToLeft;
         if (mDisplayDoublePages)
             emit currentImageChanged();
     }

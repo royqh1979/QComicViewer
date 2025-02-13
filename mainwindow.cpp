@@ -143,6 +143,7 @@ void MainWindow::applySettings()
     ui->actionFit_Page->setChecked(pSettings->view().fitMode() == "Page");
 
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
+    ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
 }
 
 void MainWindow::updateStatusBar()
@@ -224,6 +225,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         pSettings->view().setFitMode("None");
 
     pSettings->view().setRightToLeft(ui->actionRight_to_Left->isChecked());
+    pSettings->view().setSwapLeftRightKey(ui->actionSwap_Left_Right_Key->isChecked());
 }
 
 void MainWindow::on_actionNext_Page_triggered()
@@ -296,7 +298,7 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
-    mPagesNavigator->setDisplayPagesLeftToRight(!ui->actionRight_to_Left->isChecked());
+    mPagesNavigator->setDoublePagesRightToLeft(ui->actionRight_to_Left->isChecked());
 }
 
 
@@ -321,5 +323,12 @@ void MainWindow::on_actionOptions_triggered()
     connect(optionDlg.get(), &SettingsDialog::settingsChanged,
             this, &MainWindow::applySettings);
     optionDlg->exec();
+}
+
+
+void MainWindow::on_actionSwap_Left_Right_Key_toggled(bool arg1)
+{
+    Q_UNUSED(arg1);
+    mImageWidget->setSwapLeftRightWhenTurnPage(ui->actionSwap_Left_Right_Key->isChecked());
 }
 
