@@ -106,6 +106,11 @@ SOURCES += \
     quazip\zlib\trees.c \
     quazip\zlib\uncompr.c \
     quazip\zlib\zutil.c \
+    settings.cpp \
+    settingsdialog/appearancesettingswidget.cpp \
+    settingsdialog/viewsettingswidget.cpp \
+    settingsdialog\settingsdialog.cpp \
+    settingsdialog\settingswidget.cpp \
     rararchivereader.cpp \
     ziparchivereader.cpp
 
@@ -137,12 +142,20 @@ HEADERS += \
     quazip\quazipnewinfo.h \
     quazip\unzip.h \
     quazip\zip.h \
+    settings.h \
+    settingsdialog/appearancesettingswidget.h \
+    settingsdialog/viewsettingswidget.h \
+    settingsdialog\settingsdialog.h \
+    settingsdialog\settingswidget.h \
     rararchivereader.h \
     ziparchivereader.h
 
 FORMS += \
     aboutdialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    settingsdialog/appearancesettingswidget.ui \
+    settingsdialog/viewsettingswidget.ui \
+    settingsdialog\settingsdialog.ui
 
 TRANSLATIONS += \
     QComicViewer_zh_CN.ts

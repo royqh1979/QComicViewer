@@ -24,6 +24,8 @@
 #include "imagewidget.h"
 #include "pagesnavigator.h"
 #include "aboutdialog.h"
+#include "settingsdialog/settingsdialog.h"
+#include "settings.h"
 #include <QStyleFactory>
 #include <QDebug>
 
@@ -85,7 +87,8 @@ MainWindow::MainWindow(QWidget *parent)
     fitActionGroup->addAction(ui->actionFit_Height);
     fitActionGroup->addAction(ui->actionFit_Page);
     fitActionGroup->setExclusionPolicy(QActionGroup::ExclusionPolicy::ExclusiveOptional);
-    updateImageFitType();
+    //updateImageFitType();
+
     connect(ui->actionFit_Width, &QAction::triggered,
             this, &MainWindow::updateImageFitType);
     connect(ui->actionFit_Height, &QAction::triggered,
@@ -111,14 +114,35 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowIcon(QPixmap(":/icons/comic-book.png"));
     setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
 
-    ui->actionShow_Contents->setChecked(true);
+    ui->dockPages->setVisible(pSettings->ui().showContentsPanel());
 
     qApp->setStyle(QStyleFactory::create("fusion"));
+
+    applySettings();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::applySettings()
+{
+    QFont font{pSettings->ui().fontName(), pSettings->ui().fontSize()};
+    qApp->setFont(font);
+    setFont(font);
+
+    if (pSettings->view().pageMode() == "DoublePages")
+        ui->actionDouble_Pages->setChecked(true);
+    else if (pSettings->view().pageMode() == "DoublePagesWithCover")
+        ui->actionDouble_Pages_with_Front_Cover->setChecked(true);
+    else
+        ui->actionSingle_Pages->setChecked(true);
+    ui->actionFit_Width->setChecked(pSettings->view().fitMode() == "Width");
+    ui->actionFit_Height->setChecked(pSettings->view().fitMode() == "Height");
+    ui->actionFit_Page->setChecked(pSettings->view().fitMode() == "Page");
+
+    ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
 }
 
 void MainWindow::updateStatusBar()
@@ -178,6 +202,28 @@ void MainWindow::onCurrentPageChanged()
         ui->pagesView->scrollTo(index);
     }
     updateStatusBar();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+    pSettings->ui().setShowContentsPanel(ui->actionShow_Contents->isChecked());
+    if (ui->actionDouble_Pages->isChecked())
+        pSettings->view().setPageMode("DoublePages");
+    else if (ui->actionDouble_Pages_with_Front_Cover->isChecked())
+        pSettings->view().setPageMode("DoublePagesWithCover");
+    else
+        pSettings->view().setPageMode("SinglePage");
+    if (ui->actionFit_Width->isChecked())
+        pSettings->view().setFitMode("Width");
+    else if (ui->actionFit_Height->isChecked())
+        pSettings->view().setFitMode("Height");
+    else if (ui->actionFit_Page->isChecked())
+        pSettings->view().setFitMode("Page");
+    else
+        pSettings->view().setFitMode("None");
+
+    pSettings->view().setRightToLeft(ui->actionRight_to_Left->isChecked());
 }
 
 void MainWindow::on_actionNext_Page_triggered()
@@ -256,12 +302,24 @@ void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
 
 void MainWindow::on_dockPages_visibilityChanged(bool visible)
 {
+    ui->actionShow_Contents->blockSignals(true);
     ui->actionShow_Contents->setChecked(visible);
+    ui->actionShow_Contents->blockSignals(false);
 }
 
-void MainWindow::on_actionShow_Contents_triggered()
+void MainWindow::on_actionShow_Contents_toggled(bool arg1)
 {
+    Q_UNUSED(arg1);
     ui->dockPages->setVisible(ui->actionShow_Contents->isChecked());
 }
 
+
+
+void MainWindow::on_actionOptions_triggered()
+{
+    PSettingsDialog optionDlg = SettingsDialog::optionDialog(this);
+    connect(optionDlg.get(), &SettingsDialog::settingsChanged,
+            this, &MainWindow::applySettings);
+    optionDlg->exec();
+}
 

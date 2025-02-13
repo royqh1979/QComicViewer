@@ -38,6 +38,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+private:
+    void applySettings();
 private slots:
     void updateStatusBar();
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
@@ -62,7 +64,9 @@ private slots:
 
     void on_dockPages_visibilityChanged(bool visible);
 
-    void on_actionShow_Contents_triggered();
+    void on_actionShow_Contents_toggled(bool arg1);
+
+    void on_actionOptions_triggered();
 
 private:
     void onCurrentPageChanged();
@@ -75,5 +79,9 @@ private:
     QLabel *mImageSizeInfo;
     QLabel *mFilenameInfo;
     QLabel *mPageInfo;
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event) override;
 };
 #endif // MAINWINDOW_H

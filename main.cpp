@@ -18,8 +18,11 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QDir>
 #include <QLocale>
+#include <QStandardPaths>
 #include <QTranslator>
+#include "settings.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +37,14 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    QStringList appLocations = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    QDir dataDir{appLocations.first()};
+    auto settings = std::make_shared<Settings>(dataDir.filePath("config.ini"));
+    pSettings = settings.get();
+    settings->load();
     MainWindow w;
     w.showMaximized();
-    return a.exec();
+    int code = a.exec();
+    settings->save();
+    return code;
 }
