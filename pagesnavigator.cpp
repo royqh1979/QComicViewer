@@ -181,6 +181,7 @@ void PagesNavigator::setBookPath(QString newBookPath)
 
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
+        emit thumbnailsCleared();
 
         foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
             if (archiveReader->supportArchive(newBookPath)) {
@@ -304,12 +305,18 @@ int PagesNavigator::thumbnailSize() const
 
 void PagesNavigator::setThumbnailSize(int newThumbnailSize)
 {
-    mThumbnailSize = newThumbnailSize;
+    if (mThumbnailSize!=newThumbnailSize) {
+        mThumbnailSize = newThumbnailSize;
+        QMutexLocker locker(&mThumbnailMutex);
+        mThumbnailCache.clear();
+        emit thumbnailsCleared();
+    }
 }
 
 void PagesNavigator::setThumbnail(QString bookPath, int page, QPixmap thumbnail)
 {
     if (mBookPath == bookPath){
+        QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.insert(page, thumbnail);
         emit thumbnailReady(page);
     }
@@ -347,6 +354,8 @@ BookPagesModel::BookPagesModel(PagesNavigator *bookNavigator, QObject *parent):
 {
     connect(bookNavigator, &PagesNavigator::bookChanged,
             this, &BookPagesModel::onBookChanged);
+    connect(bookNavigator, &PagesNavigator::thumbnailsCleared,
+            this, &BookPagesModel::invalidateAllThumbnails);
     connect(bookNavigator, &PagesNavigator::thumbnailReady,
             this, &BookPagesModel::onThumbnailReady);
 }
@@ -376,6 +385,11 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
 void BookPagesModel::onBookChanged(QString newBookPath)
 {
     Q_UNUSED(newBookPath);
+    invalidateAllThumbnails();
+}
+
+void BookPagesModel::invalidateAllThumbnails()
+{
     beginResetModel();
     endResetModel();
 }

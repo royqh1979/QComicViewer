@@ -17,6 +17,11 @@ public:
 
 private:
     Ui::ViewSettingsWidget *ui;
+
+    // SettingsWidget interface
+protected:
+    void doLoad() override;
+    void doSave() override;
 };
 
 #endif // VIEWSETTINGSWIDGET_H

@@ -144,6 +144,7 @@ void MainWindow::applySettings()
 
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
+    mPagesNavigator->setThumbnailSize(pSettings->view().thumbnailSize());
 }
 
 void MainWindow::updateStatusBar()

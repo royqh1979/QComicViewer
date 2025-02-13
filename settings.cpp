@@ -388,6 +388,7 @@ void Settings::View::doSave()
     saveValue("FitMode",mFitMode);
     saveValue("RightToLeft", mRightToLeft);
     saveValue("SwapLeftRightKey", mSwapLeftRightKey);
+    saveValue("ThumbnailSize", mThumbnailSize);
 }
 
 void Settings::View::doLoad()
@@ -396,6 +397,17 @@ void Settings::View::doLoad()
     mFitMode = stringValue("FitMode","None");
     mRightToLeft = boolValue("RightToLeft", false);
     mSwapLeftRightKey = boolValue("SwapLeftRightKey", false);
+    mThumbnailSize = intValue("ThumbnailSize", 300);
+}
+
+int Settings::View::thumbnailSize() const
+{
+    return mThumbnailSize;
+}
+
+void Settings::View::setThumbnailSize(int newThumbnailSize)
+{
+    mThumbnailSize = newThumbnailSize;
 }
 
 bool Settings::View::swapLeftRightKey() const

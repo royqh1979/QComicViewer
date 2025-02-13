@@ -131,6 +131,9 @@ public:
         bool swapLeftRightKey() const;
         void setSwapLeftRightKey(bool newSwapLeftRightKey);
 
+        int thumbnailSize() const;
+        void setThumbnailSize(int newThumbnailSize);
+
     protected:
         void doSave() override;
         void doLoad() override;
@@ -139,6 +142,7 @@ public:
         QString mFitMode;
         bool mRightToLeft;
         bool mSwapLeftRightKey;
+        int mThumbnailSize;
     };
 
 public:

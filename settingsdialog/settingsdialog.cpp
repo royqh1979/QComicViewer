@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include "appearancesettingswidget.h"
+#include "viewsettingswidget.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -86,6 +87,9 @@ PSettingsDialog SettingsDialog::optionDialog(QWidget *parent)
 
     SettingsWidget* widget;
     widget = new AppearanceSettingsWidget(tr("Appearance"));
+    dialog->addWidget(widget);
+
+    widget = new ViewSettingsWidget(tr("View"));
     dialog->addWidget(widget);
 
 //    widget = new EnvironmentAppearanceWidget(tr("Appearance"),tr("Environment"));

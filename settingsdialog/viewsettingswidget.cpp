@@ -1,5 +1,6 @@
 #include "viewsettingswidget.h"
 #include "ui_viewsettingswidget.h"
+#include "../settings.h"
 
 ViewSettingsWidget::ViewSettingsWidget(const QString& name, QWidget *parent) :
     SettingsWidget{name, parent},
@@ -11,4 +12,14 @@ ViewSettingsWidget::ViewSettingsWidget(const QString& name, QWidget *parent) :
 ViewSettingsWidget::~ViewSettingsWidget()
 {
     delete ui;
+}
+
+void ViewSettingsWidget::doLoad()
+{
+    ui->sbThumbsize->setValue(pSettings->view().thumbnailSize());
+}
+
+void ViewSettingsWidget::doSave()
+{
+    pSettings->view().setThumbnailSize(ui->sbThumbsize->value());
 }

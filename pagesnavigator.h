@@ -39,6 +39,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 private slots:
     void onBookChanged(QString newBookPath);
+    void invalidateAllThumbnails();
     void onThumbnailReady(int page);
 private:
     PagesNavigator *mBookNavigator;
@@ -83,6 +84,7 @@ public:
 signals:
     void currentImageChanged();
     void bookChanged(QString newBookPath);
+    void thumbnailsCleared();
     void destoryed();
     void thumbnailReady(int page);
 private slots:
