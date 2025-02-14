@@ -52,6 +52,11 @@
     <addaction name="actionFit_Width"/>
     <addaction name="actionFit_Height"/>
     <addaction name="actionFit_Page"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotate_90_Clockwise"/>
+    <addaction name="actionRotate_90_Counter_Clockwise"/>
+    <addaction name="actionHorizontal_Flip"/>
+    <addaction name="actionVertical_Flip"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -88,6 +93,10 @@
    <addaction name="actionNext_Page"/>
    <addaction name="actionLast_Page"/>
    <addaction name="separator"/>
+   <addaction name="actionRotate_90_Clockwise"/>
+   <addaction name="actionRotate_90_Counter_Clockwise"/>
+   <addaction name="actionHorizontal_Flip"/>
+   <addaction name="actionVertical_Flip"/>
    <addaction name="separator"/>
    <addaction name="actionShow_Contents"/>
   </widget>
@@ -268,6 +277,26 @@
    </property>
    <property name="text">
     <string>Swap Left/Right Key</string>
+   </property>
+  </action>
+  <action name="actionRotate_90_Clockwise">
+   <property name="text">
+    <string>Rotate 90° CW</string>
+   </property>
+  </action>
+  <action name="actionRotate_90_Counter_Clockwise">
+   <property name="text">
+    <string>Rotate 90° CCW</string>
+   </property>
+  </action>
+  <action name="actionHorizontal_Flip">
+   <property name="text">
+    <string>Horizontal Flip</string>
+   </property>
+  </action>
+  <action name="actionVertical_Flip">
+   <property name="text">
+    <string>Vertical Flip</string>
    </property>
   </action>
  </widget>

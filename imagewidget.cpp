@@ -20,6 +20,7 @@
 #include <QScrollBar>
 #include <QDebug>
 #include <QWheelEvent>
+#include <QTransform>
 
 ImageWidget::ImageWidget(QWidget *parent) :
   QAbstractScrollArea{parent},
@@ -46,7 +47,7 @@ void ImageWidget::setRatio(float newRatio)
     newRatio = std::max((float)0.01, newRatio);
     if (newRatio!=mRatio) {
         mRatio = newRatio;
-        resetScrollBars(true);
+        updateImage(true);
     }
 }
 
@@ -62,7 +63,7 @@ void ImageWidget::setFitType(AutoFitType newFitType)
         mWorkingFitType = mFitType;
         if (mFitType == AutoFitType::None)
             mRatio = 1;
-        resetScrollBars();
+        updateImage();
         emit fitTypeChanged();
     }
 }
@@ -77,10 +78,9 @@ void ImageWidget::setImage(const QPixmap &newImage)
     if (mImage != newImage) {
         mImage = newImage;
         mWorkingFitType = mFitType;
-        resetScrollBars();
+        updateImage();
         horizontalScrollBar()->setValue(0);
         verticalScrollBar()->setValue(0);
-        emit imageChanged();
     }
 }
 
@@ -92,7 +92,7 @@ QSize ImageWidget::imageSize() const
 void ImageWidget::resizeEvent(QResizeEvent *event)
 {
     QAbstractScrollArea::resizeEvent(event);
-    resetScrollBars();
+    updateImage();
 }
 
 void ImageWidget::paintEvent(QPaintEvent *event)
@@ -151,7 +151,7 @@ void ImageWidget::keyReleaseEvent(QKeyEvent *event)
     QAbstractScrollArea::keyReleaseEvent(event);
 }
 
-void ImageWidget::resetScrollBars(bool forceRatio)
+void ImageWidget::updateImage(bool forceRatio)
 {
     if (forceRatio)
         mWorkingFitType = AutoFitType::None;
@@ -190,7 +190,7 @@ void ImageWidget::resetScrollBars(bool forceRatio)
         verticalScrollBar()->setRange(0,0);
         horizontalScrollBar()->setRange(0,0);
     }
-    emit ratioChanged();
+    emit imageUpdated();
     viewport()->update();
 }
 
@@ -217,6 +217,30 @@ void ImageWidget::setSwapLeftRightWhenTurnPage(bool newSwapLeftRightWhenTurnPage
         return;
     mSwapLeftRightWhenTurnPage = newSwapLeftRightWhenTurnPage;
     emit swapLeftRightWhenTurnPageChanged();
+}
+
+void ImageWidget::rotate(int degree)
+{
+    if (mImage.isNull())
+        return;
+    mImage = mImage.transformed(QTransform().rotate(degree));
+    updateImage();
+}
+
+void ImageWidget::horizontalFlip()
+{
+    if (mImage.isNull())
+        return;
+    mImage = mImage.transformed(QTransform().scale(-1,1));
+    updateImage();
+}
+
+void ImageWidget::verticalFlip()
+{
+    if (mImage.isNull())
+        return;
+    mImage = mImage.transformed(QTransform().scale(1,-1));
+    updateImage();
 }
 
 void ImageWidget::wheelEvent(QWheelEvent *e)
@@ -296,7 +320,7 @@ void ImageWidget::mouseDoubleClickEvent(QMouseEvent *event)
             mWorkingFitType = AutoFitType::Page;
         else
             mWorkingFitType = mFitType;
-        resetScrollBars();
+        updateImage();
         event->accept();
     }
 }

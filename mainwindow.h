@@ -70,6 +70,14 @@ private slots:
 
     void on_actionSwap_Left_Right_Key_toggled(bool arg1);
 
+    void on_actionRotate_90_Clockwise_triggered();
+
+    void on_actionRotate_90_Counter_Clockwise_triggered();
+
+    void on_actionHorizontal_Flip_triggered();
+
+    void on_actionVertical_Flip_triggered();
+
 private:
     void onCurrentPageChanged();
 private:

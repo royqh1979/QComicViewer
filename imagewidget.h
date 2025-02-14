@@ -47,16 +47,18 @@ public:
     bool swapLeftRightWhenTurnPage() const;
     void setSwapLeftRightWhenTurnPage(bool newSwapLeftRightWhenTurnPage);
 
+    void rotate(int degree);
+    void horizontalFlip();
+    void verticalFlip();
 signals:
-    void ratioChanged();
+    void imageUpdated();
     void fitTypeChanged();
-    void imageChanged();
     void requestPrevImage();
     void requestNextImage();
     void swapLeftRightWhenTurnPageChanged();
 
 private:
-    void resetScrollBars(bool forceRatio=false);
+    void updateImage(bool forceRatio=false);
     void scrollImageByMouseMove(QMouseEvent *event);
 private:
     float mRatio;

@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/icons">
         <file>comic-book.png</file>
+        <file>images/noun-flip-horizontal.svg</file>
+        <file>images/noun-flip-vertical.svg</file>
+        <file>images/noun-rotate-left.svg</file>
+        <file>images/noun-rotate-right.svg</file>
     </qresource>
 </RCC>

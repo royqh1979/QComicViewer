@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::on_actionNext_Page_triggered);
     connect(mImageWidget, &ImageWidget::requestPrevImage,
             this, &MainWindow::on_actionPrev_Page_triggered);
-    connect(mImageWidget, &ImageWidget::ratioChanged,
+    connect(mImageWidget, &ImageWidget::imageUpdated,
             this, &MainWindow::updateStatusBar);
 
     mPagesNavigator = new PagesNavigator(this);
@@ -75,6 +75,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->actionFirst_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->actionLast_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
     ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
+    ui->actionRotate_90_Clockwise->setIcon(QPixmap(":/icons/images/noun-rotate-right.svg"));
+    ui->actionRotate_90_Counter_Clockwise->setIcon(QPixmap(":/icons/images/noun-rotate-left.svg"));
+    ui->actionHorizontal_Flip->setIcon(QPixmap(":/icons/images/noun-flip-horizontal.svg"));
+    ui->actionVertical_Flip->setIcon(QPixmap(":/icons/images/noun-flip-vertical.svg"));
+
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
                                       });
@@ -331,5 +336,29 @@ void MainWindow::on_actionSwap_Left_Right_Key_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
     mImageWidget->setSwapLeftRightWhenTurnPage(ui->actionSwap_Left_Right_Key->isChecked());
+}
+
+
+void MainWindow::on_actionRotate_90_Clockwise_triggered()
+{
+    mImageWidget->rotate(90);
+}
+
+
+void MainWindow::on_actionRotate_90_Counter_Clockwise_triggered()
+{
+    mImageWidget->rotate(-90);
+}
+
+
+void MainWindow::on_actionHorizontal_Flip_triggered()
+{
+    mImageWidget->horizontalFlip();
+}
+
+
+void MainWindow::on_actionVertical_Flip_triggered()
+{
+    mImageWidget->verticalFlip();
 }
 
