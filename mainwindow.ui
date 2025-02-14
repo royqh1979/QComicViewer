@@ -53,8 +53,8 @@
     <addaction name="actionFit_Height"/>
     <addaction name="actionFit_Page"/>
     <addaction name="separator"/>
-    <addaction name="actionRotate_90_Clockwise"/>
     <addaction name="actionRotate_90_Counter_Clockwise"/>
+    <addaction name="actionRotate_90_Clockwise"/>
     <addaction name="actionHorizontal_Flip"/>
     <addaction name="actionVertical_Flip"/>
    </widget>
@@ -93,8 +93,8 @@
    <addaction name="actionNext_Page"/>
    <addaction name="actionLast_Page"/>
    <addaction name="separator"/>
-   <addaction name="actionRotate_90_Clockwise"/>
    <addaction name="actionRotate_90_Counter_Clockwise"/>
+   <addaction name="actionRotate_90_Clockwise"/>
    <addaction name="actionHorizontal_Flip"/>
    <addaction name="actionVertical_Flip"/>
    <addaction name="separator"/>
@@ -280,26 +280,44 @@
    </property>
   </action>
   <action name="actionRotate_90_Clockwise">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-rotate-right.svg</normaloff>:/icons/images/noun-rotate-right.svg</iconset>
+   </property>
    <property name="text">
     <string>Rotate 90° CW</string>
    </property>
   </action>
   <action name="actionRotate_90_Counter_Clockwise">
+   <property name="icon">
+    <iconset>
+     <normaloff>images/noun-rotate-left.svg</normaloff>images/noun-rotate-left.svg</iconset>
+   </property>
    <property name="text">
     <string>Rotate 90° CCW</string>
    </property>
   </action>
   <action name="actionHorizontal_Flip">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-flip-horizontal.svg</normaloff>:/icons/images/noun-flip-horizontal.svg</iconset>
+   </property>
    <property name="text">
     <string>Horizontal Flip</string>
    </property>
   </action>
   <action name="actionVertical_Flip">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-flip-vertical.svg</normaloff>:/icons/images/noun-flip-vertical.svg</iconset>
+   </property>
    <property name="text">
     <string>Vertical Flip</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
