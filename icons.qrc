@@ -5,5 +5,14 @@
         <file>images/noun-flip-vertical.svg</file>
         <file>images/noun-rotate-left.svg</file>
         <file>images/noun-rotate-right.svg</file>
+        <file>images/noun-first.svg</file>
+        <file>images/noun-last.svg</file>
+        <file>images/noun-next.svg</file>
+        <file>images/noun-prev.svg</file>
+        <file>images/noun-elevator.svg</file>
+        <file>images/noun-fit-to-screen.svg</file>
+        <file>images/noun-fit-width.svg</file>
+        <file>images/noun-folder-contents.svg</file>
+        <file>images/noun-open.svg</file>
     </qresource>
 </RCC>

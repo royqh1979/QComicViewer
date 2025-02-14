@@ -150,6 +150,10 @@
    </widget>
   </widget>
   <action name="actionNext_Page">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-next.svg</normaloff>:/icons/images/noun-next.svg</iconset>
+   </property>
    <property name="text">
     <string>Next Page</string>
    </property>
@@ -158,6 +162,10 @@
    </property>
   </action>
   <action name="actionPrev_Page">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-prev.svg</normaloff>:/icons/images/noun-prev.svg</iconset>
+   </property>
    <property name="text">
     <string>Prev Page</string>
    </property>
@@ -166,6 +174,10 @@
    </property>
   </action>
   <action name="actionLast_Page">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-last.svg</normaloff>:/icons/images/noun-last.svg</iconset>
+   </property>
    <property name="text">
     <string>Last Page</string>
    </property>
@@ -174,6 +186,10 @@
    </property>
   </action>
   <action name="actionFirst_Page">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-first.svg</normaloff>:/icons/images/noun-first.svg</iconset>
+   </property>
    <property name="text">
     <string>First Page</string>
    </property>
@@ -182,6 +198,10 @@
    </property>
   </action>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-open.svg</normaloff>:/icons/images/noun-open.svg</iconset>
+   </property>
    <property name="text">
     <string>Open...</string>
    </property>
@@ -201,6 +221,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-fit-width.svg</normaloff>:/icons/images/noun-fit-width.svg</iconset>
+   </property>
    <property name="text">
     <string>Fit Width</string>
    </property>
@@ -208,6 +232,10 @@
   <action name="actionFit_Height">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-elevator.svg</normaloff>:/icons/images/noun-elevator.svg</iconset>
    </property>
    <property name="text">
     <string>Fit Height</string>
@@ -217,6 +245,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-fit-to-screen.svg</normaloff>:/icons/images/noun-fit-to-screen.svg</iconset>
+   </property>
    <property name="text">
     <string>Fit Page</string>
    </property>
@@ -224,6 +256,10 @@
   <action name="actionShow_Contents">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-folder-contents.svg</normaloff>:/icons/images/noun-folder-contents.svg</iconset>
    </property>
    <property name="text">
     <string>Show Contents</string>
@@ -290,8 +326,8 @@
   </action>
   <action name="actionRotate_90_Counter_Clockwise">
    <property name="icon">
-    <iconset>
-     <normaloff>images/noun-rotate-left.svg</normaloff>images/noun-rotate-left.svg</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/images/noun-rotate-left.svg</normaloff>:/icons/images/noun-rotate-left.svg</iconset>
    </property>
    <property name="text">
     <string>Rotate 90° CCW</string>

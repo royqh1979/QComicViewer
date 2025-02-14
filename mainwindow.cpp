@@ -69,17 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onPageViewCurrentChanged);
 
-    ui->actionOpen->setIcon(style()->standardIcon(QStyle::SP_DialogOpenButton));
-    ui->actionPrev_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowBack));
-    ui->actionNext_Page->setIcon(style()->standardIcon(QStyle::SP_ArrowForward));
-    ui->actionFirst_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    ui->actionLast_Page->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    ui->actionShow_Contents->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
-    ui->actionRotate_90_Clockwise->setIcon(QPixmap(":/icons/images/noun-rotate-right.svg"));
-    ui->actionRotate_90_Counter_Clockwise->setIcon(QPixmap(":/icons/images/noun-rotate-left.svg"));
-    ui->actionHorizontal_Flip->setIcon(QPixmap(":/icons/images/noun-flip-horizontal.svg"));
-    ui->actionVertical_Flip->setIcon(QPixmap(":/icons/images/noun-flip-vertical.svg"));
-
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
                                       });
