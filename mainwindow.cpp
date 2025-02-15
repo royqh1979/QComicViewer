@@ -351,3 +351,9 @@ void MainWindow::on_actionVertical_Flip_triggered()
     mImageWidget->verticalFlip();
 }
 
+
+void MainWindow::on_actionClose_triggered()
+{
+    mPagesNavigator->setBookPath("");
+}
+

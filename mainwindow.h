@@ -78,6 +78,8 @@ private slots:
 
     void on_actionVertical_Flip_triggered();
 
+    void on_actionClose_triggered();
+
 private:
     void onCurrentPageChanged();
 private:

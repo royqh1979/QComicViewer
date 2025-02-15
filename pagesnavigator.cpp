@@ -164,21 +164,21 @@ void PagesNavigator::setBookPath(QString newBookPath)
     QString fileName;
     QFileInfo info{newBookPath};
     bool supportPath = false;
-    if (!info.exists())
-        return;
-    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
-        if (archiveReader->supportArchive(newBookPath)) {
-            supportPath = true;
-            break;
+    if (info.exists()) {
+        foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+            if (archiveReader->supportArchive(newBookPath)) {
+                supportPath = true;
+                break;
+            }
         }
-    }
-    if (!supportPath) {
-        newBookPath = info.absolutePath();
-        fileName = info.fileName();
+        if (!supportPath) {
+            newBookPath = info.absolutePath();
+            fileName = info.fileName();
+        }
     }
     if (mBookPath != newBookPath) {
         mBookPath = newBookPath;
-
+        mPageList.clear();
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
         emit thumbnailsCleared();
