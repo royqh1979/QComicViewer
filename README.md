@@ -1,12 +1,16 @@
 # QComicViewer
-A Light-weight Comic Viewer based on Qt
+A qt based lightweight Comic Viewer
 
-## Functions:
- - Support folder/RAR/zip archives
- - Display two pages in one
- - Contents List
+## Features:
+ - Support common image formats(jpeg/png/webp)
+ - Support RAR/zip archives
+ - Contents Panel (Thumbnails list)
+ - Single Page/Double Pages/Double Pages with cover mode
+ - Fit Width/Fit height/Fit Page mode
+ - Image Zoom In/Out
+ - Don't save usage info, to protect user's privacy.
  
-## Contributes:
+## Attributes:
 <a href="https://www.flaticon.com/free-icons/comic" title="comic icons">Comic icons created by Hilmy Abiyyu A. - Flaticon</a>  (CC BY 3.0)
 
 Rotate by Sophia from <a href="https://thenounproject.com/browse/icons/term/rotate/" target="_blank" title="Rotate Icons">Noun Project</a> (CC BY 3.0)
