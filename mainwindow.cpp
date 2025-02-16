@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mImageWidget, &ImageWidget::requestNextImage,
             this, &MainWindow::on_actionNext_Page_triggered);
     connect(mImageWidget, &ImageWidget::requestPrevImage,
-            this, &MainWindow::on_actionPrev_Page_triggered);
+            this, &MainWindow::gotoPrevPage);
     connect(mImageWidget, &ImageWidget::imageUpdated,
             this, &MainWindow::updateStatusBar);
 
@@ -136,6 +136,8 @@ void MainWindow::applySettings()
     ui->actionFit_Height->setChecked(pSettings->view().fitMode() == "Height");
     ui->actionFit_Page->setChecked(pSettings->view().fitMode() == "Page");
 
+    updateImageFitType();
+    updatePageMode();
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
     mPagesNavigator->setThumbnailSize(pSettings->view().thumbnailSize());
@@ -252,7 +254,7 @@ void MainWindow::on_actionNext_Page_triggered()
 
 void MainWindow::on_actionPrev_Page_triggered()
 {
-    mPagesNavigator->toPrevPage();
+    gotoPrevPage(false);
 }
 
 
@@ -301,6 +303,14 @@ void MainWindow::updateImageFitType()
         mImageWidget->setFitType(ImageWidget::AutoFitType::Page);
     else
         mImageWidget->setFitType(ImageWidget::AutoFitType::None);
+}
+
+void MainWindow::gotoPrevPage(bool scrollToPageBottom)
+{
+    mPagesNavigator->toPrevPage();
+    if (scrollToPageBottom) {
+        mImageWidget->scrollToBottom();
+    }
 }
 
 

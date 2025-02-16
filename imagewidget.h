@@ -50,10 +50,15 @@ public:
     void rotate(int degree);
     void horizontalFlip();
     void verticalFlip();
+
+    void scrollToTop();
+    void scrollToBottom();
+    void scrollToLeft();
+    void scrollToRight();
 signals:
     void imageUpdated();
     void fitTypeChanged();
-    void requestPrevImage();
+    void requestPrevImage(bool scrollToBottom);
     void requestNextImage();
     void swapLeftRightWhenTurnPageChanged();
 

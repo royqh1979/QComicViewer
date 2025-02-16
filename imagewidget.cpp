@@ -119,13 +119,13 @@ void ImageWidget::keyReleaseEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_Up
             && verticalScrollBar()->value()==verticalScrollBar()->minimum()) {
-        emit requestPrevImage();
+        emit requestPrevImage(true);
         event->accept();
         return;
     }
     if (event->key() == Qt::Key_Left) {
         if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum()) {
-            emit requestPrevImage();
+            emit requestPrevImage(false);
             event->accept();
             return;
         }
@@ -142,7 +142,7 @@ void ImageWidget::keyReleaseEvent(QKeyEvent *event)
             return;
         }
         if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum()) {
-            emit requestPrevImage();
+            emit requestPrevImage(false);
             event->accept();
             return;
         }
@@ -243,6 +243,26 @@ void ImageWidget::verticalFlip()
     updateImage();
 }
 
+void ImageWidget::scrollToTop()
+{
+    verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+}
+
+void ImageWidget::scrollToBottom()
+{
+    verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+}
+
+void ImageWidget::scrollToLeft()
+{
+    horizontalScrollBar()->setValue(horizontalScrollBar()->minimum());
+}
+
+void ImageWidget::scrollToRight()
+{
+    horizontalScrollBar()->setValue(horizontalScrollBar()->maximum());
+}
+
 void ImageWidget::wheelEvent(QWheelEvent *e)
 {
     if (e->modifiers() == Qt::KeyboardModifier::ControlModifier) {
@@ -268,7 +288,7 @@ void ImageWidget::wheelEvent(QWheelEvent *e)
         mScrollAngleY += e->angleDelta().y();
         if (mScrollAngleY>=120) {
             if (verticalScrollBar()->value()==verticalScrollBar()->minimum())
-                emit requestPrevImage();
+                emit requestPrevImage(true);
             else
                 verticalScrollBar()->setValue(verticalScrollBar()->value()-verticalScrollBar()->singleStep());
             mScrollAngleY %= 120;
@@ -286,7 +306,7 @@ void ImageWidget::wheelEvent(QWheelEvent *e)
         mScrollAngleX += e->angleDelta().y();
         if (mScrollAngleX>=120) {
             if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum())
-                emit requestPrevImage();
+                emit requestPrevImage(false);
             else if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum())
                 emit requestNextImage();
             else
@@ -296,7 +316,7 @@ void ImageWidget::wheelEvent(QWheelEvent *e)
             if (!mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->maximum())
                 emit requestNextImage();
             else if (mSwapLeftRightWhenTurnPage && horizontalScrollBar()->value()==horizontalScrollBar()->minimum())
-                emit requestPrevImage();
+                emit requestPrevImage(false);
             else
                 horizontalScrollBar()->setValue(horizontalScrollBar()->value()+horizontalScrollBar()->singleStep());
             mScrollAngleX = - ((-mScrollAngleX) % 120);

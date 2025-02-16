@@ -46,6 +46,7 @@ private slots:
     void onZoomFactorChanged(int value);
     void updatePageMode();
     void updateImageFitType();
+    void gotoPrevPage(bool scrollToPageBottom);
     void on_actionNext_Page_triggered();
 
     void on_actionPrev_Page_triggered();
