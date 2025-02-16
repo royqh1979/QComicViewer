@@ -109,7 +109,7 @@ void ImageWidget::paintEvent(QPaintEvent *event)
     }
 }
 
-void ImageWidget::keyReleaseEvent(QKeyEvent *event)
+void ImageWidget::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Down
             && verticalScrollBar()->value()==verticalScrollBar()->maximum()) {
@@ -148,7 +148,7 @@ void ImageWidget::keyReleaseEvent(QKeyEvent *event)
         }
 
     }
-    QAbstractScrollArea::keyReleaseEvent(event);
+    QAbstractScrollArea::keyPressEvent(event);
 }
 
 void ImageWidget::updateImage(bool forceRatio)
