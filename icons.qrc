@@ -14,5 +14,13 @@
         <file>images/noun-fit-width.svg</file>
         <file>images/noun-folder-contents.svg</file>
         <file>images/noun-open.svg</file>
+        <file>images/noun-first-disabled.svg</file>
+        <file>images/noun-rotate-right-disabled.svg</file>
+        <file>images/noun-rotate-left-disabled.svg</file>
+        <file>images/noun-prev-disabled.svg</file>
+        <file>images/noun-next-disabled.svg</file>
+        <file>images/noun-last-disabled.svg</file>
+        <file>images/noun-flip-vertical-disabled.svg</file>
+        <file>images/noun-flip-horizontal-disabled.svg</file>
     </qresource>
 </RCC>

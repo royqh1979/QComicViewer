@@ -150,6 +150,16 @@ void MainWindow::updateStatusBar()
         mImageSizeInfo->setText(" ");
         mPageInfo->setText(" ");
         ui->statusbar->clearMessage();
+
+        ui->actionClose->setEnabled(false);
+        ui->actionFirst_Page->setEnabled(false);
+        ui->actionLast_Page->setEnabled(false);
+        ui->actionNext_Page->setEnabled(false);
+        ui->actionPrev_Page->setEnabled(false);
+        ui->actionRotate_90_Clockwise->setEnabled(false);
+        ui->actionRotate_90_Counter_Clockwise->setEnabled(false);
+        ui->actionHorizontal_Flip->setEnabled(false);
+        ui->actionVertical_Flip->setEnabled(false);
     } else {
         mZoomFactor->blockSignals(true);
         mZoomFactor->setValue(mImageWidget->ratio()*100);
@@ -158,6 +168,17 @@ void MainWindow::updateStatusBar()
         mPageInfo->setText(QString("%1/%2").arg(mPagesNavigator->currentPage()+1)
                                .arg(mPagesNavigator->pageCount()));
         ui->statusbar->showMessage(mPagesNavigator->currentPageName());
+
+        ui->actionClose->setEnabled(true);
+        ui->actionFirst_Page->setEnabled(mPagesNavigator->currentPage()!=0);
+        ui->actionLast_Page->setEnabled(mPagesNavigator->currentPage()!=mPagesNavigator->pageCount()-1);
+        ui->actionPrev_Page->setEnabled(mPagesNavigator->currentPage()!=0);
+        ui->actionNext_Page->setEnabled(mPagesNavigator->currentPage()!=mPagesNavigator->pageCount()-1);
+        ui->actionRotate_90_Clockwise->setEnabled(!mImageWidget->image().isNull());
+        ui->actionRotate_90_Counter_Clockwise->setEnabled(!mImageWidget->image().isNull());
+        ui->actionHorizontal_Flip->setEnabled(!mImageWidget->image().isNull());
+        ui->actionVertical_Flip->setEnabled(!mImageWidget->image().isNull());
+
     }
 }
 

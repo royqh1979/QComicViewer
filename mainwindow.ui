@@ -153,7 +153,8 @@
   <action name="actionNext_Page">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-next.svg</normaloff>:/icons/images/noun-next.svg</iconset>
+     <normaloff>:/icons/images/noun-next.svg</normaloff>
+     <disabledoff>:/icons/images/noun-next-disabled.svg</disabledoff>:/icons/images/noun-next.svg</iconset>
    </property>
    <property name="text">
     <string>Next Page</string>
@@ -165,7 +166,8 @@
   <action name="actionPrev_Page">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-prev.svg</normaloff>:/icons/images/noun-prev.svg</iconset>
+     <normaloff>:/icons/images/noun-prev.svg</normaloff>
+     <disabledoff>:/icons/images/noun-prev-disabled.svg</disabledoff>:/icons/images/noun-prev.svg</iconset>
    </property>
    <property name="text">
     <string>Prev Page</string>
@@ -177,7 +179,8 @@
   <action name="actionLast_Page">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-last.svg</normaloff>:/icons/images/noun-last.svg</iconset>
+     <normaloff>:/icons/images/noun-last.svg</normaloff>
+     <disabledoff>:/icons/images/noun-last-disabled.svg</disabledoff>:/icons/images/noun-last.svg</iconset>
    </property>
    <property name="text">
     <string>Last Page</string>
@@ -189,7 +192,8 @@
   <action name="actionFirst_Page">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-first.svg</normaloff>:/icons/images/noun-first.svg</iconset>
+     <normaloff>:/icons/images/noun-first.svg</normaloff>
+     <disabledoff>:/icons/images/noun-first-disabled.svg</disabledoff>:/icons/images/noun-first.svg</iconset>
    </property>
    <property name="text">
     <string>First Page</string>
@@ -319,7 +323,8 @@
   <action name="actionRotate_90_Clockwise">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-rotate-right.svg</normaloff>:/icons/images/noun-rotate-right.svg</iconset>
+     <normaloff>:/icons/images/noun-rotate-right.svg</normaloff>
+     <disabledoff>:/icons/images/noun-rotate-right-disabled.svg</disabledoff>:/icons/images/noun-rotate-right.svg</iconset>
    </property>
    <property name="text">
     <string>Rotate 90° CW</string>
@@ -328,7 +333,8 @@
   <action name="actionRotate_90_Counter_Clockwise">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-rotate-left.svg</normaloff>:/icons/images/noun-rotate-left.svg</iconset>
+     <normaloff>:/icons/images/noun-rotate-left.svg</normaloff>
+     <disabledoff>:/icons/images/noun-rotate-left-disabled.svg</disabledoff>:/icons/images/noun-rotate-left.svg</iconset>
    </property>
    <property name="text">
     <string>Rotate 90° CCW</string>
@@ -337,7 +343,8 @@
   <action name="actionHorizontal_Flip">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-flip-horizontal.svg</normaloff>:/icons/images/noun-flip-horizontal.svg</iconset>
+     <normaloff>:/icons/images/noun-flip-horizontal.svg</normaloff>
+     <disabledoff>:/icons/images/noun-flip-horizontal-disabled.svg</disabledoff>:/icons/images/noun-flip-horizontal.svg</iconset>
    </property>
    <property name="text">
     <string>Horizontal Flip</string>
@@ -346,7 +353,8 @@
   <action name="actionVertical_Flip">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/images/noun-flip-vertical.svg</normaloff>:/icons/images/noun-flip-vertical.svg</iconset>
+     <normaloff>:/icons/images/noun-flip-vertical.svg</normaloff>
+     <disabledoff>:/icons/images/noun-flip-vertical-disabled.svg</disabledoff>:/icons/images/noun-flip-vertical.svg</iconset>
    </property>
    <property name="text">
     <string>Vertical Flip</string>
