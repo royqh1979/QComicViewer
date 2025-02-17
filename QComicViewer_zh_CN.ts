@@ -6,27 +6,27 @@
     <message>
         <location filename="aboutdialog.ui" line="17"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>关于</translation>
     </message>
     <message>
         <location filename="aboutdialog.ui" line="38"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;QComicViewer&lt;/span&gt;&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;QComicViewer&lt;/span&gt;&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="aboutdialog.ui" line="48"/>
         <source>Copyright(C) 2025 瞿华(royqh1979@gmail.com)</source>
-        <translation type="unfinished"></translation>
+        <translation>Copyright(C) 2025 瞿华(royqh1979@gmail.com)</translation>
     </message>
     <message>
         <location filename="aboutdialog.ui" line="55"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/royqh1979/QComicViewer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Homepage: &lt;a href=&quot;Homepage: https://sourceforge.net/projects/dev-cpp-2020/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/royqh1979/QComicViewer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="aboutdialog.ui" line="65"/>
         <source>GNU General Public License</source>
-        <translation type="unfinished"></translation>
+        <translation>GNU 通用版权协议</translation>
     </message>
     <message>
         <location filename="aboutdialog.ui" line="72"/>
@@ -35,7 +35,29 @@
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</translation>
+    </message>
+</context>
+<context>
+    <name>AppearanceSettingsWidget</name>
+    <message>
+        <location filename="settingsdialog/appearancesettingswidget.ui" line="14"/>
+        <source>Form</source>
+        <translation>表单</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/appearancesettingswidget.ui" line="33"/>
+        <source>Font Name</source>
+        <translation>字体名称</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/appearancesettingswidget.ui" line="74"/>
+        <source>Font Size</source>
+        <translation>字体大小</translation>
     </message>
 </context>
 <context>
@@ -43,205 +65,221 @@
     <message>
         <location filename="mainwindow.ui" line="14"/>
         <source>QComicsViewer</source>
-        <translation type="unfinished"></translation>
+        <translation>QComicsViewer</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="28"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="36"/>
+        <location filename="mainwindow.ui" line="37"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>视图</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="56"/>
+        <location filename="mainwindow.ui" line="64"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>关于</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="67"/>
+        <location filename="mainwindow.ui" line="70"/>
+        <source>Options</source>
+        <translation>选项</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="82"/>
         <source>toolBar</source>
-        <translation type="unfinished"></translation>
+        <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="92"/>
+        <location filename="mainwindow.ui" line="112"/>
         <source>Contents</source>
-        <translation type="unfinished"></translation>
+        <translation>目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="132"/>
+        <location filename="mainwindow.ui" line="160"/>
         <source>Next Page</source>
-        <translation type="unfinished"></translation>
+        <translation>下一页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="135"/>
-        <location filename="mainwindow.cpp" line="64"/>
+        <location filename="mainwindow.ui" line="163"/>
+        <location filename="mainwindow.cpp" line="76"/>
         <source>PgDown</source>
-        <translation type="unfinished"></translation>
+        <translation>PgDown</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="140"/>
+        <location filename="mainwindow.ui" line="173"/>
         <source>Prev Page</source>
-        <translation type="unfinished"></translation>
+        <translation>上一页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="143"/>
-        <location filename="mainwindow.cpp" line="59"/>
+        <location filename="mainwindow.ui" line="176"/>
+        <location filename="mainwindow.cpp" line="73"/>
         <source>PgUp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="148"/>
-        <source>Last Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="151"/>
-        <source>End</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="156"/>
-        <source>First Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="159"/>
-        <source>Home</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="167"/>
-        <source>Show Double Pages</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="170"/>
-        <source>Ctrl+D</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="175"/>
-        <source>Goto Page</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="178"/>
-        <source>Ctrl+G</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="183"/>
-        <source>Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>PgUp</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="186"/>
-        <source>Ctrl+O</source>
-        <translation type="unfinished"></translation>
+        <source>Last Page</source>
+        <translation>末页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="191"/>
-        <source>Exit</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="189"/>
+        <source>End</source>
+        <translation>End</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="194"/>
-        <source>Ctrl+X</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="199"/>
+        <source>First Page</source>
+        <translation>首页</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="202"/>
-        <source>Fit Width</source>
-        <translation type="unfinished"></translation>
+        <source>Home</source>
+        <translation>Home</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="210"/>
-        <source>Fit Height</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="283"/>
+        <source>Single Pages</source>
+        <translation>单页显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="218"/>
-        <source>Fit Page</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="291"/>
+        <source>Double Pages</source>
+        <translation>双页显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="226"/>
-        <source>Single First Page</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="299"/>
+        <source>Double Pages with Front Cover</source>
+        <translation>带封面的双页显示</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="307"/>
+        <source>Right to Left Layout</source>
+        <translation>从右到左布局</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="312"/>
+        <source>Options...</source>
+        <translation>选项...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="320"/>
+        <source>Swap Left/Right Key</source>
+        <translation>交换左/右键</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="330"/>
+        <source>Rotate 90° CW</source>
+        <translation>顺时针转90度</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="340"/>
+        <source>Rotate 90° CCW</source>
+        <translation>逆时针转90度</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="350"/>
+        <source>Horizontal Flip</source>
+        <translation>水平翻转</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="360"/>
+        <source>Vertical Flip</source>
+        <translation>垂直翻转</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="365"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="368"/>
+        <source>Ctrl+F4</source>
+        <translation>Ctrl+F4</translation>
+    </message>
+    <message>
+        <source>Show Double Pages</source>
+        <translation type="vanished">双页显示</translation>
+    </message>
+    <message>
+        <source>Ctrl+D</source>
+        <translation type="vanished">Ctrl+D</translation>
+    </message>
+    <message>
+        <source>Goto Page</source>
+        <translation type="vanished">跳转到</translation>
+    </message>
+    <message>
+        <source>Ctrl+G</source>
+        <translation type="vanished">Ctrl+G</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="211"/>
+        <source>Open...</source>
+        <translation>打开...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="214"/>
+        <source>Ctrl+O</source>
+        <translation>Ctrl+O</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="219"/>
+        <source>Exit</source>
+        <translation>退出</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="222"/>
+        <source>Ctrl+X</source>
+        <translation>Ctrl+X</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="234"/>
-        <source>Left To Right</source>
-        <translation type="unfinished"></translation>
+        <source>Fit Width</source>
+        <translation>适应宽度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="237"/>
-        <source>Ctrl+L</source>
-        <translation type="unfinished"></translation>
+        <location filename="mainwindow.ui" line="246"/>
+        <source>Fit Height</source>
+        <translation>适应高度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="242"/>
+        <location filename="mainwindow.ui" line="258"/>
+        <source>Fit Page</source>
+        <translation>适应页面</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="270"/>
         <source>Show Contents</source>
-        <translation type="unfinished"></translation>
+        <translation>显示目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="247"/>
+        <location filename="mainwindow.ui" line="275"/>
         <source>About...</source>
-        <translation type="unfinished"></translation>
+        <translation>关于...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="60"/>
-        <source>Left</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="61"/>
-        <source>Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="65"/>
-        <source>Right</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="66"/>
-        <source>Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="67"/>
+        <location filename="mainwindow.cpp" line="77"/>
         <source>Space</source>
-        <translation type="unfinished"></translation>
+        <translation>Space</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="68"/>
-        <source>Enter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="69"/>
-        <source>Return</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="82"/>
-        <location filename="mainwindow.cpp" line="161"/>
+        <location filename="mainwindow.cpp" line="109"/>
+        <location filename="mainwindow.cpp" line="292"/>
         <source>QComicsViewer %1</source>
-        <translation type="unfinished"></translation>
+        <translation>QComicsViewer %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="151"/>
+        <location filename="mainwindow.cpp" line="282"/>
         <source>Open File/Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>打开文件/文件夹</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="159"/>
+        <location filename="mainwindow.cpp" line="290"/>
         <source>QComicsViewer %1 [%2]</source>
-        <translation type="unfinished"></translation>
+        <translation>QComicsViewer %1 [%2]</translation>
     </message>
 </context>
 <context>
@@ -249,22 +287,22 @@
     <message>
         <location filename="quazip/quagzipfile.cpp" line="60"/>
         <source>QIODevice::Append is not supported for GZIP</source>
-        <translation type="unfinished"></translation>
+        <translation>不支持对GZIP进行QIODevice::Append操作</translation>
     </message>
     <message>
         <location filename="quazip/quagzipfile.cpp" line="66"/>
         <source>Opening gzip for both reading and writing is not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>不支持同时对gzip进行读和写操作</translation>
     </message>
     <message>
         <location filename="quazip/quagzipfile.cpp" line="75"/>
         <source>You can open a gzip either for reading or for writing. Which is it?</source>
-        <translation type="unfinished"></translation>
+        <translation>你可以打开gzip进行读或者写。请选择其中一项。</translation>
     </message>
     <message>
         <location filename="quazip/quagzipfile.cpp" line="81"/>
         <source>Could not gzopen() file</source>
-        <translation type="unfinished"></translation>
+        <translation>gzopen()无法打开文件</translation>
     </message>
 </context>
 <context>
@@ -272,12 +310,12 @@
     <message>
         <location filename="quazip/quaziodevice.cpp" line="178"/>
         <source>QIODevice::Append is not supported for QuaZIODevice</source>
-        <translation type="unfinished"></translation>
+        <translation>QuaZIODevice不支持QIODevice::Append操作</translation>
     </message>
     <message>
         <location filename="quazip/quaziodevice.cpp" line="183"/>
         <source>QIODevice::ReadWrite is not supported for QuaZIODevice</source>
-        <translation type="unfinished"></translation>
+        <translation>QuaZIODevice不支持QIODevice::ReadWrite</translation>
     </message>
 </context>
 <context>
@@ -285,7 +323,69 @@
     <message>
         <location filename="quazip/quazipfile.cpp" line="251"/>
         <source>ZIP/UNZIP API error %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ZIP/UNZIP API错误%1</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="settingsdialog/settingsdialog.ui" line="14"/>
+        <location filename="settingsdialog/settingsdialog.cpp" line="86"/>
+        <source>Options</source>
+        <translation>选项</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.ui" line="98"/>
+        <source>TextLabel</source>
+        <translation>TextLabel</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.ui" line="162"/>
+        <source>OK</source>
+        <translation>确认</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.ui" line="169"/>
+        <source>Apply</source>
+        <translation>应用</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.ui" line="176"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.cpp" line="89"/>
+        <source>Appearance</source>
+        <translation>外观</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.cpp" line="92"/>
+        <source>View</source>
+        <translation>视图</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.cpp" line="153"/>
+        <source>Save Changes</source>
+        <translation>保存设置变更</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/settingsdialog.cpp" line="154"/>
+        <source>There are changes in the settings, do you want to save them before swtich to other page?</source>
+        <translation>当前页设置有变更，是否在切换到其他页前保存变更？</translation>
+    </message>
+</context>
+<context>
+    <name>ViewSettingsWidget</name>
+    <message>
+        <location filename="settingsdialog/viewsettingswidget.ui" line="14"/>
+        <source>Form</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog/viewsettingswidget.ui" line="33"/>
+        <source>Thumbnail Size</source>
+        <translation>缩略图大小</translation>
     </message>
 </context>
 </TS>
