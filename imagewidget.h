@@ -90,6 +90,7 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+
 };
 
 #endif // IMAGEWIDGET_H

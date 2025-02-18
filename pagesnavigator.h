@@ -81,6 +81,8 @@ public:
     int thumbnailSize() const;
     void setThumbnailSize(int newThumbnailSize);
 
+    bool canHandle(const QString& filePath);
+
 signals:
     void currentImageChanged();
     void bookChanged(QString newBookPath);

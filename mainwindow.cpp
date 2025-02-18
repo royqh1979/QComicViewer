@@ -28,6 +28,8 @@
 #include "settings.h"
 #include <QStyleFactory>
 #include <QDebug>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -112,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     qApp->setStyle(QStyleFactory::create("fusion"));
 
+    setAcceptDrops(true);
     applySettings();
 }
 
@@ -244,6 +247,30 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     pSettings->view().setRightToLeft(ui->actionRight_to_Left->isChecked());
     pSettings->view().setSwapLeftRightKey(ui->actionSwap_Left_Right_Key->isChecked());
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    if (mimeData->urls().count()==1) {
+        QList<QUrl> urlList = mimeData->urls();
+        QString fileName = urlList.first().toLocalFile();
+        if (mPagesNavigator->canHandle(fileName))
+            event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    if (mimeData->urls().count()==1) {
+        QList<QUrl> urlList = mimeData->urls();
+        QString fileName = urlList.first().toLocalFile();
+        if (mPagesNavigator->canHandle(fileName)) {
+            mPagesNavigator->setBookPath(fileName);
+            event->acceptProposedAction();
+        }
+    }
 }
 
 void MainWindow::on_actionNext_Page_triggered()

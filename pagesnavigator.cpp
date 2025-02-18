@@ -313,6 +313,17 @@ void PagesNavigator::setThumbnailSize(int newThumbnailSize)
     }
 }
 
+bool PagesNavigator::canHandle(const QString &filePath)
+{
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(filePath)) {
+            return true;
+        }
+    }
+    QString suffix = QFileInfo(filePath).suffix().toLower();
+    return mImageSuffice.contains(suffix);
+}
+
 void PagesNavigator::setThumbnail(QString bookPath, int page, QPixmap thumbnail)
 {
     if (mBookPath == bookPath){
