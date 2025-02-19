@@ -38,6 +38,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    bool openBook(const QString& bookPath);
 private:
     void applySettings();
 private slots:

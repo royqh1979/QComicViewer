@@ -109,7 +109,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowIcon(QPixmap(":/icons/comic-book.png"));
     setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
-
+    resize(pSettings->ui().mainWindowWidth(), pSettings->ui().mainWindowHeight());
+    move(pSettings->ui().mainWindowLeft(), pSettings->ui().mainWindowTop());
     ui->dockPages->setVisible(pSettings->ui().showContentsPanel());
 
     qApp->setStyle(QStyleFactory::create("fusion"));
@@ -121,6 +122,16 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::openBook(const QString &bookPath)
+{
+    if (QFile::exists(bookPath)) {
+        mPagesNavigator->setBookPath(bookPath);
+    } else {
+        mPagesNavigator->setBookPath("");
+    }
+    return true;
 }
 
 void MainWindow::applySettings()
@@ -219,8 +230,7 @@ void MainWindow::onCurrentPageChanged()
     mImageWidget->setImage(image);
     if (mPagesNavigator->pageCount()>0) {
         QModelIndex index = mBookPagesModel->index(mPagesNavigator->currentPage(),0);
-        ui->pagesView->selectionModel()->select(index,
-                                                QItemSelectionModel::SelectionFlag::Select | QItemSelectionModel::SelectionFlag::Current);
+        ui->pagesView->setCurrentIndex(index);
         ui->pagesView->scrollTo(index);
     }
     updateStatusBar();
@@ -230,6 +240,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
     pSettings->ui().setShowContentsPanel(ui->actionShow_Contents->isChecked());
+    pSettings->ui().setMainWindowWidth(width());
+    pSettings->ui().setMainWindowHeight(height());
+    pSettings->ui().setMainWindowLeft(pos().x());
+    pSettings->ui().setMainWindowTop(pos().y());
     if (ui->actionDouble_Pages->isChecked())
         pSettings->view().setPageMode("DoublePages");
     else if (ui->actionDouble_Pages_with_Front_Cover->isChecked())
@@ -267,7 +281,7 @@ void MainWindow::dropEvent(QDropEvent *event)
         QList<QUrl> urlList = mimeData->urls();
         QString fileName = urlList.first().toLocalFile();
         if (mPagesNavigator->canHandle(fileName)) {
-            mPagesNavigator->setBookPath(fileName);
+            openBook(fileName);
             event->acceptProposedAction();
         }
     }
@@ -307,11 +321,7 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString file = QFileDialog::getOpenFileName(
                 this, tr("Open File/Folder"));
-    if (QFile::exists(file)) {
-        mPagesNavigator->setBookPath(file);
-    } else {
-        mPagesNavigator->setBookPath("");
-    }
+    openBook(file);
     if (mPagesNavigator->pageCount()>0) {
         updatePageMode();
         setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mPagesNavigator->bookTitle()));

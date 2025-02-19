@@ -297,8 +297,12 @@ void Settings::UI::doSave()
     saveValue("SettingsDialogSplitterPos",mSettingsDialogSplitterPos);
     saveValue("FontName", mFontName);
     saveValue("FontSize",mFontSize);
-
     saveValue("ShowContentsPanel", mShowContentsPanel);
+    saveValue("MainWindowWidth", mMainWindowWidth);
+    saveValue("MainWindowHeight", mMainWindowHeight);
+    saveValue("MainWindowLeft", mMainWindowLeft);
+    saveValue("MainWindowTop", mMainWindowTop);
+    saveValue("ContentsPanelWidth", mContentsPanelWidth);
 }
 
 void Settings::UI::doLoad()
@@ -314,6 +318,62 @@ void Settings::UI::doLoad()
     mFontSize = intValue("FontSize", 12);
 
     mShowContentsPanel = boolValue("ShowContentsPanel", true);
+
+    mMainWindowWidth = intValue("MainWindowWidth", 1350 * width / 1920);
+    mMainWindowHeight = intValue("MainWindowHeight", 810 * height / 1080);
+    mContentsPanelWidth = intValue("ContentsPanelWidth", 270 * width / 1920);
+    mMainWindowLeft = intValue("MainWindowLeft", 100 * width / 1920);
+    mMainWindowTop = intValue("MainWindowTop", 30 * height / 1080 );
+}
+
+int Settings::UI::mainWindowTop() const
+{
+    return mMainWindowTop;
+}
+
+void Settings::UI::setMainWindowTop(int newMainWindowTop)
+{
+    mMainWindowTop = newMainWindowTop;
+}
+
+int Settings::UI::mainWindowLeft() const
+{
+    return mMainWindowLeft;
+}
+
+void Settings::UI::setMainWindowLeft(int newMainWindowLeft)
+{
+    mMainWindowLeft = newMainWindowLeft;
+}
+
+int Settings::UI::contentsPanelWidth() const
+{
+    return mContentsPanelWidth;
+}
+
+void Settings::UI::setContentsPanelWidth(int newContentsPanelWidth)
+{
+    mContentsPanelWidth = newContentsPanelWidth;
+}
+
+int Settings::UI::mainWindowHeight() const
+{
+    return mMainWindowHeight;
+}
+
+void Settings::UI::setMainWindowHeight(int newMainWindowHeight)
+{
+    mMainWindowHeight = newMainWindowHeight;
+}
+
+int Settings::UI::mainWindowWidth() const
+{
+    return mMainWindowWidth;
+}
+
+void Settings::UI::setMainWindowWidth(int newMainWindowWidth)
+{
+    mMainWindowWidth = newMainWindowWidth;
 }
 
 bool Settings::UI::showContentsPanel() const

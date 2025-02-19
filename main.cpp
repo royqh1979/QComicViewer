@@ -23,6 +23,7 @@
 #include <QStandardPaths>
 #include <QTranslator>
 #include "settings.h"
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +44,10 @@ int main(int argc, char *argv[])
     pSettings = settings.get();
     settings->load();
     MainWindow w;
-    w.showMaximized();
+    w.show();
+    if (argc==2) {
+        w.openBook(QString::fromLocal8Bit(argv[1]));
+    }
     int code = a.exec();
     settings->save();
     return code;

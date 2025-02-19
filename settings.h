@@ -103,6 +103,21 @@ public:
         bool showContentsPanel() const;
         void setShowContentsPanel(bool newShowContentsPanel);
 
+        int mainWindowWidth() const;
+        void setMainWindowWidth(int newMainWindowWidth);
+
+        int mainWindowHeight() const;
+        void setMainWindowHeight(int newMainWindowHeight);
+
+        int contentsPanelWidth() const;
+        void setContentsPanelWidth(int newContentsPanelWidth);
+
+        int mainWindowLeft() const;
+        void setMainWindowLeft(int newMainWindowLeft);
+
+        int mainWindowTop() const;
+        void setMainWindowTop(int newMainWindowTop);
+
     protected:
         void doSave() override;
         void doLoad() override;
@@ -113,6 +128,11 @@ public:
         QString mFontName;
         int mFontSize;
         bool mShowContentsPanel;
+        int mMainWindowWidth;
+        int mMainWindowHeight;
+        int mMainWindowLeft;
+        int mMainWindowTop;
+        int mContentsPanelWidth;
     };
 
     class View: public _Base {
