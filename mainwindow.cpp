@@ -111,6 +111,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
     resize(pSettings->ui().mainWindowWidth(), pSettings->ui().mainWindowHeight());
     move(pSettings->ui().mainWindowLeft(), pSettings->ui().mainWindowTop());
+    resizeDocks({ui->dockPages},{pSettings->ui().contentsPanelWidth()},Qt::Orientation::Horizontal);
     ui->dockPages->setVisible(pSettings->ui().showContentsPanel());
 
     qApp->setStyle(QStyleFactory::create("fusion"));
@@ -244,6 +245,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     pSettings->ui().setMainWindowHeight(height());
     pSettings->ui().setMainWindowLeft(pos().x());
     pSettings->ui().setMainWindowTop(pos().y());
+    pSettings->ui().setContentsPanelWidth(ui->dockPages->width());
     if (ui->actionDouble_Pages->isChecked())
         pSettings->view().setPageMode("DoublePages");
     else if (ui->actionDouble_Pages_with_Front_Cover->isChecked())
