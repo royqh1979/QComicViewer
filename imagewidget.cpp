@@ -171,14 +171,14 @@ void ImageWidget::updateImage(bool forceRatio)
             mCacheImage = mImage.scaled(
                         mImage.width() * mRatio,
                         mImage.height() * mRatio,
-                        Qt::KeepAspectRatio);
+                        Qt::KeepAspectRatio, Qt::SmoothTransformation);
             break;
         case AutoFitType::Height:
-            mCacheImage = mImage.scaledToHeight(viewport()->height());
+            mCacheImage = mImage.scaledToHeight(viewport()->height(), Qt::SmoothTransformation);
             mRatio = (float)mCacheImage.height() / mImage.height();
             break;
         case AutoFitType::Width:
-            mCacheImage = mImage.scaledToWidth(viewport()->width());
+            mCacheImage = mImage.scaledToWidth(viewport()->width(), Qt::SmoothTransformation);
             mRatio = (float)mCacheImage.width() / mImage.width();
             break;
         }

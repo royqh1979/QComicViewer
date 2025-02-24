@@ -51,5 +51,10 @@ bool RarArchiveReader::supportArchive(const QString &path)
 {
     QFileInfo info{path};
     return info.exists() && info.isFile() && (path.endsWith(".rar", Qt::CaseInsensitive)
-            || path.endsWith(".cbr", Qt::CaseInsensitive));
+                                              || path.endsWith(".cbr", Qt::CaseInsensitive));
+}
+
+QString RarArchiveReader::archiveType()
+{
+    return "rar";
 }

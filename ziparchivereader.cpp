@@ -51,5 +51,10 @@ bool ZipArchiveReader::supportArchive(const QString &path)
 {
     QFileInfo info{path};
     return info.exists() && info.isFile() && (path.endsWith(".zip", Qt::CaseInsensitive)
-            || path.endsWith(".cbz", Qt::CaseInsensitive));
+                                              || path.endsWith(".cbz", Qt::CaseInsensitive));
+}
+
+QString ZipArchiveReader::archiveType()
+{
+    return "zip";
 }

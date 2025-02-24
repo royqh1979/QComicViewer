@@ -26,6 +26,7 @@
 #include <QThread>
 #include <memory>
 
+class QFileSystemWatcher;
 class ArchiveReader;
 class PagesNavigator;
 class BookPagesModel: public QAbstractListModel{
@@ -89,9 +90,12 @@ signals:
     void thumbnailsCleared();
     void destoryed();
     void thumbnailReady(int page);
+    void thumbnailRemoved(int page);
 private slots:
     void setThumbnail(QString bookPath, int page, QPixmap thumbnail);
     void onThumbnailLoadingFinished(QString bookPath);
+    void onDirChanged(const QString& path);
+    void onFileChanged(const QString& path);
 private:
     QPixmap getPageImage(int page);
     void setCurrentPage(int newCurrentPage);
@@ -108,6 +112,7 @@ private:
     bool mLoadingThumbnail;
     QMap<int, QPixmap> mThumbnailCache;
     QRecursiveMutex mThumbnailMutex;
+    QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
     static QSet<QString> mImageSuffice;
 };

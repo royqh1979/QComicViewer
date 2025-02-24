@@ -34,3 +34,8 @@ bool FolderArchiveReader::supportArchive(const QString &path)
     QFileInfo info{path};
     return info.exists() && info.isDir();
 }
+
+QString FolderArchiveReader::archiveType()
+{
+    return "folder";
+}

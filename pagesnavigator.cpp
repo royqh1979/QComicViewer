@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QSet>
 #include <QImageReader>
+#include <QFileSystemWatcher>
 #include "folderarchivereader.h"
 #include "ziparchivereader.h"
 #include "rararchivereader.h"
@@ -38,6 +39,11 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     mThumbnailSize{256},
     mLoadingThumbnail{false}
 {
+    mFileSystemWatcher = new QFileSystemWatcher(this);
+    connect(mFileSystemWatcher, &QFileSystemWatcher::directoryChanged,
+            this, &PagesNavigator::onDirChanged);
+    connect(mFileSystemWatcher, &QFileSystemWatcher::fileChanged,
+            this, &PagesNavigator::onFileChanged);
     if (mImageSuffice.isEmpty()) {
         foreach(const QString& type, QImageReader::supportedImageFormats())
             mImageSuffice.insert(type.toLower());
@@ -177,6 +183,7 @@ void PagesNavigator::setBookPath(QString newBookPath)
         }
     }
     if (mBookPath != newBookPath) {
+        mFileSystemWatcher->removePath(mBookPath);
         mBookPath = newBookPath;
         mPageList.clear();
         QMutexLocker locker(&mThumbnailMutex);
@@ -203,6 +210,7 @@ void PagesNavigator::setBookPath(QString newBookPath)
             gotoPage(page);
         if (oldPage == mCurrentPage)
             emit currentImageChanged();
+        mFileSystemWatcher->addPath(mBookPath);
     }
 }
 
@@ -341,6 +349,46 @@ void PagesNavigator::onThumbnailLoadingFinished(QString bookPath)
         loadThumbnails();
     } else
         mLoadingThumbnail = false;
+}
+
+void PagesNavigator::onDirChanged(const QString &path)
+{
+    std::shared_ptr<ArchiveReader> reader;
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(mBookPath)) {
+            reader = archiveReader;
+            break;
+        }
+    }
+    if (reader) {
+        if (reader->archiveType()=="folder") {
+            QString oldPath = mBookPath;
+            mBookPath = "";
+            setBookPath(oldPath);
+        }
+    }
+}
+
+void PagesNavigator::onFileChanged(const QString &path)
+{
+    std::shared_ptr<ArchiveReader> reader;
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(mBookPath)) {
+            reader = archiveReader;
+            break;
+        }
+    }
+    if (reader) {
+        if (reader->archiveType()!="folder") {
+            QString oldPath = mBookPath;
+            mBookPath = "";
+            setBookPath(oldPath);
+        } else {
+            QString oldPath = mBookPath;
+            mBookPath = "";
+            setBookPath(oldPath);
+        }
+    }
 }
 
 QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file)
