@@ -65,6 +65,8 @@ MainWindow::MainWindow(QWidget *parent)
     mPagesNavigator = new PagesNavigator(this);
     connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
             this, &MainWindow::onCurrentPageChanged);
+    connect(mPagesNavigator, &PagesNavigator::currentPageChanged,
+            this, &MainWindow::updateStatusBar);
 
     mBookPagesModel = new BookPagesModel(mPagesNavigator, this);
     ui->pagesView->setModel(mBookPagesModel);

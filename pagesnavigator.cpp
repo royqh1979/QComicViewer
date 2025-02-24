@@ -31,6 +31,7 @@ QList<std::shared_ptr<ArchiveReader>> PagesNavigator::mArchiveReaders;
 QSet<QString> PagesNavigator::mImageSuffice;
 
 PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
+    mDisplayPage{-1},
     mCurrentPage{-1},
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
@@ -94,18 +95,18 @@ QPixmap PagesNavigator::currentImage()
 {
     if (mPageList.isEmpty())
         return QPixmap();
-    if (mCurrentPage == -1)
+    if (mDisplayPage == -1)
         return QPixmap();
     if (!mDisplayDoublePages) {
-        return getPageImage(mCurrentPage);
+        return getPageImage(mDisplayPage);
     } else {
-        if (mCurrentPage+1 >= pageCount()
-                || mCurrentPage < mDoublePagesStart
-                || mCurrentPage >= mDoublePagesEnd)
-            return getPageImage(mCurrentPage);
+        if (mDisplayPage+1 >= pageCount()
+                || mDisplayPage < mDoublePagesStart
+                || mDisplayPage >= mDoublePagesEnd)
+            return getPageImage(mDisplayPage);
         else {
-            QPixmap image1 = getPageImage(mCurrentPage);
-            QPixmap image2 = getPageImage(mCurrentPage+1);
+            QPixmap image1 = getPageImage(mDisplayPage);
+            QPixmap image2 = getPageImage(mDisplayPage+1);
             int width = image1.width()+image2.width();
             int height = std::max(image1.height(), image2.height());
             QPixmap img(width,height);
@@ -125,9 +126,9 @@ QPixmap PagesNavigator::currentImage()
 
 QString PagesNavigator::currentPageName()
 {
-    if (mCurrentPage<0 || mCurrentPage>=pageCount())
+    if (mDisplayPage<0 || mDisplayPage>=pageCount())
         return QString();
-    return mPageList[mCurrentPage];
+    return mPageList[mDisplayPage];
 }
 
 void PagesNavigator::loadThumbnails()
@@ -183,7 +184,8 @@ void PagesNavigator::setBookPath(QString newBookPath)
         }
     }
     if (mBookPath != newBookPath) {
-        mFileSystemWatcher->removePath(mBookPath);
+        if (!mBookPath.isEmpty())
+            mFileSystemWatcher->removePath(mBookPath);
         mBookPath = newBookPath;
         mPageList.clear();
         QMutexLocker locker(&mThumbnailMutex);
@@ -235,9 +237,13 @@ void PagesNavigator::setCurrentPage(int newCurrentPage)
         newCurrentPage = 0;
     if (newCurrentPage>=pageCount())
         newCurrentPage = pageCount()-1;
-    newCurrentPage = ensureDoublePages(newCurrentPage);
-    if (newCurrentPage!=mCurrentPage) {
+    if (mCurrentPage!=newCurrentPage) {
         mCurrentPage = newCurrentPage;
+        emit currentPageChanged();
+    }
+    int newDisplayPage = ensureDoublePages(newCurrentPage);
+    if (newDisplayPage!=mDisplayPage) {
+        mDisplayPage = newDisplayPage;
         emit currentImageChanged();
     }
 }

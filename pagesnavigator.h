@@ -86,6 +86,7 @@ public:
 
 signals:
     void currentImageChanged();
+    void currentPageChanged();
     void bookChanged(QString newBookPath);
     void thumbnailsCleared();
     void destoryed();
@@ -103,6 +104,7 @@ private:
 private:
     QString mBookPath;
     QStringList mPageList;
+    int mDisplayPage;
     int mCurrentPage;
     int mDoublePagesStart;
     int mDoublePagesEnd;
