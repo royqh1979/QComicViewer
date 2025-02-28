@@ -368,9 +368,12 @@ void PagesNavigator::onDirChanged(const QString &path)
     }
     if (reader) {
         if (reader->archiveType()=="folder") {
-            QString oldPath = mBookPath;
-            mBookPath = "";
-            setBookPath(oldPath);
+            QStringList pageList = reader->pageList(path, mImageSuffice);
+            if (pageList != mPageList) {
+                QString oldPath = mBookPath;
+                mBookPath = "";
+                setBookPath(oldPath);
+            }
         }
     }
 }
