@@ -82,6 +82,7 @@ private slots:
 
     void on_actionClose_triggered();
 
+    void on_actionFull_Screen_triggered();
 private:
     void onCurrentPageChanged();
 private:
@@ -93,6 +94,8 @@ private:
     QLabel *mImageSizeInfo;
     QLabel *mFilenameInfo;
     QLabel *mPageInfo;
+    bool mInFullScreen;
+    bool mMaximizedBeforeFullScreen;
 
     // QWidget interface
 protected:
@@ -102,5 +105,6 @@ protected:
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 };
 #endif // MAINWINDOW_H

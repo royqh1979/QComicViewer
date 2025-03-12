@@ -371,8 +371,10 @@ void PagesNavigator::onDirChanged(const QString &path)
             QStringList pageList = reader->pageList(path, mImageSuffice);
             if (pageList != mPageList) {
                 QString oldPath = mBookPath;
+                int oldPage = mCurrentPage;
                 mBookPath = "";
                 setBookPath(oldPath);
+                gotoPage(oldPage);
             }
         }
     }
@@ -380,6 +382,7 @@ void PagesNavigator::onDirChanged(const QString &path)
 
 void PagesNavigator::onFileChanged(const QString &path)
 {
+    Q_UNUSED(path);
     std::shared_ptr<ArchiveReader> reader;
     foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
         if (archiveReader->supportArchive(mBookPath)) {

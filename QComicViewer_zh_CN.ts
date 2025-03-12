@@ -78,126 +78,136 @@
         <translation>视图</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="64"/>
+        <location filename="mainwindow.ui" line="65"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="70"/>
+        <location filename="mainwindow.ui" line="71"/>
         <source>Options</source>
         <translation>选项</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="82"/>
+        <location filename="mainwindow.ui" line="83"/>
         <source>toolBar</source>
         <translation>工具栏</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="112"/>
+        <location filename="mainwindow.ui" line="113"/>
         <source>Contents</source>
         <translation>目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="160"/>
+        <location filename="mainwindow.ui" line="161"/>
         <source>Next Page</source>
         <translation>下一页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="163"/>
-        <location filename="mainwindow.cpp" line="76"/>
+        <location filename="mainwindow.ui" line="164"/>
+        <location filename="mainwindow.cpp" line="80"/>
         <source>PgDown</source>
         <translation>PgDown</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="173"/>
+        <location filename="mainwindow.ui" line="174"/>
         <source>Prev Page</source>
         <translation>上一页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="176"/>
-        <location filename="mainwindow.cpp" line="73"/>
+        <location filename="mainwindow.ui" line="177"/>
+        <location filename="mainwindow.cpp" line="77"/>
         <source>PgUp</source>
         <translation>PgUp</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="186"/>
+        <location filename="mainwindow.ui" line="187"/>
         <source>Last Page</source>
         <translation>末页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="189"/>
+        <location filename="mainwindow.ui" line="190"/>
         <source>End</source>
         <translation>End</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="199"/>
+        <location filename="mainwindow.ui" line="200"/>
         <source>First Page</source>
         <translation>首页</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="202"/>
+        <location filename="mainwindow.ui" line="203"/>
         <source>Home</source>
         <translation>Home</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="283"/>
+        <location filename="mainwindow.ui" line="284"/>
         <source>Single Pages</source>
         <translation>单页显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="291"/>
+        <location filename="mainwindow.ui" line="292"/>
         <source>Double Pages</source>
         <translation>双页显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="299"/>
+        <location filename="mainwindow.ui" line="300"/>
         <source>Double Pages with Front Cover</source>
         <translation>带封面的双页显示</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="307"/>
+        <location filename="mainwindow.ui" line="308"/>
         <source>Right to Left Layout</source>
         <translation>从右到左布局</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="312"/>
+        <location filename="mainwindow.ui" line="313"/>
         <source>Options...</source>
         <translation>选项...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="320"/>
+        <location filename="mainwindow.ui" line="321"/>
         <source>Swap Left/Right Key</source>
         <translation>交换左/右键</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="330"/>
+        <location filename="mainwindow.ui" line="331"/>
         <source>Rotate 90° CW</source>
         <translation>顺时针转90度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="340"/>
+        <location filename="mainwindow.ui" line="341"/>
         <source>Rotate 90° CCW</source>
         <translation>逆时针转90度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="350"/>
+        <location filename="mainwindow.ui" line="351"/>
         <source>Horizontal Flip</source>
         <translation>水平翻转</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="360"/>
+        <location filename="mainwindow.ui" line="361"/>
         <source>Vertical Flip</source>
         <translation>垂直翻转</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="365"/>
+        <location filename="mainwindow.ui" line="366"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="368"/>
+        <location filename="mainwindow.ui" line="369"/>
         <source>Ctrl+F4</source>
         <translation>Ctrl+F4</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="374"/>
+        <source>Full Screen</source>
+        <translation type="unfinished">全屏</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="377"/>
+        <source>F11</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Show Double Pages</source>
@@ -216,68 +226,68 @@
         <translation type="vanished">Ctrl+G</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="211"/>
+        <location filename="mainwindow.ui" line="212"/>
         <source>Open...</source>
         <translation>打开...</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="214"/>
+        <location filename="mainwindow.ui" line="215"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="219"/>
+        <location filename="mainwindow.ui" line="220"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="222"/>
+        <location filename="mainwindow.ui" line="223"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="234"/>
+        <location filename="mainwindow.ui" line="235"/>
         <source>Fit Width</source>
         <translation>适应宽度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="246"/>
+        <location filename="mainwindow.ui" line="247"/>
         <source>Fit Height</source>
         <translation>适应高度</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="258"/>
+        <location filename="mainwindow.ui" line="259"/>
         <source>Fit Page</source>
         <translation>适应页面</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="270"/>
+        <location filename="mainwindow.ui" line="271"/>
         <source>Show Contents</source>
         <translation>显示目录</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="275"/>
+        <location filename="mainwindow.ui" line="276"/>
         <source>About...</source>
         <translation>关于...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="77"/>
+        <location filename="mainwindow.cpp" line="81"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="109"/>
-        <location filename="mainwindow.cpp" line="292"/>
+        <location filename="mainwindow.cpp" line="113"/>
+        <location filename="mainwindow.cpp" line="336"/>
         <source>QComicsViewer %1</source>
         <translation>QComicsViewer %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="282"/>
+        <location filename="mainwindow.cpp" line="330"/>
         <source>Open File/Folder</source>
         <translation>打开文件/文件夹</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="290"/>
+        <location filename="mainwindow.cpp" line="334"/>
         <source>QComicsViewer %1 [%2]</source>
         <translation>QComicsViewer %1 [%2]</translation>
     </message>

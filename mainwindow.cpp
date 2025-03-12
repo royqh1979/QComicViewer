@@ -120,6 +120,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     setAcceptDrops(true);
     applySettings();
+
+    mInFullScreen = false;
+    mMaximizedBeforeFullScreen = false;
 }
 
 MainWindow::~MainWindow()
@@ -291,6 +294,14 @@ void MainWindow::dropEvent(QDropEvent *event)
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape && event->modifiers() == Qt::NoModifier
+            && mInFullScreen) {
+        on_actionFull_Screen_triggered();
+    }
+}
+
 void MainWindow::on_actionNext_Page_triggered()
 {
     mPagesNavigator->toNextPage();
@@ -429,3 +440,18 @@ void MainWindow::on_actionClose_triggered()
     mPagesNavigator->setBookPath("");
 }
 
+
+void MainWindow::on_actionFull_Screen_triggered()
+{
+    if (mInFullScreen) {
+        if (mMaximizedBeforeFullScreen)
+            showMaximized();
+        else
+            showNormal();
+        mInFullScreen = false;
+    } else {
+        mMaximizedBeforeFullScreen = isMaximized();
+        showFullScreen();
+        mInFullScreen = true;
+    }
+}
