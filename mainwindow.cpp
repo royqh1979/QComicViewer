@@ -444,6 +444,13 @@ void MainWindow::on_actionClose_triggered()
 void MainWindow::on_actionFull_Screen_triggered()
 {
     if (mInFullScreen) {
+        ui->dockPages->blockSignals(true);
+        if (ui->dockPages->isVisible()!=ui->actionShow_Contents->isChecked())
+            ui->dockPages->setVisible(ui->actionShow_Contents->isChecked());
+        ui->dockPages->blockSignals(false);
+        ui->toolBar->setVisible(true);
+        ui->menubar->setVisible(true);
+        ui->statusbar->setVisible(true);
         if (mMaximizedBeforeFullScreen)
             showMaximized();
         else
@@ -451,6 +458,12 @@ void MainWindow::on_actionFull_Screen_triggered()
         mInFullScreen = false;
     } else {
         mMaximizedBeforeFullScreen = isMaximized();
+        ui->dockPages->blockSignals(true);
+        ui->dockPages->setVisible(false);
+        ui->dockPages->blockSignals(false);
+        ui->toolBar->setVisible(false);
+        ui->menubar->setVisible(false);
+        ui->statusbar->setVisible(false);
         showFullScreen();
         mInFullScreen = true;
     }
