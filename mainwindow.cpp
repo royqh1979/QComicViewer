@@ -123,6 +123,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mInFullScreen = false;
     mMaximizedBeforeFullScreen = false;
+
+    addActions(menuBar()->actions());
 }
 
 MainWindow::~MainWindow()
