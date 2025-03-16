@@ -43,6 +43,7 @@ private:
     void applySettings();
 private slots:
     void updateStatusBar();
+    void onImageWidgetContextMenuRequested(const QPoint &pos);
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void onZoomFactorChanged(int value);
     void updatePageMode();

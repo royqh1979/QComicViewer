@@ -61,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::gotoPrevPage);
     connect(mImageWidget, &ImageWidget::imageUpdated,
             this, &MainWindow::updateStatusBar);
+    connect(mImageWidget, &QWidget::customContextMenuRequested,
+            this , &MainWindow::onImageWidgetContextMenuRequested);
+    mImageWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     mPagesNavigator = new PagesNavigator(this);
     connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
@@ -204,6 +207,22 @@ void MainWindow::updateStatusBar()
         ui->actionVertical_Flip->setEnabled(!mImageWidget->image().isNull());
 
     }
+}
+
+void MainWindow::onImageWidgetContextMenuRequested(const QPoint &pos)
+{
+    QMenu *menu=new QMenu(this);
+    menu->addAction(ui->actionFull_Screen);
+    menu->addSeparator();
+    menu->addAction(ui->actionSingle_Pages);
+    menu->addAction(ui->actionDouble_Pages);
+    menu->addAction(ui->actionDouble_Pages_with_Front_Cover);
+    menu->addAction(ui->actionRight_to_Left);
+    menu->addSeparator();
+    menu->addAction(ui->actionFit_Page);
+    menu->addAction(ui->actionFit_Width);
+    menu->addAction(ui->actionFit_Height);
+    menu->popup(mImageWidget->mapToGlobal(pos));
 }
 
 void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
