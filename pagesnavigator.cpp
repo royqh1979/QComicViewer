@@ -128,7 +128,7 @@ QString PagesNavigator::currentPageName()
 {
     if (mDisplayPage<0 || mDisplayPage>=pageCount())
         return QString();
-    return mPageList[mDisplayPage];
+    return mPageList[mCurrentPage];
 }
 
 void PagesNavigator::loadThumbnails()
