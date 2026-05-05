@@ -562,8 +562,8 @@ void DirImageThumbnailLoader::run()
         if (!image.isNull())
             break;
         delayCount++;
-        if (delayCount>30) {
-            break;
+        if (delayCount>10) {
+            return;
         }
         QThread::msleep(100);
     }

@@ -166,7 +166,12 @@ void ImageWidget::updateImage(bool forceRatio)
                 mRatio = r2;
             else
                 mRatio = r1;
-        }   // fall through here
+        }
+            mCacheImage = mImage.scaled(
+                        mImage.width() * mRatio,
+                        mImage.height() * mRatio,
+                        Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            break;
         case AutoFitType::None:
             mCacheImage = mImage.scaled(
                         mImage.width() * mRatio,
