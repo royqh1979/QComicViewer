@@ -39,7 +39,7 @@ public:
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 private slots:
-    void onBookChanged(QString newBookPath);
+    void onBookPagesChanged();
     void invalidateAllThumbnails();
     void onThumbnailReady(int page);
 private:
@@ -61,6 +61,7 @@ public:
     QPixmap currentImage();
     QString currentPageName();
     void loadThumbnails();
+    void loadThumbnail(int page, const QString &pagePath);
     QPixmap thumbnail(int page);
 
     QString bookTitle() const;
@@ -87,20 +88,22 @@ public:
 signals:
     void currentImageChanged();
     void currentPageChanged();
-    void bookChanged(QString newBookPath);
+    void bookChanged(const QString &newBookPath);
+    void bookPagesChanged();
     void thumbnailsCleared();
     void destoryed();
     void thumbnailReady(int page);
     void thumbnailRemoved(int page);
 private slots:
-    void setThumbnail(QString bookPath, int page, QPixmap thumbnail);
-    void onThumbnailLoadingFinished(QString bookPath);
+    void setThumbnail(const QString &bookPath, int page, const QString &pagePath, QPixmap thumbnail);
+    void onThumbnailsLoadingFinished(const QString &bookPath);
     void onDirChanged(const QString& path);
     void onFileChanged(const QString& path);
 private:
     QPixmap getPageImage(int page);
     void setCurrentPage(int newCurrentPage);
     int ensureDoublePages(int page);
+    void setPageList(const QStringList &newPageList);
 private:
     QString mBookPath;
     QStringList mPageList;
@@ -111,28 +114,46 @@ private:
     bool mDisplayDoublePages;
     bool mDoublePagesRightToLeft;
     int mThumbnailSize;
-    bool mLoadingThumbnail;
+    bool mLoadingThumbnails;
     QMap<int, QPixmap> mThumbnailCache;
+    QMap<int, QString> mThumbnailPagePath;
     QRecursiveMutex mThumbnailMutex;
     QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
     static QSet<QString> mImageSuffice;
 };
 
-class PageThumbnailLoader: public QThread {
+class PageThumbnailsLoader: public QThread {
     Q_OBJECT
 public:
-    PageThumbnailLoader(PagesNavigator *navigator, QObject* parent=nullptr);
+    PageThumbnailsLoader(PagesNavigator *navigator, QObject* parent=nullptr);
 signals:
-    void thumbnailLoaded(QString bookPath, int page, QPixmap thumbnail);
-    void loadFinished(QString bookPath);
+    void thumbnailLoaded(const QString &bookPath, int page, const QString &pagePath, const QPixmap &thumbnail);
+    void loadFinished(const QString &bookPath);
 private slots:
-    void onBookChanged(QString newBookPath);
+    void onBookChanged(const QString &newBookPath);
     void stopLoader();
 private:
     QString mBookPath;
     QStringList mPageList;
     bool mStop;
+    int mThumbnailSize;
+
+    // QThread interface
+protected:
+    void run() override;
+};
+
+class DirImageThumbnailLoader: public QThread {
+    Q_OBJECT
+public:
+    DirImageThumbnailLoader(const QString &bookPath, int page, int thumbnailSize, const QString &pagePath, QObject* parent=nullptr);
+signals:
+    void thumbnailLoaded(const QString &bookPath, int page, const QString &pagePath, const QPixmap &thumbnail);
+private:
+    QString mBookPath;
+    int mPage;
+    QString mPagePath;
     int mThumbnailSize;
 
     // QThread interface

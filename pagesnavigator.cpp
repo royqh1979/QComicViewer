@@ -38,7 +38,7 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     mDisplayDoublePages{false},
     mDoublePagesRightToLeft{false},
     mThumbnailSize{256},
-    mLoadingThumbnail{false}
+    mLoadingThumbnails{false}
 {
     mFileSystemWatcher = new QFileSystemWatcher(this);
     connect(mFileSystemWatcher, &QFileSystemWatcher::directoryChanged,
@@ -133,11 +133,20 @@ QString PagesNavigator::currentPageName()
 
 void PagesNavigator::loadThumbnails()
 {
-    PageThumbnailLoader *loader=new PageThumbnailLoader(this);
-    connect(loader, &PageThumbnailLoader::thumbnailLoaded,
+    PageThumbnailsLoader *loader=new PageThumbnailsLoader(this);
+    connect(loader, &PageThumbnailsLoader::thumbnailLoaded,
             this, &PagesNavigator::setThumbnail);
-    connect(loader, &PageThumbnailLoader::loadFinished,
-            this, &PagesNavigator::onThumbnailLoadingFinished);
+    connect(loader, &PageThumbnailsLoader::loadFinished,
+            this, &PagesNavigator::onThumbnailsLoadingFinished);
+    mLoadingThumbnails=true;
+    loader->start();
+}
+
+void PagesNavigator::loadThumbnail(int page, const QString& pagePath)
+{
+    DirImageThumbnailLoader *loader=new DirImageThumbnailLoader(mBookPath,page,mThumbnailSize,pagePath);
+    connect(loader, &DirImageThumbnailLoader::thumbnailLoaded,
+            this, &PagesNavigator::setThumbnail);
     loader->start();
 }
 
@@ -145,9 +154,12 @@ void PagesNavigator::loadThumbnails()
 QPixmap PagesNavigator::thumbnail(int page)
 {
     QMutexLocker locker(&mThumbnailMutex);
-    if (pageCount()>0 && mThumbnailCache.isEmpty() && !mLoadingThumbnail) {
-        mLoadingThumbnail=true;
-        loadThumbnails();
+    if (QFileInfo{mBookPath}.isDir()) {
+        if (page>=0 && page<pageCount() && !mLoadingThumbnails) {
+            QString pagePath = mPageList[page];
+            if (!mThumbnailCache.contains(page) || mThumbnailPagePath.value(page)!=pagePath)
+                loadThumbnail(page,pagePath);
+        }
     }
     QPixmap defaultThumb{mThumbnailSize,mThumbnailSize};
     return mThumbnailCache.value(page, defaultThumb);
@@ -187,20 +199,22 @@ void PagesNavigator::setBookPath(QString newBookPath)
         if (!mBookPath.isEmpty())
             mFileSystemWatcher->removePath(mBookPath);
         mBookPath = newBookPath;
-        mPageList.clear();
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
+        mThumbnailPagePath.clear();
         emit thumbnailsCleared();
 
+        mCurrentPage = -1;
+        QStringList newPageList;
         foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
             if (archiveReader->supportArchive(newBookPath)) {
-                mPageList = archiveReader->pageList(newBookPath, mImageSuffice);
+                newPageList = archiveReader->pageList(newBookPath, mImageSuffice);
+                break;
             }
         }
-
-        mDoublePagesStart = 0;
-        mDoublePagesEnd = pageCount();
+        setPageList(newPageList);
         emit bookChanged(mBookPath);
+
         int page = -1;
         if (!fileName.isEmpty()) {
             page = mPageList.indexOf(fileName);
@@ -212,7 +226,9 @@ void PagesNavigator::setBookPath(QString newBookPath)
             gotoPage(page);
         if (oldPage == mCurrentPage)
             emit currentImageChanged();
+
         mFileSystemWatcher->addPath(mBookPath);
+        loadThumbnails();
     }
 }
 
@@ -312,6 +328,15 @@ int PagesNavigator::ensureDoublePages(int page)
     return page;
 }
 
+void PagesNavigator::setPageList(const QStringList &newPageList)
+{
+    mPageList = newPageList;
+
+    mDoublePagesStart = 0;
+    mDoublePagesEnd = pageCount();
+    emit bookPagesChanged();
+}
+
 int PagesNavigator::thumbnailSize() const
 {
     return mThumbnailSize;
@@ -323,7 +348,9 @@ void PagesNavigator::setThumbnailSize(int newThumbnailSize)
         mThumbnailSize = newThumbnailSize;
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
+        mThumbnailPagePath.clear();
         emit thumbnailsCleared();
+        loadThumbnails();
     }
 }
 
@@ -338,44 +365,41 @@ bool PagesNavigator::canHandle(const QString &filePath)
     return mImageSuffice.contains(suffix);
 }
 
-void PagesNavigator::setThumbnail(QString bookPath, int page, QPixmap thumbnail)
+void PagesNavigator::setThumbnail(const QString &bookPath, int page, const QString& pagePath, QPixmap thumbnail)
 {
     if (mBookPath == bookPath){
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.insert(page, thumbnail);
+        mThumbnailPagePath.insert(page, pagePath);
         emit thumbnailReady(page);
     }
 }
 
-void PagesNavigator::onThumbnailLoadingFinished(QString bookPath)
+void PagesNavigator::onThumbnailsLoadingFinished(const QString &bookPath)
 {
     QMutexLocker locker(&mThumbnailMutex);
-    if (bookPath != mBookPath) {
-        mLoadingThumbnail = true;
-        loadThumbnails();
-    } else
-        mLoadingThumbnail = false;
+    if (bookPath == mBookPath)
+        mLoadingThumbnails = false;
 }
 
 void PagesNavigator::onDirChanged(const QString &path)
 {
-    std::shared_ptr<ArchiveReader> reader;
-    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
-        if (archiveReader->supportArchive(mBookPath)) {
-            reader = archiveReader;
-            break;
-        }
-    }
-    if (reader) {
-        if (reader->archiveType()=="folder") {
-            QStringList pageList = reader->pageList(path, mImageSuffice);
-            if (pageList != mPageList) {
-                QString oldPath = mBookPath;
-                int oldPage = mCurrentPage;
-                mBookPath = "";
-                setBookPath(oldPath);
-                gotoPage(oldPage);
+    if (QFileInfo{path}.isDir()) {
+        FolderArchiveReader reader;
+        QStringList pageList = reader.pageList(path, mImageSuffice);
+        if (pageList.count() != mPageList.count()) {
+            QString oldPath = mBookPath;
+            int oldPage = mCurrentPage;
+            int newPage = -1;
+            QStringList oldPageList = mPageList;
+            setPageList(pageList);
+            if (oldPage>=0 && oldPage < mPageList.count()) {
+                newPage = pageList.indexOf(mPageList[oldPage]);
             }
+            if (newPage==-1)
+                toFirstPage();
+            else
+                gotoPage(newPage);
         }
     }
 }
@@ -423,8 +447,8 @@ BookPagesModel::BookPagesModel(PagesNavigator *bookNavigator, QObject *parent):
     QAbstractListModel{parent},
     mBookNavigator{bookNavigator}
 {
-    connect(bookNavigator, &PagesNavigator::bookChanged,
-            this, &BookPagesModel::onBookChanged);
+    connect(bookNavigator, &PagesNavigator::bookPagesChanged,
+            this, &BookPagesModel::onBookPagesChanged);
     connect(bookNavigator, &PagesNavigator::thumbnailsCleared,
             this, &BookPagesModel::invalidateAllThumbnails);
     connect(bookNavigator, &PagesNavigator::thumbnailReady,
@@ -453,9 +477,8 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void BookPagesModel::onBookChanged(QString newBookPath)
+void BookPagesModel::onBookPagesChanged()
 {
-    Q_UNUSED(newBookPath);
     invalidateAllThumbnails();
 }
 
@@ -471,7 +494,7 @@ void BookPagesModel::onThumbnailReady(int page)
     emit dataChanged(index,index);
 }
 
-PageThumbnailLoader::PageThumbnailLoader(PagesNavigator *navigator, QObject *parent):
+PageThumbnailsLoader::PageThumbnailsLoader(PagesNavigator *navigator, QObject *parent):
     QThread{parent}
 {
     mBookPath = navigator->bookPath();
@@ -481,29 +504,30 @@ PageThumbnailLoader::PageThumbnailLoader(PagesNavigator *navigator, QObject *par
     connect(this, &QThread::finished,
             this, &QObject::deleteLater);
     connect(navigator, &PagesNavigator::bookChanged,
-            this, &PageThumbnailLoader::onBookChanged);
+            this, &PageThumbnailsLoader::onBookChanged);
     connect(navigator, &PagesNavigator::destoryed,
-            this, &PageThumbnailLoader::stopLoader);
+            this, &PageThumbnailsLoader::stopLoader);
 }
 
-void PageThumbnailLoader::onBookChanged(QString newBookPath)
+void PageThumbnailsLoader::onBookChanged(const QString &newBookPath)
 {
     if (newBookPath!=mBookPath)
         stopLoader();
 }
 
-void PageThumbnailLoader::stopLoader()
+void PageThumbnailsLoader::stopLoader()
 {
     mStop = true;
 }
 
-void PageThumbnailLoader::run()
+void PageThumbnailsLoader::run()
 {
     for(int i=0;i<mPageList.count();i++){
-        const QString& file=mPageList[i];
+        const QString& pagePath=mPageList[i];
         if (mStop)
             break;
-        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, file);
+
+        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, pagePath);
         if (mStop)
             break;
         QPixmap thumbnail;
@@ -512,7 +536,42 @@ void PageThumbnailLoader::run()
         } else {
             thumbnail = image.scaledToHeight(mThumbnailSize);
         }
-        emit thumbnailLoaded(mBookPath, i, thumbnail);
+        emit thumbnailLoaded(mBookPath, i, pagePath, thumbnail);
     }
     emit loadFinished(mBookPath);
+}
+
+DirImageThumbnailLoader::DirImageThumbnailLoader(const QString &bookPath, int page, int thumbnailSize,const QString &pagePath, QObject *parent):
+    QThread{parent}
+{
+    mBookPath = bookPath;
+    mThumbnailSize = thumbnailSize;
+    mPage = page;
+    mPagePath = pagePath;
+    connect(this, &QThread::finished,
+            this, &QObject::deleteLater);
+}
+
+void DirImageThumbnailLoader::run()
+{
+    FolderArchiveReader reader;
+    QPixmap image;
+    int delayCount = 0;
+    while (true) {
+        image = reader.pageImage(mBookPath, mPagePath);
+        if (!image.isNull())
+            break;
+        delayCount++;
+        if (delayCount>30) {
+            break;
+        }
+        QThread::msleep(100);
+    }
+    QPixmap thumbnail;
+    if (image.width()>image.height()) {
+        thumbnail = image.scaledToWidth(mThumbnailSize);
+    } else {
+        thumbnail = image.scaledToHeight(mThumbnailSize);
+    }
+    emit thumbnailLoaded(mBookPath, mPage, mPagePath, thumbnail);
 }
