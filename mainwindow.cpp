@@ -324,6 +324,8 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::on_actionNext_Page_triggered()
 {
+    if (mBookPagesModel->currentPage()==mBookPagesModel->pageCount()-1)
+        return;
     mBookPagesModel->toNextPage();
 }
 
@@ -379,6 +381,8 @@ void MainWindow::updateImageFitType()
 
 void MainWindow::gotoPrevPage(bool scrollToPageBottom)
 {
+    if (mBookPagesModel->currentPage()==0)
+        return;
     mBookPagesModel->toPrevPage();
     if (scrollToPageBottom) {
         mImageWidget->scrollToBottom();
