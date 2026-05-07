@@ -28,7 +28,6 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class ImageWidget;
-class PagesNavigator;
 class BookPagesModel;
 
 class MainWindow : public QMainWindow
@@ -89,7 +88,6 @@ private:
 private:
     Ui::MainWindow *ui;
     ImageWidget *mImageWidget;
-    PagesNavigator *mPagesNavigator;
     BookPagesModel *mBookPagesModel;
     QSpinBox *mZoomFactor;
     QLabel *mImageSizeInfo;

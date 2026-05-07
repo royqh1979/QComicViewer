@@ -22,7 +22,7 @@
 #include <QHBoxLayout>
 #include <QStyle>
 #include "imagewidget.h"
-#include "pagesnavigator.h"
+#include "bookpagesmodel.h"
 #include "aboutdialog.h"
 #include "settingsdialog/settingsdialog.h"
 #include "settings.h"
@@ -65,13 +65,12 @@ MainWindow::MainWindow(QWidget *parent)
             this , &MainWindow::onImageWidgetContextMenuRequested);
     mImageWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    mPagesNavigator = new PagesNavigator(this);
-    connect(mPagesNavigator, &PagesNavigator::currentImageChanged,
+    mBookPagesModel = new BookPagesModel(this);
+    connect(mBookPagesModel, &BookPagesModel::currentImageChanged,
             this, &MainWindow::onCurrentPageChanged);
-    connect(mPagesNavigator, &PagesNavigator::currentPageChanged,
+    connect(mBookPagesModel, &BookPagesModel::currentPageChanged,
             this, &MainWindow::updateStatusBar);
 
-    mBookPagesModel = new BookPagesModel(mPagesNavigator, this);
     ui->pagesView->setModel(mBookPagesModel);
     connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onPageViewCurrentChanged);
@@ -138,9 +137,9 @@ MainWindow::~MainWindow()
 bool MainWindow::openBook(const QString &bookPath)
 {
     if (QFile::exists(bookPath)) {
-        mPagesNavigator->setBookPath(bookPath);
+        mBookPagesModel->setBookPath(bookPath);
     } else {
-        mPagesNavigator->setBookPath("");
+        mBookPagesModel->setBookPath("");
     }
     return true;
 }
@@ -165,12 +164,12 @@ void MainWindow::applySettings()
     updatePageMode();
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
-    mPagesNavigator->setThumbnailSize(pSettings->view().thumbnailSize());
+    mBookPagesModel->setThumbnailSize(pSettings->view().thumbnailSize());
 }
 
 void MainWindow::updateStatusBar()
 {
-    if (mPagesNavigator->pageCount()<=0) {
+    if (mBookPagesModel->pageCount()<=0) {
         mZoomFactor->blockSignals(true);
         mZoomFactor->setValue(100);
         mZoomFactor->blockSignals(false);
@@ -192,15 +191,15 @@ void MainWindow::updateStatusBar()
         mZoomFactor->setValue(mImageWidget->ratio()*100);
         mZoomFactor->blockSignals(false);
         mImageSizeInfo->setText(QString(" %1x%2 ").arg(mImageWidget->imageSize().width()).arg(mImageWidget->imageSize().height()));
-        mPageInfo->setText(QString("%1/%2").arg(mPagesNavigator->currentPage()+1)
-                               .arg(mPagesNavigator->pageCount()));
-        ui->statusbar->showMessage(mPagesNavigator->currentPageName());
+        mPageInfo->setText(QString("%1/%2").arg(mBookPagesModel->currentPage()+1)
+                               .arg(mBookPagesModel->pageCount()));
+        ui->statusbar->showMessage(mBookPagesModel->currentPageName());
 
         ui->actionClose->setEnabled(true);
-        ui->actionFirst_Page->setEnabled(mPagesNavigator->currentPage()!=0);
-        ui->actionLast_Page->setEnabled(mPagesNavigator->currentPage()!=mPagesNavigator->pageCount()-1);
-        ui->actionPrev_Page->setEnabled(mPagesNavigator->currentPage()!=0);
-        ui->actionNext_Page->setEnabled(mPagesNavigator->currentPage()!=mPagesNavigator->pageCount()-1);
+        ui->actionFirst_Page->setEnabled(mBookPagesModel->currentPage()!=0);
+        ui->actionLast_Page->setEnabled(mBookPagesModel->currentPage()!=mBookPagesModel->pageCount()-1);
+        ui->actionPrev_Page->setEnabled(mBookPagesModel->currentPage()!=0);
+        ui->actionNext_Page->setEnabled(mBookPagesModel->currentPage()!=mBookPagesModel->pageCount()-1);
         ui->actionRotate_90_Clockwise->setEnabled(!mImageWidget->image().isNull());
         ui->actionRotate_90_Counter_Clockwise->setEnabled(!mImageWidget->image().isNull());
         ui->actionHorizontal_Flip->setEnabled(!mImageWidget->image().isNull());
@@ -230,7 +229,7 @@ void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QMod
     Q_UNUSED(previous);
     if (!current.isValid())
         return;
-    mPagesNavigator->gotoPage(current.row());
+    mBookPagesModel->gotoPage(current.row());
 }
 
 void MainWindow::onZoomFactorChanged(int value)
@@ -241,22 +240,22 @@ void MainWindow::onZoomFactorChanged(int value)
 void MainWindow::updatePageMode()
 {
     if (ui->actionSingle_Pages->isChecked()) {
-        mPagesNavigator->setDisplayDoublePages(false);
+        mBookPagesModel->setDisplayDoublePages(false);
     } else if (ui->actionDouble_Pages->isChecked()) {
-        mPagesNavigator->setDisplayDoublePages(true);
-        mPagesNavigator->setDoublePagesStart(0);
+        mBookPagesModel->setDisplayDoublePages(true);
+        mBookPagesModel->setDoublePagesStart(0);
     } else if (ui->actionDouble_Pages_with_Front_Cover->isChecked()) {
-        mPagesNavigator->setDisplayDoublePages(true);
-        mPagesNavigator->setDoublePagesStart(1);
+        mBookPagesModel->setDisplayDoublePages(true);
+        mBookPagesModel->setDoublePagesStart(1);
     }
 }
 
 void MainWindow::onCurrentPageChanged()
 {
-    QPixmap image = mPagesNavigator->currentImage();
+    QPixmap image = mBookPagesModel->currentImage();
     mImageWidget->setImage(image);
-    if (mPagesNavigator->pageCount()>0) {
-        QModelIndex index = mBookPagesModel->index(mPagesNavigator->currentPage(),0);
+    if (mBookPagesModel->pageCount()>0) {
+        QModelIndex index = mBookPagesModel->index(mBookPagesModel->currentPage(),0);
         ui->pagesView->setCurrentIndex(index);
         ui->pagesView->scrollTo(index);
     }
@@ -297,7 +296,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
     if (mimeData->urls().count()==1) {
         QList<QUrl> urlList = mimeData->urls();
         QString fileName = urlList.first().toLocalFile();
-        if (mPagesNavigator->canHandle(fileName))
+        if (mBookPagesModel->canHandle(fileName))
             event->acceptProposedAction();
     }
 }
@@ -308,7 +307,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     if (mimeData->urls().count()==1) {
         QList<QUrl> urlList = mimeData->urls();
         QString fileName = urlList.first().toLocalFile();
-        if (mPagesNavigator->canHandle(fileName)) {
+        if (mBookPagesModel->canHandle(fileName)) {
             openBook(fileName);
             event->acceptProposedAction();
         }
@@ -325,7 +324,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::on_actionNext_Page_triggered()
 {
-    mPagesNavigator->toNextPage();
+    mBookPagesModel->toNextPage();
 }
 
 
@@ -337,13 +336,13 @@ void MainWindow::on_actionPrev_Page_triggered()
 
 void MainWindow::on_actionLast_Page_triggered()
 {
-    mPagesNavigator->toLastPage();
+    mBookPagesModel->toLastPage();
 }
 
 
 void MainWindow::on_actionFirst_Page_triggered()
 {
-    mPagesNavigator->toFirstPage();
+    mBookPagesModel->toFirstPage();
 }
 
 
@@ -358,9 +357,9 @@ void MainWindow::on_actionOpen_triggered()
     QString file = QFileDialog::getOpenFileName(
                 this, tr("Open File/Folder"));
     openBook(file);
-    if (mPagesNavigator->pageCount()>0) {
+    if (mBookPagesModel->pageCount()>0) {
         updatePageMode();
-        setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mPagesNavigator->bookTitle()));
+        setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mBookPagesModel->bookTitle()));
     } else {
         setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
     }
@@ -380,7 +379,7 @@ void MainWindow::updateImageFitType()
 
 void MainWindow::gotoPrevPage(bool scrollToPageBottom)
 {
-    mPagesNavigator->toPrevPage();
+    mBookPagesModel->toPrevPage();
     if (scrollToPageBottom) {
         mImageWidget->scrollToBottom();
     }
@@ -397,7 +396,7 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionRight_to_Left_toggled(bool arg1)
 {
     Q_UNUSED(arg1);
-    mPagesNavigator->setDoublePagesRightToLeft(ui->actionRight_to_Left->isChecked());
+    mBookPagesModel->setDoublePagesRightToLeft(ui->actionRight_to_Left->isChecked());
 }
 
 
@@ -458,7 +457,7 @@ void MainWindow::on_actionVertical_Flip_triggered()
 
 void MainWindow::on_actionClose_triggered()
 {
-    mPagesNavigator->setBookPath("");
+    mBookPagesModel->setBookPath("");
 }
 
 

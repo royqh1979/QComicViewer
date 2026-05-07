@@ -22,11 +22,11 @@ win32 {
 SOURCES += \
     aboutdialog.cpp \
     archivereader.cpp \
+    bookpagesmodel.cpp \
     folderarchivereader.cpp \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    pagesnavigator.cpp \
     qtrar\qtrar.cpp \
     qtrar\qtrarfile.cpp \
     qtrar\qtrarfileinfo.cpp \
@@ -117,10 +117,10 @@ SOURCES += \
 HEADERS += \
     aboutdialog.h \
     archivereader.h \
+    bookpagesmodel.h \
     folderarchivereader.h \
     imagewidget.h \
     mainwindow.h \
-    pagesnavigator.h \
     qtrar\qtrar.h \
     qtrar\qtrar_global.h \
     qtrar\qtrarfile.h \

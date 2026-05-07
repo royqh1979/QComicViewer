@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pagesnavigator.h"
+#include "bookpagesmodel.h"
 
 #include <QDir>
 #include <QPainter>
@@ -27,10 +27,10 @@
 #include "ziparchivereader.h"
 #include "rararchivereader.h"
 
-QList<std::shared_ptr<ArchiveReader>> PagesNavigator::mArchiveReaders;
-QSet<QString> PagesNavigator::mImageSuffice;
+QList<std::shared_ptr<ArchiveReader>> BookPagesModel::mArchiveReaders;
+QSet<QString> BookPagesModel::mImageSuffice;
 
-PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
+BookPagesModel::BookPagesModel(QObject *parent) : QAbstractListModel(parent),
     mDisplayPage{-1},
     mCurrentPage{-1},
     mDoublePagesStart{-1},
@@ -42,9 +42,9 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
 {
     mFileSystemWatcher = new QFileSystemWatcher(this);
     connect(mFileSystemWatcher, &QFileSystemWatcher::directoryChanged,
-            this, &PagesNavigator::onDirChanged);
+            this, &BookPagesModel::onDirChanged);
     connect(mFileSystemWatcher, &QFileSystemWatcher::fileChanged,
-            this, &PagesNavigator::onFileChanged);
+            this, &BookPagesModel::onFileChanged);
     if (mImageSuffice.isEmpty()) {
         foreach(const QString& type, QImageReader::supportedImageFormats())
             mImageSuffice.insert(type.toLower());
@@ -55,17 +55,17 @@ PagesNavigator::PagesNavigator(QObject *parent) : QObject(parent),
     }
 }
 
-PagesNavigator::~PagesNavigator()
+BookPagesModel::~BookPagesModel()
 {
     emit destroyed();
 }
 
-void PagesNavigator::gotoPage(int page)
+void BookPagesModel::gotoPage(int page)
 {
     setCurrentPage(page);
 }
 
-void PagesNavigator::toNextPage()
+void BookPagesModel::toNextPage()
 {
     int page = currentPage() + 1;
     if (mDisplayDoublePages && page>=mDoublePagesStart && page<mDoublePagesEnd) {
@@ -74,24 +74,24 @@ void PagesNavigator::toNextPage()
     setCurrentPage(page);
 }
 
-void PagesNavigator::toPrevPage()
+void BookPagesModel::toPrevPage()
 {
     int page = currentPage()-1;
     setCurrentPage(page);
 }
 
-void PagesNavigator::toLastPage()
+void BookPagesModel::toLastPage()
 {
     int page = pageCount()-1;
     setCurrentPage(page);
 }
 
-void PagesNavigator::toFirstPage()
+void BookPagesModel::toFirstPage()
 {
     setCurrentPage(0);
 }
 
-QPixmap PagesNavigator::currentImage()
+QPixmap BookPagesModel::currentImage() const
 {
     if (mPageList.isEmpty())
         return QPixmap();
@@ -124,34 +124,34 @@ QPixmap PagesNavigator::currentImage()
     }
 }
 
-QString PagesNavigator::currentPageName()
+QString BookPagesModel::currentPageName() const
 {
     if (mDisplayPage<0 || mDisplayPage>=pageCount())
         return QString();
     return mPageList[mCurrentPage];
 }
 
-void PagesNavigator::loadThumbnails()
+void BookPagesModel::loadThumbnails() const
 {
     PageThumbnailsLoader *loader=new PageThumbnailsLoader(this);
     connect(loader, &PageThumbnailsLoader::thumbnailLoaded,
-            this, &PagesNavigator::setThumbnail);
+            this, &BookPagesModel::setThumbnail);
     connect(loader, &PageThumbnailsLoader::loadFinished,
-            this, &PagesNavigator::onThumbnailsLoadingFinished);
+            this, &BookPagesModel::onThumbnailsLoadingFinished);
     mLoadingThumbnails=true;
     loader->start();
 }
 
-void PagesNavigator::loadThumbnail(int page, const QString& pagePath)
+void BookPagesModel::loadThumbnail(int page, const QString& pagePath) const
 {
     DirImageThumbnailLoader *loader=new DirImageThumbnailLoader(mBookPath,page,mThumbnailSize,pagePath);
     connect(loader, &DirImageThumbnailLoader::thumbnailLoaded,
-            this, &PagesNavigator::setThumbnail);
+            this, &BookPagesModel::setThumbnail);
     loader->start();
 }
 
 
-QPixmap PagesNavigator::thumbnail(int page)
+QPixmap BookPagesModel::thumbnail(int page) const
 {
     QMutexLocker locker(&mThumbnailMutex);
     if (QFileInfo{mBookPath}.isDir()) {
@@ -165,7 +165,7 @@ QPixmap PagesNavigator::thumbnail(int page)
     return mThumbnailCache.value(page, defaultThumb);
 }
 
-QString PagesNavigator::bookTitle() const
+QString BookPagesModel::bookTitle() const
 {
     if (pageCount()<=0)
         return QString();
@@ -173,12 +173,12 @@ QString PagesNavigator::bookTitle() const
     return dir.dirName();
 }
 
-const QString &PagesNavigator::bookPath() const
+const QString &BookPagesModel::bookPath() const
 {
     return mBookPath;
 }
 
-void PagesNavigator::setBookPath(QString newBookPath)
+void BookPagesModel::setBookPath(QString newBookPath)
 {
     QString fileName;
     QFileInfo info{newBookPath};
@@ -199,10 +199,10 @@ void PagesNavigator::setBookPath(QString newBookPath)
         if (!mBookPath.isEmpty())
             mFileSystemWatcher->removePath(mBookPath);
         mBookPath = newBookPath;
+        beginResetModel();
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.clear();
         mThumbnailPagePath.clear();
-        emit thumbnailsCleared();
 
         mCurrentPage = -1;
         QStringList newPageList;
@@ -212,7 +212,11 @@ void PagesNavigator::setBookPath(QString newBookPath)
                 break;
             }
         }
-        setPageList(newPageList);
+        mPageList = newPageList;
+
+        mDoublePagesStart = 0;
+        mDoublePagesEnd = pageCount();
+        endResetModel();
         emit bookChanged(mBookPath);
 
         int page = -1;
@@ -232,22 +236,22 @@ void PagesNavigator::setBookPath(QString newBookPath)
     }
 }
 
-const QStringList &PagesNavigator::pageList() const
+const QStringList &BookPagesModel::pageList() const
 {
     return mPageList;
 }
 
-int PagesNavigator::pageCount() const
+int BookPagesModel::pageCount() const
 {
     return mPageList.count();
 }
 
-int PagesNavigator::currentPage() const
+int BookPagesModel::currentPage() const
 {
     return mCurrentPage;
 }
 
-void PagesNavigator::setCurrentPage(int newCurrentPage)
+void BookPagesModel::setCurrentPage(int newCurrentPage)
 {
     if (newCurrentPage<0)
         newCurrentPage = 0;
@@ -264,12 +268,12 @@ void PagesNavigator::setCurrentPage(int newCurrentPage)
     }
 }
 
-bool PagesNavigator::displayDoublePages() const
+bool BookPagesModel::displayDoublePages() const
 {
     return mDisplayDoublePages;
 }
 
-void PagesNavigator::setDisplayDoublePages(bool newDisplayDoublePages)
+void BookPagesModel::setDisplayDoublePages(bool newDisplayDoublePages)
 {
     if (mDisplayDoublePages!=newDisplayDoublePages) {
         mDisplayDoublePages = newDisplayDoublePages;
@@ -278,12 +282,12 @@ void PagesNavigator::setDisplayDoublePages(bool newDisplayDoublePages)
     }
 }
 
-bool PagesNavigator::doublePagesRightToLeft() const
+bool BookPagesModel::doublePagesRightToLeft() const
 {
     return mDoublePagesRightToLeft;
 }
 
-void PagesNavigator::setDoublePagesRightToLeft(bool newRightToLeft)
+void BookPagesModel::setDoublePagesRightToLeft(bool newRightToLeft)
 {
     if (mDoublePagesRightToLeft!=newRightToLeft) {
         mDoublePagesRightToLeft = newRightToLeft;
@@ -292,12 +296,12 @@ void PagesNavigator::setDoublePagesRightToLeft(bool newRightToLeft)
     }
 }
 
-int PagesNavigator::doublePagesStart() const
+int BookPagesModel::doublePagesStart() const
 {
     return mDoublePagesStart;
 }
 
-void PagesNavigator::setDoublePagesStart(int newDoublePagesStart)
+void BookPagesModel::setDoublePagesStart(int newDoublePagesStart)
 {
     if (mDoublePagesStart != newDoublePagesStart) {
         mDoublePagesStart = newDoublePagesStart;
@@ -306,12 +310,12 @@ void PagesNavigator::setDoublePagesStart(int newDoublePagesStart)
     }
 }
 
-int PagesNavigator::doublePagesEnd() const
+int BookPagesModel::doublePagesEnd() const
 {
     return mDoublePagesEnd;
 }
 
-void PagesNavigator::setDoublePagesEnd(int newDoublePagesEnd)
+void BookPagesModel::setDoublePagesEnd(int newDoublePagesEnd)
 {
     if (mDoublePagesEnd != newDoublePagesEnd) {
         mDoublePagesEnd = newDoublePagesEnd;
@@ -320,7 +324,7 @@ void PagesNavigator::setDoublePagesEnd(int newDoublePagesEnd)
     }
 }
 
-int PagesNavigator::ensureDoublePages(int page)
+int BookPagesModel::ensureDoublePages(int page)
 {
     if (mDisplayDoublePages && page>=mDoublePagesStart && page<mDoublePagesEnd) {
         page -= (page - mDoublePagesStart) % 2;
@@ -328,33 +332,40 @@ int PagesNavigator::ensureDoublePages(int page)
     return page;
 }
 
-void PagesNavigator::setPageList(const QStringList &newPageList)
+void BookPagesModel::setPageList(const QStringList &newPageList)
 {
     mPageList = newPageList;
 
     mDoublePagesStart = 0;
     mDoublePagesEnd = pageCount();
-    emit bookPagesChanged();
 }
 
-int PagesNavigator::thumbnailSize() const
+
+void BookPagesModel::clearThumbnails()
+{
+    QMutexLocker locker(&mThumbnailMutex);
+    mThumbnailCache.clear();
+    mThumbnailPagePath.clear();
+    QModelIndex top=createIndex(0,0);
+    QModelIndex bottom = createIndex(pageCount()-1,0);
+    emit dataChanged(top,bottom);
+}
+
+int BookPagesModel::thumbnailSize() const
 {
     return mThumbnailSize;
 }
 
-void PagesNavigator::setThumbnailSize(int newThumbnailSize)
+void BookPagesModel::setThumbnailSize(int newThumbnailSize)
 {
     if (mThumbnailSize!=newThumbnailSize) {
         mThumbnailSize = newThumbnailSize;
-        QMutexLocker locker(&mThumbnailMutex);
-        mThumbnailCache.clear();
-        mThumbnailPagePath.clear();
-        emit thumbnailsCleared();
+        clearThumbnails();
         loadThumbnails();
     }
 }
 
-bool PagesNavigator::canHandle(const QString &filePath)
+bool BookPagesModel::canHandle(const QString &filePath)
 {
     foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
         if (archiveReader->supportArchive(filePath)) {
@@ -365,46 +376,62 @@ bool PagesNavigator::canHandle(const QString &filePath)
     return mImageSuffice.contains(suffix);
 }
 
-void PagesNavigator::setThumbnail(const QString &bookPath, int page, const QString& pagePath, QPixmap thumbnail)
+void BookPagesModel::setThumbnail(const QString &bookPath, int page, const QString& pagePath, QPixmap thumbnail)
 {
     if (mBookPath == bookPath){
         QMutexLocker locker(&mThumbnailMutex);
         mThumbnailCache.insert(page, thumbnail);
         mThumbnailPagePath.insert(page, pagePath);
-        emit thumbnailReady(page);
+        QModelIndex index = createIndex(page,0);
+        emit dataChanged(index,index);
     }
 }
 
-void PagesNavigator::onThumbnailsLoadingFinished(const QString &bookPath)
+void BookPagesModel::onThumbnailsLoadingFinished(const QString &bookPath)
 {
     QMutexLocker locker(&mThumbnailMutex);
     if (bookPath == mBookPath)
         mLoadingThumbnails = false;
 }
 
-void PagesNavigator::onDirChanged(const QString &path)
+void BookPagesModel::onDirChanged(const QString &path)
 {
     if (QFileInfo{path}.isDir()) {
         FolderArchiveReader reader;
-        QStringList pageList = reader.pageList(path, mImageSuffice);
-        if (pageList.count() != mPageList.count()) {
-            QString oldPath = mBookPath;
-            int oldPage = mCurrentPage;
-            int newPage = -1;
-            QStringList oldPageList = mPageList;
-            setPageList(pageList);
-            if (oldPage>=0 && oldPage < mPageList.count()) {
-                newPage = pageList.indexOf(mPageList[oldPage]);
+        QStringList newPageList = reader.pageList(path, mImageSuffice);
+        clearThumbnails();
+        QString oldCurrentPagePath;
+        if (mCurrentPage>=0 && mCurrentPage<mPageList.count())
+            oldCurrentPagePath = mPageList[mCurrentPage];
+        QStringList oldPageList = mPageList;
+        int oldCurrentPage = mCurrentPage;
+        if (oldCurrentPage==-1) {
+            beginResetModel();
+            setPageList(newPageList);
+            endResetModel();
+        } else {
+            if (oldPageList.count() < newPageList.count()) {
+                beginInsertRows(QModelIndex(),oldPageList.count()-1, newPageList.count()-1);
+                setPageList(newPageList);
+                endInsertRows();
+            } else {
+                int deleteCount = oldPageList.count()-newPageList.count();
+                beginRemoveRows(QModelIndex(),0,deleteCount-1);
+                setPageList(newPageList);
+                endRemoveRows();
             }
-            if (newPage==-1)
-                toFirstPage();
-            else
-                gotoPage(newPage);
         }
+
+        int newCurrentPage = mPageList.indexOf(oldCurrentPagePath);
+        if (newCurrentPage!=-1)
+            gotoPage(newCurrentPage);
+        else
+            toFirstPage();
+
     }
 }
 
-void PagesNavigator::onFileChanged(const QString &path)
+void BookPagesModel::onFileChanged(const QString &path)
 {
     Q_UNUSED(path);
     std::shared_ptr<ArchiveReader> reader;
@@ -427,7 +454,7 @@ void PagesNavigator::onFileChanged(const QString &path)
     }
 }
 
-QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file)
+QPixmap BookPagesModel::getBookPageImage(QString bookPath, QString file)
 {
     foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
         if (archiveReader->supportArchive(bookPath)) {
@@ -437,28 +464,15 @@ QPixmap PagesNavigator::getBookPageImage(QString bookPath, QString file)
     return QPixmap();
 }
 
-QPixmap PagesNavigator::getPageImage(int page)
+QPixmap BookPagesModel::getPageImage(int page) const
 {
     return getBookPageImage(mBookPath, mPageList[page]);
-}
-
-
-BookPagesModel::BookPagesModel(PagesNavigator *bookNavigator, QObject *parent):
-    QAbstractListModel{parent},
-    mBookNavigator{bookNavigator}
-{
-    connect(bookNavigator, &PagesNavigator::bookPagesChanged,
-            this, &BookPagesModel::onBookPagesChanged);
-    connect(bookNavigator, &PagesNavigator::thumbnailsCleared,
-            this, &BookPagesModel::invalidateAllThumbnails);
-    connect(bookNavigator, &PagesNavigator::thumbnailReady,
-            this, &BookPagesModel::onThumbnailReady);
 }
 
 int BookPagesModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return mBookNavigator->pageCount();
+    return pageCount();
 }
 
 QVariant BookPagesModel::data(const QModelIndex &index, int role) const
@@ -466,35 +480,20 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
     int row =index.row();
-    if (row<0 || row>=mBookNavigator->pageCount())
+    if (row<0 || row>=pageCount())
         return QVariant();
     switch(role) {
     case Qt::DisplayRole:
         return row+1;
     case Qt::DecorationRole:
-        return mBookNavigator->thumbnail(row);
+        return thumbnail(row);
     }
     return QVariant();
 }
 
-void BookPagesModel::onBookPagesChanged()
-{
-    invalidateAllThumbnails();
-}
 
-void BookPagesModel::invalidateAllThumbnails()
-{
-    beginResetModel();
-    endResetModel();
-}
 
-void BookPagesModel::onThumbnailReady(int page)
-{
-    QModelIndex index = createIndex(page,0);
-    emit dataChanged(index,index);
-}
-
-PageThumbnailsLoader::PageThumbnailsLoader(PagesNavigator *navigator, QObject *parent):
+PageThumbnailsLoader::PageThumbnailsLoader(const BookPagesModel *navigator, QObject *parent):
     QThread{parent}
 {
     mBookPath = navigator->bookPath();
@@ -503,9 +502,9 @@ PageThumbnailsLoader::PageThumbnailsLoader(PagesNavigator *navigator, QObject *p
     mStop = false;
     connect(this, &QThread::finished,
             this, &QObject::deleteLater);
-    connect(navigator, &PagesNavigator::bookChanged,
+    connect(navigator, &BookPagesModel::bookChanged,
             this, &PageThumbnailsLoader::onBookChanged);
-    connect(navigator, &PagesNavigator::destoryed,
+    connect(navigator, &BookPagesModel::destoryed,
             this, &PageThumbnailsLoader::stopLoader);
 }
 
@@ -527,7 +526,7 @@ void PageThumbnailsLoader::run()
         if (mStop)
             break;
 
-        QPixmap image = PagesNavigator::getBookPageImage(mBookPath, pagePath);
+        QPixmap image = BookPagesModel::getBookPageImage(mBookPath, pagePath);
         if (mStop)
             break;
         QPixmap thumbnail;

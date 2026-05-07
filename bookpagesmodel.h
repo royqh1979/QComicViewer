@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PAGESNAVIGATOR_H
-#define PAGESNAVIGATOR_H
+#ifndef BOOKPAGESMODEL_H
+#define BOOKPAGESMODEL_H
 
 #include <QObject>
 #include <QPixmap>
@@ -28,41 +28,24 @@
 
 class QFileSystemWatcher;
 class ArchiveReader;
-class PagesNavigator;
-class BookPagesModel: public QAbstractListModel{
-    Q_OBJECT
-public:
-    BookPagesModel(PagesNavigator *bookNavigator, QObject *parent);
 
-    // QAbstractItemModel interface
-public:
-    int rowCount(const QModelIndex &parent) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
-private slots:
-    void onBookPagesChanged();
-    void invalidateAllThumbnails();
-    void onThumbnailReady(int page);
-private:
-    PagesNavigator *mBookNavigator;
-};
-
-class PagesNavigator : public QObject
+class BookPagesModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit PagesNavigator(QObject *parent = nullptr);
-    ~PagesNavigator();
+    explicit BookPagesModel(QObject *parent = nullptr);
+    ~BookPagesModel();
 
     void gotoPage(int page);
     void toNextPage();
     void toPrevPage();
     void toLastPage();
     void toFirstPage();
-    QPixmap currentImage();
-    QString currentPageName();
-    void loadThumbnails();
-    void loadThumbnail(int page, const QString &pagePath);
-    QPixmap thumbnail(int page);
+    QPixmap currentImage() const;
+    QString currentPageName() const;
+    void loadThumbnails() const;
+    void loadThumbnail(int page, const QString &pagePath) const;
+    QPixmap thumbnail(int page) const;
 
     QString bookTitle() const;
     const QString &bookPath() const;
@@ -85,25 +68,25 @@ public:
 
     bool canHandle(const QString& filePath);
 
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+
 signals:
     void currentImageChanged();
     void currentPageChanged();
     void bookChanged(const QString &newBookPath);
-    void bookPagesChanged();
-    void thumbnailsCleared();
     void destoryed();
-    void thumbnailReady(int page);
-    void thumbnailRemoved(int page);
 private slots:
     void setThumbnail(const QString &bookPath, int page, const QString &pagePath, QPixmap thumbnail);
     void onThumbnailsLoadingFinished(const QString &bookPath);
     void onDirChanged(const QString& path);
     void onFileChanged(const QString& path);
 private:
-    QPixmap getPageImage(int page);
+    QPixmap getPageImage(int page) const;
     void setCurrentPage(int newCurrentPage);
     int ensureDoublePages(int page);
     void setPageList(const QStringList &newPageList);
+    void clearThumbnails();
 private:
     QString mBookPath;
     QStringList mPageList;
@@ -114,10 +97,10 @@ private:
     bool mDisplayDoublePages;
     bool mDoublePagesRightToLeft;
     int mThumbnailSize;
-    bool mLoadingThumbnails;
+    mutable bool mLoadingThumbnails;
     QMap<int, QPixmap> mThumbnailCache;
     QMap<int, QString> mThumbnailPagePath;
-    QRecursiveMutex mThumbnailMutex;
+    mutable QRecursiveMutex mThumbnailMutex;
     QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
     static QSet<QString> mImageSuffice;
@@ -126,7 +109,7 @@ private:
 class PageThumbnailsLoader: public QThread {
     Q_OBJECT
 public:
-    PageThumbnailsLoader(PagesNavigator *navigator, QObject* parent=nullptr);
+    PageThumbnailsLoader(const BookPagesModel *navigator, QObject* parent=nullptr);
 signals:
     void thumbnailLoaded(const QString &bookPath, int page, const QString &pagePath, const QPixmap &thumbnail);
     void loadFinished(const QString &bookPath);
@@ -161,4 +144,4 @@ protected:
     void run() override;
 };
 
-#endif // PAGESNAVIGATOR_H
+#endif // BOOKPAGESMODEL_H
