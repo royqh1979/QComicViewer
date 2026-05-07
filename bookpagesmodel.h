@@ -46,6 +46,7 @@ public:
     void loadThumbnails() const;
     void loadThumbnail(int page, const QString &pagePath) const;
     QPixmap thumbnail(int page) const;
+    QString pageName(int page) const;
 
     QString bookTitle() const;
     const QString &bookPath() const;

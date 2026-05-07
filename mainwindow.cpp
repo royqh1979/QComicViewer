@@ -193,7 +193,7 @@ void MainWindow::updateStatusBar()
         mImageSizeInfo->setText(QString(" %1x%2 ").arg(mImageWidget->imageSize().width()).arg(mImageWidget->imageSize().height()));
         mPageInfo->setText(QString("%1/%2").arg(mBookPagesModel->currentPage()+1)
                                .arg(mBookPagesModel->pageCount()));
-        ui->statusbar->showMessage(mBookPagesModel->currentPageName());
+//        ui->statusbar->showMessage(mBookPagesModel->imagePageNames());
 
         ui->actionClose->setEnabled(true);
         ui->actionFirst_Page->setEnabled(mBookPagesModel->currentPage()!=0);

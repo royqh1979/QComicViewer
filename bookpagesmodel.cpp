@@ -100,6 +100,7 @@ void BookPagesModel::toFirstPage()
 
 QPixmap BookPagesModel::currentImage() const
 {
+    QMutexLocker locker{&mMutex};
     if (mPageList.isEmpty())
         return QPixmap();
     if (mDisplayPage == -1)
@@ -135,7 +136,25 @@ QString BookPagesModel::currentPageName() const
 {
     if (mDisplayPage<0 || mDisplayPage>=pageCount())
         return QString();
+    QMutexLocker locker{&mMutex};
     return mPageList[mCurrentPage];
+}
+
+QString BookPagesModel::imagePageNames() const
+{
+    if (mDisplayPage<0 || mDisplayPage>=pageCount())
+        return QString();
+    QMutexLocker locker{&mMutex};
+    if (mDisplayPage+1 >= pageCount()
+            || mDisplayPage < mDoublePagesStart
+            || mDisplayPage >= mDoublePagesEnd) {
+        return mPageList[mDisplayPage];
+    } else {
+        if (mDisplayPage == mCurrentPage)
+            return mPageList[mDisplayPage] + "*/" + mPageList[mDisplayPage+1];
+        else
+            return mPageList[mDisplayPage] + "/" + mPageList[mDisplayPage+1] + "*";
+    }
 }
 
 void BookPagesModel::loadThumbnails() const
@@ -172,6 +191,12 @@ QPixmap BookPagesModel::thumbnail(int page) const
         }
     }
     return mThumbnailCache.value(pagePath, defaultThumb);
+}
+
+QString BookPagesModel::pageName(int page) const
+{
+    QMutexLocker locker(&mMutex);
+    return mPageList[page];
 }
 
 QString BookPagesModel::bookTitle() const
@@ -501,8 +526,9 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
     if (row<0 || row>=pageCount())
         return QVariant();
     switch(role) {
-    case Qt::DisplayRole:
-        return row+1;
+    case Qt::DisplayRole: {
+        return pageName(row);
+    }
     case Qt::DecorationRole:
         return thumbnail(row);
     }
