@@ -41,6 +41,7 @@ public:
 private:
     void applySettings();
 private slots:
+    void updateAppTitle();
     void updateStatusBar();
     void onImageWidgetContextMenuRequested(const QPoint &pos);
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);

@@ -70,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onCurrentPageChanged);
     connect(mBookPagesModel, &BookPagesModel::currentPageChanged,
             this, &MainWindow::updateStatusBar);
+    connect(mBookPagesModel, &BookPagesModel::bookChanged,
+            this, &MainWindow::updateAppTitle);
 
     ui->pagesView->setModel(mBookPagesModel);
     connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
@@ -165,6 +167,16 @@ void MainWindow::applySettings()
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
     mBookPagesModel->setThumbnailSize(pSettings->view().thumbnailSize());
+}
+
+void MainWindow::updateAppTitle()
+{
+    if (mBookPagesModel->pageCount()>0) {
+        setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION,mBookPagesModel->bookTitle()));
+    } else {
+        setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
+    }
+
 }
 
 void MainWindow::updateStatusBar()
@@ -359,12 +371,6 @@ void MainWindow::on_actionOpen_triggered()
     QString file = QFileDialog::getOpenFileName(
                 this, tr("Open File/Folder"));
     openBook(file);
-    if (mBookPagesModel->pageCount()>0) {
-        updatePageMode();
-        setWindowTitle(tr("QComicsViewer %1 [%2]").arg(APP_VERSION).arg(mBookPagesModel->bookTitle()));
-    } else {
-        setWindowTitle(tr("QComicsViewer %1").arg(APP_VERSION));
-    }
 }
 
 void MainWindow::updateImageFitType()

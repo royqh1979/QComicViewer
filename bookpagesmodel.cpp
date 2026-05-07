@@ -203,8 +203,8 @@ QString BookPagesModel::bookTitle() const
 {
     if (pageCount()<=0)
         return QString();
-    QDir dir(mBookPath);
-    return dir.dirName();
+    QFileInfo info(mBookPath);
+    return info.fileName();
 }
 
 const QString &BookPagesModel::bookPath() const
@@ -526,6 +526,7 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
     if (row<0 || row>=pageCount())
         return QVariant();
     switch(role) {
+    case Qt::ToolTipRole:
     case Qt::DisplayRole: {
         return pageName(row);
     }

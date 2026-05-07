@@ -43,6 +43,7 @@ public:
     void toFirstPage();
     QPixmap currentImage() const;
     QString currentPageName() const;
+    QString imagePageNames() const;
     void loadThumbnails() const;
     void loadThumbnail(int page, const QString &pagePath) const;
     QPixmap thumbnail(int page) const;
