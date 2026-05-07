@@ -160,16 +160,18 @@ void BookPagesModel::loadThumbnail(int page, const QString& pagePath) const
 
 QPixmap BookPagesModel::thumbnail(int page) const
 {
-    QMutexLocker locker(&mThumbnailMutex);
+    QMutexLocker locker(&mMutex);
+    QPixmap defaultThumb{mThumbnailSize,mThumbnailSize};
+    if (page<0 || page>=pageCount())
+        return defaultThumb;
+    QString pagePath = mPageList[page];
     if (QFileInfo{mBookPath}.isDir()) {
-        if (page>=0 && page<pageCount() && !mLoadingThumbnails) {
-            QString pagePath = mPageList[page];
-            if (!mThumbnailCache.contains(page) || mThumbnailPagePath.value(page)!=pagePath)
+        if (!mLoadingThumbnails) {
+            if (!mThumbnailCache.contains(pagePath))
                 loadThumbnail(page,pagePath);
         }
     }
-    QPixmap defaultThumb{mThumbnailSize,mThumbnailSize};
-    return mThumbnailCache.value(page, defaultThumb);
+    return mThumbnailCache.value(pagePath, defaultThumb);
 }
 
 QString BookPagesModel::bookTitle() const
@@ -207,9 +209,8 @@ void BookPagesModel::setBookPath(QString newBookPath)
             mFileSystemWatcher->removePath(mBookPath);
         mBookPath = newBookPath;
         beginResetModel();
-        QMutexLocker locker(&mThumbnailMutex);
+        QMutexLocker locker(&mMutex);
         mThumbnailCache.clear();
-        mThumbnailPagePath.clear();
 
         mCurrentPage = -1;
         QStringList newPageList;
@@ -243,13 +244,15 @@ void BookPagesModel::setBookPath(QString newBookPath)
     }
 }
 
-const QStringList &BookPagesModel::pageList() const
+QStringList BookPagesModel::pageList() const
 {
+    QMutexLocker locker{&mMutex};
     return mPageList;
 }
 
 int BookPagesModel::pageCount() const
 {
+    QMutexLocker locker{&mMutex};
     return mPageList.count();
 }
 
@@ -341,6 +344,7 @@ int BookPagesModel::ensureDoublePages(int page)
 
 void BookPagesModel::setPageList(const QStringList &newPageList)
 {
+    QMutexLocker locker{&mMutex};
     mPageList = newPageList;
 
     mDoublePagesStart = 0;
@@ -350,9 +354,8 @@ void BookPagesModel::setPageList(const QStringList &newPageList)
 
 void BookPagesModel::clearThumbnails()
 {
-    QMutexLocker locker(&mThumbnailMutex);
+    QMutexLocker locker(&mMutex);
     mThumbnailCache.clear();
-    mThumbnailPagePath.clear();
     QModelIndex top=createIndex(0,0);
     QModelIndex bottom = createIndex(pageCount()-1,0);
     emit dataChanged(top,bottom);
@@ -386,9 +389,8 @@ bool BookPagesModel::canHandle(const QString &filePath)
 void BookPagesModel::setThumbnail(const QString &bookPath, int page, const QString& pagePath, QPixmap thumbnail)
 {
     if (mBookPath == bookPath){
-        QMutexLocker locker(&mThumbnailMutex);
-        mThumbnailCache.insert(page, thumbnail);
-        mThumbnailPagePath.insert(page, pagePath);
+        QMutexLocker locker(&mMutex);
+        mThumbnailCache.insert(pagePath, thumbnail);
         QModelIndex index = createIndex(page,0);
         emit dataChanged(index,index);
     }
@@ -396,7 +398,7 @@ void BookPagesModel::setThumbnail(const QString &bookPath, int page, const QStri
 
 void BookPagesModel::onThumbnailsLoadingFinished(const QString &bookPath)
 {
-    QMutexLocker locker(&mThumbnailMutex);
+    QMutexLocker locker(&mMutex);
     if (bookPath == mBookPath)
         mLoadingThumbnails = false;
 }
@@ -404,8 +406,10 @@ void BookPagesModel::onThumbnailsLoadingFinished(const QString &bookPath)
 void BookPagesModel::onDirChanged(const QString &path)
 {
     if (QFileInfo{path}.isDir()) {
+        QMutexLocker locker{&mMutex};
         FolderArchiveReader reader;
         QStringList newPageList = reader.pageList(path, mImageSuffice);
+        QMap<QString, QPixmap> oldThumbnails = mThumbnailCache;
         clearThumbnails();
         QString oldCurrentPagePath;
         if (mCurrentPage>=0 && mCurrentPage<mPageList.count())
@@ -427,6 +431,12 @@ void BookPagesModel::onDirChanged(const QString &path)
                 setPageList(newPageList);
                 endRemoveRows();
             }
+        }
+        for(int i=0;i<mPageList.count();i++) {
+            QString pagePath = mPageList[i];
+            QPixmap thumbnail = oldThumbnails.value(pagePath);
+            if (!thumbnail.isNull())
+                mThumbnailCache.insert(pagePath,thumbnail);
         }
 
         int newCurrentPage = mPageList.indexOf(oldCurrentPagePath);
@@ -473,6 +483,7 @@ QPixmap BookPagesModel::getBookPageImage(QString bookPath, QString file)
 
 QPixmap BookPagesModel::getPageImage(int page) const
 {
+    QMutexLocker locker{&mMutex};
     return getBookPageImage(mBookPath, mPageList[page]);
 }
 

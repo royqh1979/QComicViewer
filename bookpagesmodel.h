@@ -50,7 +50,7 @@ public:
     QString bookTitle() const;
     const QString &bookPath() const;
     void setBookPath(QString newBookPath);
-    const QStringList &pageList() const;
+    QStringList pageList() const;
     int pageCount() const;
     int currentPage() const;
     bool displayDoublePages() const;
@@ -98,9 +98,8 @@ private:
     bool mDoublePagesRightToLeft;
     int mThumbnailSize;
     mutable bool mLoadingThumbnails;
-    QMap<int, QPixmap> mThumbnailCache;
-    QMap<int, QString> mThumbnailPagePath;
-    mutable QRecursiveMutex mThumbnailMutex;
+    QMap<QString, QPixmap> mThumbnailCache;
+    mutable QRecursiveMutex mMutex;
     QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
     static QSet<QString> mImageSuffice;
