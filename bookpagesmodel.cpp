@@ -68,15 +68,22 @@ void BookPagesModel::gotoPage(int page)
 void BookPagesModel::toNextPage()
 {
     int page = currentPage() + 1;
-    if (mDisplayDoublePages && page>=mDoublePagesStart && page<mDoublePagesEnd) {
-        page += (page - mDoublePagesStart) % 2;
-    }
+    int oldPage = currentPage();
+    if (mDisplayDoublePages
+            && oldPage>=mDoublePagesStart && oldPage<mDoublePagesEnd
+            && page>=mDoublePagesStart && page<mDoublePagesEnd)
+        page+=1;
     setCurrentPage(page);
 }
 
 void BookPagesModel::toPrevPage()
 {
     int page = currentPage()-1;
+    int oldPage = currentPage();
+    if (mDisplayDoublePages
+            && oldPage>=mDoublePagesStart && oldPage<mDoublePagesEnd
+            && page>=mDoublePagesStart && page<mDoublePagesEnd)
+        page-=1;
     setCurrentPage(page);
 }
 
