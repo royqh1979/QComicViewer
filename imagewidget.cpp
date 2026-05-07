@@ -275,11 +275,11 @@ void ImageWidget::wheelEvent(QWheelEvent *e)
             mScrollAngleY = 0;
         mScrollAngleY += e->angleDelta().y();
         if (mScrollAngleY>=120) {
-            setRatio(mRatio - 0.05);
+            setRatio(mRatio + 0.05);
             while (mScrollAngleY >= 120)
                 mScrollAngleY -= 120;
         } else if (mScrollAngleY <= -120) {
-            setRatio(mRatio + 0.05);
+            setRatio(mRatio - 0.05);
             while (mScrollAngleY <= -120)
                 mScrollAngleY += 120;
         }

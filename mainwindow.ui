@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -134,6 +134,9 @@
        <property name="resizeMode">
         <enum>QListView::Adjust</enum>
        </property>
+       <property name="layoutMode">
+        <enum>QListView::Batched</enum>
+       </property>
        <property name="spacing">
         <number>7</number>
        </property>
@@ -141,7 +144,7 @@
         <enum>QListView::IconMode</enum>
        </property>
        <property name="uniformItemSizes">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="itemAlignment">
         <set>Qt::AlignCenter</set>
@@ -234,6 +237,9 @@
    <property name="text">
     <string>Fit Width</string>
    </property>
+   <property name="shortcut">
+    <string>W</string>
+   </property>
   </action>
   <action name="actionFit_Height">
    <property name="checkable">
@@ -246,6 +252,9 @@
    <property name="text">
     <string>Fit Height</string>
    </property>
+   <property name="shortcut">
+    <string>H</string>
+   </property>
   </action>
   <action name="actionFit_Page">
    <property name="checkable">
@@ -257,6 +266,9 @@
    </property>
    <property name="text">
     <string>Fit Page</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
    </property>
   </action>
   <action name="actionShow_Contents">
@@ -330,6 +342,9 @@
    <property name="text">
     <string>Rotate 90° CW</string>
    </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
   </action>
   <action name="actionRotate_90_Counter_Clockwise">
    <property name="icon">
@@ -339,6 +354,9 @@
    </property>
    <property name="text">
     <string>Rotate 90° CCW</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionHorizontal_Flip">
@@ -350,6 +368,9 @@
    <property name="text">
     <string>Horizontal Flip</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
   </action>
   <action name="actionVertical_Flip">
    <property name="icon">
@@ -359,6 +380,9 @@
    </property>
    <property name="text">
     <string>Vertical Flip</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionClose">
