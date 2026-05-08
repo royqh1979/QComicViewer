@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include "thumbnailview.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -73,9 +74,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mBookPagesModel, &BookPagesModel::bookChanged,
             this, &MainWindow::updateAppTitle);
 
+    mThumbnailDelegate = new ThumbnailDelegate(this);
+    ui->pagesView->setItemDelegate(mThumbnailDelegate);
     ui->pagesView->setModel(mBookPagesModel);
     connect(ui->pagesView->selectionModel(), &QItemSelectionModel::currentRowChanged,
             this, &MainWindow::onPageViewCurrentChanged);
+    ui->pagesView->setFlow(QListView::Flow::TopToBottom);
+    ui->pagesView->setWrapping(false);
 
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
@@ -166,7 +171,12 @@ void MainWindow::applySettings()
     updatePageMode();
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
+    mThumbnailDelegate->setThumbnailSize(pSettings->view().thumbnailSize());
+    ui->pagesView->setMinimumWidth(pSettings->view().thumbnailSize()+40);
+    ui->pagesView->setMaximumWidth(pSettings->view().thumbnailSize()+40);
+    ui->dockPages->setWidget(ui->pagesView);
     mBookPagesModel->setThumbnailSize(pSettings->view().thumbnailSize());
+    ui->pagesView->doItemsLayout();
 }
 
 void MainWindow::updateAppTitle()

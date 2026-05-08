@@ -180,7 +180,7 @@ void BookPagesModel::loadThumbnail(int page, const QString& pagePath) const
 QPixmap BookPagesModel::thumbnail(int page) const
 {
     QMutexLocker locker(&mMutex);
-    QPixmap defaultThumb{mThumbnailSize,mThumbnailSize};
+    QPixmap defaultThumb;
     if (page<0 || page>=pageCount())
         return defaultThumb;
     QString pagePath = mPageList[page];
@@ -527,9 +527,9 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
         return QVariant();
     switch(role) {
     case Qt::ToolTipRole:
-    case Qt::DisplayRole: {
         return pageName(row);
-    }
+    case Qt::DisplayRole:
+        return QFileInfo{pageName(row)}.fileName();
     case Qt::DecorationRole:
         return thumbnail(row);
     }

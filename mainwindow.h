@@ -29,6 +29,7 @@ QT_END_NAMESPACE
 
 class ImageWidget;
 class BookPagesModel;
+class ThumbnailDelegate;
 
 class MainWindow : public QMainWindow
 {
@@ -96,6 +97,7 @@ private:
     QLabel *mPageInfo;
     bool mInFullScreen;
     bool mMaximizedBeforeFullScreen;
+    ThumbnailDelegate *mThumbnailDelegate;
 
     // QWidget interface
 protected:

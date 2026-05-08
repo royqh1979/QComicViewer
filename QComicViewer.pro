@@ -27,6 +27,7 @@ SOURCES += \
     imagewidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    thumbnailview.cpp \
     qtrar\qtrar.cpp \
     qtrar\qtrarfile.cpp \
     qtrar\qtrarfileinfo.cpp \
@@ -121,6 +122,7 @@ HEADERS += \
     folderarchivereader.h \
     imagewidget.h \
     mainwindow.h \
+    thumbnailview.h \
     qtrar\qtrar.h \
     qtrar\qtrar_global.h \
     qtrar\qtrarfile.h \

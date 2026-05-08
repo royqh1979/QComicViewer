@@ -16,6 +16,7 @@ public:
 
     // ArchiveReader interface
 public:
+    QStringList pageList(const QString &path, const QString& prefix, const QSet<QString> &suffixes) ;
     QString archiveType() override;
 };
 
