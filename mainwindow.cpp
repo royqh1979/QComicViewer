@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     mImageSizeInfo = new QLabel(this);
     mImageSizeInfo->setText(" ");
     ui->statusbar->addPermanentWidget(mImageSizeInfo);
+    ui->actionClose->setShortcuts(QList<QKeySequence>{QKeySequence{"Ctrl+F4"},QKeySequence{"Ctrl+W"}});
 
 
     QHBoxLayout *layout = new QHBoxLayout(ui->centralwidget);
