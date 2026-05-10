@@ -24,6 +24,7 @@
 #include <QImageReader>
 #include <QFileSystemWatcher>
 #include <QMimeData>
+#include <QTimer>
 #include "folderarchivereader.h"
 #include "ziparchivereader.h"
 #include "rararchivereader.h"
@@ -258,13 +259,16 @@ void BookPagesModel::setBookPath(QString newBookPath)
             page = mPageList.indexOf(fileName);
         }
         int oldPage = mCurrentPage;
-        if (page == -1)
-            toFirstPage();
-        else
-            gotoPage(page);
-        if (oldPage == mCurrentPage)
-            emit currentImageChanged();
 
+//        //delay 0.1s to ensure layout is calculated
+//        QTimer::singleShot(100, this, [this,page, oldPage]() {
+            if (page == -1)
+                toFirstPage();
+            else
+                gotoPage(page);
+            if (oldPage == mCurrentPage)
+                emit currentImageChanged();
+//        });
         mFileSystemWatcher->addPath(mBookPath);
         loadThumbnails();
     }

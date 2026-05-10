@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include <QTimer>
 #include "thumbnailview.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -279,8 +280,24 @@ void MainWindow::onCurrentPageChanged()
     mImageWidget->setImage(image);
     if (mBookPagesModel->pageCount()>0) {
         QModelIndex index = mBookPagesModel->index(mBookPagesModel->currentPage(),0);
+        ui->pagesView->selectionModel()->select(index,QItemSelectionModel::SelectionFlag::Select);
         ui->pagesView->setCurrentIndex(index);
-        ui->pagesView->scrollTo(index);
+
+        auto *timer = new QTimer(this);
+        timer->setInterval(20);
+        QObject::connect(timer, &QTimer::timeout, [=]() {
+            QRect r = ui->pagesView->visualRect(index);
+            if (r.isValid() && r.top() > 0) {
+                ui->pagesView->scrollTo(index);
+                timer->stop();
+            }
+        });
+
+        timer->start();
+        QTimer::singleShot(500, timer, [timer]() {
+            timer->stop();
+            timer->deleteLater();
+        });
     }
     updateStatusBar();
 }
