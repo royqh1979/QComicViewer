@@ -398,7 +398,8 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString file = QFileDialog::getOpenFileName(
                 this, tr("Open File/Folder"));
-    openBook(file);
+    if (!file.isEmpty())
+        openBook(file);
 }
 
 void MainWindow::updateImageFitType()
