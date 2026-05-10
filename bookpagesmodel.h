@@ -47,7 +47,7 @@ public:
     void loadThumbnails() const;
     void loadThumbnail(int page, const QString &pagePath) const;
     QPixmap thumbnail(int page) const;
-    QString pageName(int page) const;
+    QString pagePath(int page) const;
 
     QString bookTitle() const;
     const QString &bookPath() const;
@@ -105,6 +105,13 @@ private:
     QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
     static QSet<QString> mImageSuffice;
+
+    // QAbstractItemModel interface
+public:
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::DropActions supportedDragActions() const override;
 };
 
 class PageThumbnailsLoader: public QThread {

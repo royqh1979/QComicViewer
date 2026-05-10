@@ -134,11 +134,17 @@
      </property>
      <item>
       <widget class="QListView" name="pagesView">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
        <property name="defaultDropAction">
         <enum>Qt::CopyAction</enum>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::NoSelection</enum>
+        <enum>QAbstractItemView::SingleSelection</enum>
        </property>
        <property name="flow">
         <enum>QListView::LeftToRight</enum>

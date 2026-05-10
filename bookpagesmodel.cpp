@@ -23,6 +23,7 @@
 #include <QSet>
 #include <QImageReader>
 #include <QFileSystemWatcher>
+#include <QMimeData>
 #include "folderarchivereader.h"
 #include "ziparchivereader.h"
 #include "rararchivereader.h"
@@ -193,7 +194,7 @@ QPixmap BookPagesModel::thumbnail(int page) const
     return mThumbnailCache.value(pagePath, defaultThumb);
 }
 
-QString BookPagesModel::pageName(int page) const
+QString BookPagesModel::pagePath(int page) const
 {
     QMutexLocker locker(&mMutex);
     return mPageList[page];
@@ -386,6 +387,43 @@ void BookPagesModel::clearThumbnails()
     emit dataChanged(top,bottom);
 }
 
+QStringList BookPagesModel::mimeTypes() const
+{
+    return QStringList{"text/uri-list"};
+}
+
+QMimeData *BookPagesModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mime = new QMimeData();
+    QDir dir{mBookPath};
+    if (dir.exists()) {
+        QStringList texts;
+        QList<QUrl> urls;
+        for (const QModelIndex &idx : indexes) {
+            QString path = dir.absoluteFilePath(pagePath(idx.row()));
+            texts << path;
+            urls.append(QUrl::fromLocalFile(path));
+        }
+        mime->setUrls(urls);
+        mime->setText(texts.join("\n"));
+    }
+    return mime;
+
+}
+
+Qt::ItemFlags BookPagesModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid()) return Qt::NoItemFlags;
+    if (!QFileInfo{mBookPath}.isDir())
+        return QAbstractListModel::flags(index);
+    return QAbstractListModel::flags(index) | Qt::ItemIsDragEnabled;
+}
+
+Qt::DropActions BookPagesModel::supportedDragActions() const
+{
+    return Qt::CopyAction;
+}
+
 int BookPagesModel::thumbnailSize() const
 {
     return mThumbnailSize;
@@ -527,9 +565,9 @@ QVariant BookPagesModel::data(const QModelIndex &index, int role) const
         return QVariant();
     switch(role) {
     case Qt::ToolTipRole:
-        return pageName(row);
+        return pagePath(row);
     case Qt::DisplayRole:
-        return QFileInfo{pageName(row)}.fileName();
+        return QFileInfo{pagePath(row)}.fileName();
     case Qt::DecorationRole:
         return thumbnail(row);
     }
