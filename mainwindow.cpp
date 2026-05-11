@@ -31,6 +31,7 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QTimer>
+#include <QScrollBar>
 #include "thumbnailview.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -174,8 +175,10 @@ void MainWindow::applySettings()
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
     mThumbnailDelegate->setThumbnailSize(pSettings->view().thumbnailSize());
-    ui->pagesView->setMinimumWidth(pSettings->view().thumbnailSize()+40);
-    ui->pagesView->setMaximumWidth(pSettings->view().thumbnailSize()+40);
+    ui->pagesView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->pagesView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    ui->pagesView->setMinimumWidth(pSettings->view().thumbnailSize()+ui->pagesView->verticalScrollBar()->sizeHint().width()+20);
+    ui->pagesView->setMaximumWidth(pSettings->view().thumbnailSize()+ui->pagesView->verticalScrollBar()->sizeHint().width()+20);
     ui->dockPages->setWidget(ui->pagesView);
     mBookPagesModel->setThumbnailSize(pSettings->view().thumbnailSize());
     ui->pagesView->doItemsLayout();
