@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QImageReader>
 
 FolderArchiveReader::FolderArchiveReader()
 {
@@ -47,8 +48,13 @@ QPixmap FolderArchiveReader::pageImage(const QString &bookPath, const QString &p
 {
     QDir dir{bookPath};
     QString imagePath = dir.absoluteFilePath(pagePath);
+    QImageReader reader{imagePath};
+    reader.setAutoTransform(true);
+    QImage image = reader.read();
+    if (image.isNull())
+        return QPixmap();
     //qDebug()<<pagePath;
-    return QPixmap(imagePath);
+    return QPixmap::fromImage(image);
 }
 
 bool FolderArchiveReader::supportArchive(const QString &path)
