@@ -254,23 +254,23 @@ void BookPagesModel::setBookPath(QString newBookPath)
         endResetModel();
         emit bookChanged(mBookPath);
 
-        int page = -1;
-        if (!fileName.isEmpty()) {
-            page = mPageList.indexOf(fileName);
-        }
+        if (!mBookPath.isEmpty())
+            mFileSystemWatcher->addPath(mBookPath);
+        loadThumbnails();
+    }
+    if (!fileName.isEmpty()){
+        int page = mPageList.indexOf(fileName);
         int oldPage = mCurrentPage;
 
-//        //delay 0.1s to ensure layout is calculated
-//        QTimer::singleShot(100, this, [this,page, oldPage]() {
-            if (page == -1)
-                toFirstPage();
-            else
-                gotoPage(page);
-            if (oldPage == mCurrentPage)
-                emit currentImageChanged();
-//        });
-        mFileSystemWatcher->addPath(mBookPath);
-        loadThumbnails();
+        if (page == -1)
+            toFirstPage();
+        else
+            gotoPage(page);
+        if (oldPage == mCurrentPage)
+            emit currentImageChanged();
+    } else {
+        toFirstPage();
+        emit currentImageChanged();
     }
 }
 
