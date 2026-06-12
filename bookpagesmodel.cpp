@@ -73,7 +73,7 @@ void BookPagesModel::toNextPage()
     int oldPage = ensureDoublePages(currentPage());
     int page = ensureDoublePages(currentPage()+1);
     if (page == oldPage)
-        page+=1;
+        page = currentPage()+2;
     setCurrentPage(page);
 }
 
@@ -82,7 +82,7 @@ void BookPagesModel::toPrevPage()
     int oldPage = ensureDoublePages(currentPage());
     int page = ensureDoublePages(currentPage()-1);
     if (page == oldPage)
-        page-=1;
+        page = currentPage()-2;
     setCurrentPage(page);
 }
 
