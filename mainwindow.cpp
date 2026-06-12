@@ -112,11 +112,13 @@ MainWindow::MainWindow(QWidget *parent)
     pageModeActionGroup->addAction(ui->actionDouble_Pages_with_Front_Cover);
     ui->actionSingle_Pages->setChecked(true);
 
-    connect(ui->actionSingle_Pages, &QAction::triggered,
+    connect(ui->actionSingle_Pages, &QAction::toggled,
             this, &MainWindow::updatePageMode);
-    connect(ui->actionDouble_Pages, &QAction::triggered,
+    connect(ui->actionDouble_Pages, &QAction::toggled,
             this, &MainWindow::updatePageMode);
-    connect(ui->actionDouble_Pages_with_Front_Cover, &QAction::triggered,
+    connect(ui->actionDouble_Pages_with_Front_Cover, &QAction::toggled,
+            this, &MainWindow::updatePageMode);
+    connect(ui->actionAuto_Single_Page, &QAction::toggled,
             this, &MainWindow::updatePageMode);
 
     ui->actionRight_to_Left->setChecked(true);
@@ -166,6 +168,7 @@ void MainWindow::applySettings()
         ui->actionDouble_Pages_with_Front_Cover->setChecked(true);
     else
         ui->actionSingle_Pages->setChecked(true);
+    ui->actionAuto_Single_Page->setChecked(pSettings->view().autoSinglePage());
     ui->actionFit_Width->setChecked(pSettings->view().fitMode() == "Width");
     ui->actionFit_Height->setChecked(pSettings->view().fitMode() == "Height");
     ui->actionFit_Page->setChecked(pSettings->view().fitMode() == "Page");
@@ -243,6 +246,7 @@ void MainWindow::onImageWidgetContextMenuRequested(const QPoint &pos)
     menu->addAction(ui->actionSingle_Pages);
     menu->addAction(ui->actionDouble_Pages);
     menu->addAction(ui->actionDouble_Pages_with_Front_Cover);
+    menu->addAction(ui->actionAuto_Single_Page);
     menu->addAction(ui->actionRight_to_Left);
     menu->addSeparator();
     menu->addAction(ui->actionFit_Page);
@@ -266,6 +270,7 @@ void MainWindow::onZoomFactorChanged(int value)
 
 void MainWindow::updatePageMode()
 {
+    mBookPagesModel->setAutoSinglePage(ui->actionAuto_Single_Page->isChecked());
     if (ui->actionSingle_Pages->isChecked()) {
         mBookPagesModel->setDisplayDoublePages(false);
     } else if (ui->actionDouble_Pages->isChecked()) {
@@ -320,6 +325,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         pSettings->view().setPageMode("DoublePagesWithCover");
     else
         pSettings->view().setPageMode("SinglePage");
+    pSettings->view().setAutoSinglePage(ui->actionAuto_Single_Page->isChecked());
     if (ui->actionFit_Width->isChecked())
         pSettings->view().setFitMode("Width");
     else if (ui->actionFit_Height->isChecked())
@@ -530,3 +536,4 @@ void MainWindow::on_actionFull_Screen_triggered()
         mInFullScreen = true;
     }
 }
+

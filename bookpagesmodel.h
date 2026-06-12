@@ -87,6 +87,7 @@ private:
     QPixmap getPageImage(int page) const;
     void setCurrentPage(int newCurrentPage);
     int ensureDoublePages(int page);
+    bool isPageShouldSingle(int page) const;
     void setPageList(const QStringList &newPageList);
     void clearThumbnails();
 private:
@@ -97,10 +98,12 @@ private:
     int mDoublePagesStart;
     int mDoublePagesEnd;
     bool mDisplayDoublePages;
+    bool mAutoSinglePage;
     bool mDoublePagesRightToLeft;
     int mThumbnailSize;
     mutable bool mLoadingThumbnails;
     QMap<QString, QPixmap> mThumbnailCache;
+    QMap<int, bool> mIsPageShouldSingle;
     mutable QRecursiveMutex mMutex;
     QFileSystemWatcher *mFileSystemWatcher;
     static QList<std::shared_ptr<ArchiveReader>> mArchiveReaders;
@@ -112,6 +115,8 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     Qt::DropActions supportedDragActions() const override;
+    bool autoSinglePage() const;
+    void setAutoSinglePage(bool newAutoSinglePage);
 };
 
 class PageThumbnailsLoader: public QThread {

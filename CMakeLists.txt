@@ -210,7 +210,11 @@ if(QT_VERSION_MAJOR EQUAL 6)
 else()
     find_package(Qt5LinguistTools REQUIRED)
     set(QM_FILES)
+    qt5_create_translation(QM_FILES
+        ${CMAKE_SOURCE_DIR}
+        ${TS_FILES})
     qt5_add_translation(QM_FILES ${TS_FILES})
+
 
     set(QM_QRC "${CMAKE_CURRENT_BINARY_DIR}/translations.qrc")
     file(WRITE ${QM_QRC} "<RCC>\n    <qresource prefix=\"/i18n\">\n")

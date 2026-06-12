@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -47,6 +47,7 @@
     <addaction name="actionSingle_Pages"/>
     <addaction name="actionDouble_Pages"/>
     <addaction name="actionDouble_Pages_with_Front_Cover"/>
+    <addaction name="actionAuto_Single_Page"/>
     <addaction name="actionRight_to_Left"/>
     <addaction name="separator"/>
     <addaction name="actionSwap_Left_Right_Key"/>
@@ -426,6 +427,14 @@
    </property>
    <property name="shortcut">
     <string>F11</string>
+   </property>
+  </action>
+  <action name="actionAuto_Single_Page">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Single Page</string>
    </property>
   </action>
  </widget>

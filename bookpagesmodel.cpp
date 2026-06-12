@@ -38,6 +38,7 @@ BookPagesModel::BookPagesModel(QObject *parent) : QAbstractListModel(parent),
     mDoublePagesStart{-1},
     mDoublePagesEnd{-1},
     mDisplayDoublePages{false},
+    mAutoSinglePage{false},
     mDoublePagesRightToLeft{false},
     mThumbnailSize{256},
     mLoadingThumbnails{false}
@@ -69,22 +70,18 @@ void BookPagesModel::gotoPage(int page)
 
 void BookPagesModel::toNextPage()
 {
-    int page = currentPage() + 1;
-    int oldPage = currentPage();
-    if (mDisplayDoublePages
-            && oldPage>=mDoublePagesStart && oldPage<mDoublePagesEnd
-            && page>=mDoublePagesStart && page<mDoublePagesEnd)
+    int oldPage = ensureDoublePages(currentPage());
+    int page = ensureDoublePages(currentPage()+1);
+    if (page == oldPage)
         page+=1;
     setCurrentPage(page);
 }
 
 void BookPagesModel::toPrevPage()
 {
-    int page = currentPage()-1;
-    int oldPage = currentPage();
-    if (mDisplayDoublePages
-            && oldPage>=mDoublePagesStart && oldPage<mDoublePagesEnd
-            && page>=mDoublePagesStart && page<mDoublePagesEnd)
+    int oldPage = ensureDoublePages(currentPage());
+    int page = ensureDoublePages(currentPage()-1);
+    if (page == oldPage)
         page-=1;
     setCurrentPage(page);
 }
@@ -107,7 +104,10 @@ QPixmap BookPagesModel::currentImage() const
         return QPixmap();
     if (mDisplayPage == -1)
         return QPixmap();
-    if (!mDisplayDoublePages) {
+    if (!mDisplayDoublePages
+            || (mAutoSinglePage &&
+                (isPageShouldSingle(mDisplayPage)
+                 || isPageShouldSingle(mDisplayPage+1)))) {
         return getPageImage(mDisplayPage);
     } else {
         if (mDisplayPage+1 >= pageCount()
@@ -117,8 +117,12 @@ QPixmap BookPagesModel::currentImage() const
         else {
             QPixmap image1 = getPageImage(mDisplayPage);
             QPixmap image2 = getPageImage(mDisplayPage+1);
-            int width = image1.width()+image2.width();
             int height = std::max(image1.height(), image2.height());
+            if (image1.height() < height)
+                image1 = image1.scaledToHeight(height);
+            if (image2.height() < height)
+                image2 = image2.scaledToHeight(height);
+            int width = image1.width()+image2.width();
             QPixmap img(width,height);
             QPainter painter(&img);
             painter.fillRect(0, 0, width, height, Qt::transparent);
@@ -238,6 +242,7 @@ void BookPagesModel::setBookPath(QString newBookPath)
         beginResetModel();
         QMutexLocker locker(&mMutex);
         mThumbnailCache.clear();
+        mIsPageShouldSingle.clear();
 
         mCurrentPage = -1;
         QStringList newPageList;
@@ -302,6 +307,12 @@ void BookPagesModel::setCurrentPage(int newCurrentPage)
         emit currentPageChanged();
     }
     int newDisplayPage = ensureDoublePages(newCurrentPage);
+    if (mAutoSinglePage) {
+        QPixmap pageThumb = thumbnail(newCurrentPage);
+        if (!pageThumb.isNull() && pageThumb.width()>pageThumb.height()) {
+            newDisplayPage = newCurrentPage;
+        }
+    }
     if (newDisplayPage!=mDisplayPage) {
         mDisplayPage = newDisplayPage;
         emit currentImageChanged();
@@ -367,9 +378,25 @@ void BookPagesModel::setDoublePagesEnd(int newDoublePagesEnd)
 int BookPagesModel::ensureDoublePages(int page)
 {
     if (mDisplayDoublePages && page>=mDoublePagesStart && page<mDoublePagesEnd) {
-        page -= (page - mDoublePagesStart) % 2;
+        int p=mDoublePagesStart;
+        while (p<page) {
+            if (mAutoSinglePage &&
+                    (isPageShouldSingle(p)
+                    || isPageShouldSingle(p+1)))
+                p+=1;
+            else if (p+2<=page)
+                p+=2;
+            else
+                return p;
+        }
     }
     return page;
+}
+
+bool BookPagesModel::isPageShouldSingle(int page) const
+{
+    QMutexLocker locker(&mMutex);
+    return mIsPageShouldSingle.value(page,false);
 }
 
 void BookPagesModel::setPageList(const QStringList &newPageList)
@@ -386,9 +413,20 @@ void BookPagesModel::clearThumbnails()
 {
     QMutexLocker locker(&mMutex);
     mThumbnailCache.clear();
+    mIsPageShouldSingle.clear();
     QModelIndex top=createIndex(0,0);
     QModelIndex bottom = createIndex(pageCount()-1,0);
     emit dataChanged(top,bottom);
+}
+
+bool BookPagesModel::autoSinglePage() const
+{
+    return mAutoSinglePage;
+}
+
+void BookPagesModel::setAutoSinglePage(bool newAutoSinglePage)
+{
+    mAutoSinglePage = newAutoSinglePage;
 }
 
 QStringList BookPagesModel::mimeTypes() const
@@ -458,6 +496,7 @@ void BookPagesModel::setThumbnail(const QString &bookPath, int page, const QStri
     if (mBookPath == bookPath){
         QMutexLocker locker(&mMutex);
         mThumbnailCache.insert(pagePath, thumbnail);
+        mIsPageShouldSingle.insert(page,thumbnail.width()>thumbnail.height()*1.2);
         QModelIndex index = createIndex(page,0);
         emit dataChanged(index,index);
     }
@@ -502,8 +541,10 @@ void BookPagesModel::onDirChanged(const QString &path)
         for(int i=0;i<mPageList.count();i++) {
             QString pagePath = mPageList[i];
             QPixmap thumbnail = oldThumbnails.value(pagePath);
-            if (!thumbnail.isNull())
+            if (!thumbnail.isNull()) {
                 mThumbnailCache.insert(pagePath,thumbnail);
+                mIsPageShouldSingle.insert(i,thumbnail.width()>thumbnail.height()*1.2);
+            }
         }
 
         int newCurrentPage = mPageList.indexOf(oldCurrentPagePath);

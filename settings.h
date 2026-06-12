@@ -154,12 +154,16 @@ public:
         int thumbnailSize() const;
         void setThumbnailSize(int newThumbnailSize);
 
+        bool autoSinglePage() const;
+        void setAutoSinglePage(bool newAutoSinglePage);
+
     protected:
         void doSave() override;
         void doLoad() override;
     private:
         QString mPageMode;
         QString mFitMode;
+        bool mAutoSinglePage;
         bool mRightToLeft;
         bool mSwapLeftRightKey;
         int mThumbnailSize;

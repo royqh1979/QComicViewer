@@ -449,6 +449,7 @@ void Settings::View::doSave()
     saveValue("RightToLeft", mRightToLeft);
     saveValue("SwapLeftRightKey", mSwapLeftRightKey);
     saveValue("ThumbnailSize", mThumbnailSize);
+    saveValue("Auto_Single_Page", mAutoSinglePage);
 }
 
 void Settings::View::doLoad()
@@ -458,6 +459,17 @@ void Settings::View::doLoad()
     mRightToLeft = boolValue("RightToLeft", false);
     mSwapLeftRightKey = boolValue("SwapLeftRightKey", false);
     mThumbnailSize = intValue("ThumbnailSize", 300);
+    mAutoSinglePage = boolValue("Auto_Single_Page", true);
+}
+
+bool Settings::View::autoSinglePage() const
+{
+    return mAutoSinglePage;
+}
+
+void Settings::View::setAutoSinglePage(bool newAutoSinglePage)
+{
+    mAutoSinglePage = newAutoSinglePage;
 }
 
 int Settings::View::thumbnailSize() const
