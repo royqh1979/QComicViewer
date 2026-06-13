@@ -70,8 +70,8 @@ void BookPagesModel::gotoPage(int page)
 
 void BookPagesModel::toNextPage()
 {
-    int oldPage = ensureDoublePages(currentPage());
-    int page = ensureDoublePages(currentPage()+1);
+    int oldPage = calcDisplayPage(currentPage());
+    int page = calcDisplayPage(currentPage()+1);
     if (page == oldPage)
         page = currentPage()+2;
     setCurrentPage(page);
@@ -79,8 +79,8 @@ void BookPagesModel::toNextPage()
 
 void BookPagesModel::toPrevPage()
 {
-    int oldPage = ensureDoublePages(currentPage());
-    int page = ensureDoublePages(currentPage()-1);
+    int oldPage = calcDisplayPage(currentPage());
+    int page = calcDisplayPage(currentPage()-1);
     if (page == oldPage)
         page = currentPage()-2;
     setCurrentPage(page);
@@ -254,7 +254,7 @@ void BookPagesModel::setBookPath(QString newBookPath)
         }
         mPageList = newPageList;
 
-        mDoublePagesStart = 0;
+        //mDoublePagesStart = 0;
         mDoublePagesEnd = pageCount();
         endResetModel();
         emit bookChanged(mBookPath);
@@ -306,7 +306,7 @@ void BookPagesModel::setCurrentPage(int newCurrentPage)
         mCurrentPage = newCurrentPage;
         emit currentPageChanged();
     }
-    int newDisplayPage = ensureDoublePages(newCurrentPage);
+    int newDisplayPage = calcDisplayPage(newCurrentPage);
     if (mAutoSinglePage) {
         QPixmap pageThumb = thumbnail(newCurrentPage);
         if (!pageThumb.isNull() && pageThumb.width()>pageThumb.height()) {
@@ -375,7 +375,7 @@ void BookPagesModel::setDoublePagesEnd(int newDoublePagesEnd)
     }
 }
 
-int BookPagesModel::ensureDoublePages(int page)
+int BookPagesModel::calcDisplayPage(int page)
 {
     if (mDisplayDoublePages && page>=mDoublePagesStart && page<mDoublePagesEnd) {
         int p=mDoublePagesStart;

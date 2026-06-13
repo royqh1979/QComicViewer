@@ -86,7 +86,7 @@ private slots:
 private:
     QPixmap getPageImage(int page) const;
     void setCurrentPage(int newCurrentPage);
-    int ensureDoublePages(int page);
+    int calcDisplayPage(int page);
     bool isPageShouldSingle(int page) const;
     void setPageList(const QStringList &newPageList);
     void clearThumbnails();
