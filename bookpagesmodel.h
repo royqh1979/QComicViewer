@@ -63,7 +63,8 @@ public:
     void setDoublePagesStart(int newDoublePagesStart);
     int doublePagesEnd() const;
     void setDoublePagesEnd(int newDoublePagesEnd);
-
+    bool autoSinglePage() const;
+    void setAutoSinglePage(bool newAutoSinglePage);
     static QPixmap getBookPageImage(QString bookPath, QString file);
     int thumbnailSize() const;
     void setThumbnailSize(int newThumbnailSize);
@@ -115,8 +116,6 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     Qt::DropActions supportedDragActions() const override;
-    bool autoSinglePage() const;
-    void setAutoSinglePage(bool newAutoSinglePage);
 };
 
 class PageThumbnailsLoader: public QThread {
