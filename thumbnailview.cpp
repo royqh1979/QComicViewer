@@ -12,25 +12,21 @@ ThumbnailDelegate::ThumbnailDelegate(QObject *parent):
 
 void ThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // 1. 初始化 option，这会正确同步 State_Selected、State_HasFocus 等状态
-    QStyleOptionViewItem opt = option;
-    initStyleOption(&opt, index);
-
-    const QWidget *widget = opt.widget;
+    const QWidget *widget = option.widget;
     QStyle *style = widget ? widget->style() : QApplication::style();
 
     painter->save();
 
     //style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, widget);
     QFontMetrics fm(option.font);
-    if (opt.state & QStyle::State_Selected) {
-        QPalette::ColorGroup cg = (opt.state & QStyle::State_HasFocus)
+    if (option.state & QStyle::State_Selected) {
+        QPalette::ColorGroup cg = (option.state & QStyle::State_HasFocus)
                                       ? QPalette::Active
                                       : QPalette::Inactive;
-        QColor backgroundBrush = opt.palette.color(cg, QPalette::Highlight);
+        QColor backgroundBrush = option.palette.color(cg, QPalette::Highlight);
         painter->fillRect(option.rect.left(),option.rect.top(),mThumbnailSize,mThumbnailSize+fm.lineSpacing(), backgroundBrush);
     }
-    painter->setPen(opt.palette.color(QPalette::Text));
+    painter->setPen(option.palette.color(QPalette::Text));
     QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
     if (!icon.isNull()) {
         painter->drawPixmap(option.rect.left()+std::max(0,mThumbnailSize-icon.width())/2,
@@ -44,14 +40,14 @@ void ThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
                    option.rect.top()+mThumbnailSize,
                    mThumbnailSize,
                    fm.lineSpacing());
-    if (opt.state & QStyle::State_Selected) {
+    if (option.state & QStyle::State_Selected) {
         // 关键：区分有焦点和无焦点
-        QPalette::ColorGroup cg = (opt.state & QStyle::State_HasFocus)
+        QPalette::ColorGroup cg = (option.state & QStyle::State_HasFocus)
                                       ? QPalette::Active
                                       : QPalette::Inactive;
-        painter->setPen(opt.palette.color(cg, QPalette::HighlightedText));
+        painter->setPen(option.palette.color(cg, QPalette::HighlightedText));
     } else {
-        painter->setPen(opt.palette.color(QPalette::Text));
+        painter->setPen(option.palette.color(QPalette::Text));
     }
 
     QString text = index.data(Qt::DisplayRole).toString();
