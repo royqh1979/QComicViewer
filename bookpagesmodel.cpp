@@ -25,6 +25,7 @@
 #include <QFileSystemWatcher>
 #include <QMimeData>
 #include <QTimer>
+#include <QSemaphore>
 #include "folderarchivereader.h"
 #include "ziparchivereader.h"
 #include "rararchivereader.h"
@@ -668,6 +669,7 @@ void PageThumbnailsLoader::run()
     emit loadFinished(mBookPath);
 }
 
+static QSemaphore thumbnailLoaderSemaphore{5};
 DirImageThumbnailLoader::DirImageThumbnailLoader(const QString &bookPath, int page, int thumbnailSize,const QString &pagePath, QObject *parent):
     QThread{parent}
 {
@@ -685,7 +687,9 @@ void DirImageThumbnailLoader::run()
     QPixmap image;
     int delayCount = 0;
     while (true) {
+        thumbnailLoaderSemaphore.acquire(1);
         image = reader.pageImage(mBookPath, mPagePath);
+        thumbnailLoaderSemaphore.release(1);
         if (!image.isNull())
             break;
         delayCount++;
