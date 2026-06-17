@@ -47,6 +47,7 @@ private slots:
     void onImageWidgetContextMenuRequested(const QPoint &pos);
     void onPageViewCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void onZoomFactorChanged(int value);
+    void onPagesViewSizeChanged();
     void updatePageMode();
     void updateImageFitType();
     void gotoPrevPage(bool scrollToPageBottom);

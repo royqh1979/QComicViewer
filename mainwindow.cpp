@@ -84,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::onPageViewCurrentChanged);
     ui->pagesView->setFlow(QListView::Flow::TopToBottom);
     ui->pagesView->setWrapping(false);
+    connect(ui->pagesView, &ResizeawareListView::resized,
+            this, &MainWindow::onPagesViewSizeChanged);
 
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
@@ -178,12 +180,18 @@ void MainWindow::applySettings()
     ui->actionRight_to_Left->setChecked(pSettings->view().rightToLeft());
     ui->actionSwap_Left_Right_Key->setChecked(pSettings->view().swapLeftRightKey());
     mThumbnailDelegate->setThumbnailSize(pSettings->view().thumbnailSize());
+    int oldMin = ui->pagesView->minimumWidth();
+    int oldMax = ui->pagesView->maximumWidth();
+    ui->pagesView->blockSignals(true);
     ui->pagesView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->pagesView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui->pagesView->setMinimumWidth(pSettings->view().thumbnailSize()+ui->pagesView->verticalScrollBar()->sizeHint().width()+20);
     ui->pagesView->setMaximumWidth(pSettings->view().thumbnailSize()+ui->pagesView->verticalScrollBar()->sizeHint().width()+20);
     ui->dockPages->setWidget(ui->pagesView);
     mBookPagesModel->setThumbnailSize(pSettings->view().thumbnailSize());
+    ui->pagesView->setMinimumWidth(oldMin);
+    ui->pagesView->setMaximumWidth(oldMax);
+    ui->pagesView->blockSignals(false);
     ui->pagesView->doItemsLayout();
 }
 
@@ -266,6 +274,15 @@ void MainWindow::onPageViewCurrentChanged(const QModelIndex &current, const QMod
 void MainWindow::onZoomFactorChanged(int value)
 {
     mImageWidget->setRatio(value/100.0);
+}
+
+void MainWindow::onPagesViewSizeChanged()
+{
+    int width = ui->pagesView->width()-ui->pagesView->verticalScrollBar()->sizeHint().width()-20;
+    mThumbnailDelegate->setThumbnailSize(width);
+    mBookPagesModel->setThumbnailSize(width);
+    pSettings->view().setThumbnailSize(width);
+    ui->pagesView->doItemsLayout();
 }
 
 void MainWindow::updatePageMode()

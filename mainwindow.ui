@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -134,7 +134,7 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QListView" name="pagesView">
+      <widget class="ResizeawareListView" name="pagesView">
        <property name="dragEnabled">
         <bool>true</bool>
        </property>
@@ -438,6 +438,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ResizeawareListView</class>
+   <extends>QListView</extends>
+   <header>widgets/resizeawarelistview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>

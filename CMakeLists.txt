@@ -109,6 +109,7 @@ set(SOURCES
     settingsdialog/viewsettingswidget.cpp
     settingsdialog/settingsdialog.cpp
     settingsdialog/settingswidget.cpp
+    widgets/resizeawarelistview.cpp
     rararchivereader.cpp
     ziparchivereader.cpp
 )
@@ -147,6 +148,7 @@ set(HEADERS
     settingsdialog/viewsettingswidget.h
     settingsdialog/settingsdialog.h
     settingsdialog/settingswidget.h
+    widgets/resizeawarelistview.h    
     rararchivereader.h
     ziparchivereader.h
 )
