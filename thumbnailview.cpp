@@ -21,8 +21,15 @@ void ThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     painter->save();
 
-    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, widget);
-
+    //style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, widget);
+    QFontMetrics fm(option.font);
+    if (opt.state & QStyle::State_Selected) {
+        QPalette::ColorGroup cg = (opt.state & QStyle::State_HasFocus)
+                                      ? QPalette::Active
+                                      : QPalette::Inactive;
+        QColor backgroundBrush = opt.palette.color(cg, QPalette::Highlight);
+        painter->fillRect(option.rect.left(),option.rect.top(),mThumbnailSize,mThumbnailSize+fm.lineSpacing(), backgroundBrush);
+    }
     painter->setPen(opt.palette.color(QPalette::Text));
     QPixmap icon = index.data(Qt::DecorationRole).value<QPixmap>();
     if (!icon.isNull()) {
@@ -33,6 +40,10 @@ void ThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
 
     // 2. 根据选中状态设置正确的文本颜色
+    QRect textRect(option.rect.left(),
+                   option.rect.top()+mThumbnailSize,
+                   mThumbnailSize,
+                   fm.lineSpacing());
     if (opt.state & QStyle::State_Selected) {
         // 关键：区分有焦点和无焦点
         QPalette::ColorGroup cg = (opt.state & QStyle::State_HasFocus)
@@ -42,11 +53,6 @@ void ThumbnailDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     } else {
         painter->setPen(opt.palette.color(QPalette::Text));
     }
-    QFontMetrics fm(option.font);
-    QRect textRect(option.rect.left(),
-                   option.rect.top()+mThumbnailSize,
-                   mThumbnailSize,
-                   fm.lineSpacing());
 
     QString text = index.data(Qt::DisplayRole).toString();
     QString elided = fm.elidedText(text, Qt::ElideRight, textRect.width());
