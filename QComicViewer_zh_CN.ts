@@ -104,7 +104,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="195"/>
-        <location filename="mainwindow.cpp" line="94"/>
+        <location filename="mainwindow.cpp" line="95"/>
         <source>PgDown</source>
         <translation>PgDown</translation>
     </message>
@@ -115,7 +115,7 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="208"/>
-        <location filename="mainwindow.cpp" line="91"/>
+        <location filename="mainwindow.cpp" line="92"/>
         <source>PgUp</source>
         <translation>PgUp</translation>
     </message>
@@ -311,23 +311,23 @@
         <translation>关于...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="95"/>
+        <location filename="mainwindow.cpp" line="96"/>
         <source>Space</source>
         <translation>Space</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="129"/>
-        <location filename="mainwindow.cpp" line="203"/>
+        <location filename="mainwindow.cpp" line="130"/>
+        <location filename="mainwindow.cpp" line="204"/>
         <source>QComicsViewer %1</source>
         <translation>QComicsViewer %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="426"/>
+        <location filename="mainwindow.cpp" line="427"/>
         <source>Open File/Folder</source>
         <translation>打开文件/文件夹</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="201"/>
+        <location filename="mainwindow.cpp" line="202"/>
         <source>QComicsViewer %1 [%2]</source>
         <translation>QComicsViewer %1 [%2]</translation>
     </message>

@@ -86,6 +86,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagesView->setWrapping(false);
     connect(ui->pagesView, &ResizeawareListView::resized,
             this, &MainWindow::onPagesViewSizeChanged);
+    ui->pagesView->setAcceptDrops(false);
 
     ui->actionPrev_Page->setShortcuts({
                                           tr("PgUp"),
