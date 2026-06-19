@@ -89,8 +89,8 @@ PSettingsDialog SettingsDialog::optionDialog(QWidget *parent)
     widget = new AppearanceSettingsWidget(tr("Appearance"));
     dialog->addWidget(widget);
 
-    widget = new ViewSettingsWidget(tr("View"));
-    dialog->addWidget(widget);
+//    widget = new ViewSettingsWidget(tr("View"));
+//    dialog->addWidget(widget);
 
 //    widget = new EnvironmentAppearanceWidget(tr("Appearance"),tr("Environment"));
 //    dialog->addWidget(widget);

@@ -151,9 +151,6 @@ public:
         bool swapLeftRightKey() const;
         void setSwapLeftRightKey(bool newSwapLeftRightKey);
 
-        int thumbnailSize() const;
-        void setThumbnailSize(int newThumbnailSize);
-
         bool autoSinglePage() const;
         void setAutoSinglePage(bool newAutoSinglePage);
 
@@ -166,7 +163,6 @@ public:
         bool mAutoSinglePage;
         bool mRightToLeft;
         bool mSwapLeftRightKey;
-        int mThumbnailSize;
     };
 
 public:

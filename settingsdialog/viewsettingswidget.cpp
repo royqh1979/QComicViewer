@@ -16,10 +16,10 @@ ViewSettingsWidget::~ViewSettingsWidget()
 
 void ViewSettingsWidget::doLoad()
 {
-    ui->sbThumbsize->setValue(pSettings->view().thumbnailSize());
+    //ui->sbThumbsize->setValue(pSettings->view().thumbnailSize());
 }
 
 void ViewSettingsWidget::doSave()
 {
-    pSettings->view().setThumbnailSize(ui->sbThumbsize->value());
+    //pSettings->view().setThumbnailSize(ui->sbThumbsize->value());
 }

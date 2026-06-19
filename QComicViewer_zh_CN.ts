@@ -317,17 +317,17 @@
     </message>
     <message>
         <location filename="mainwindow.cpp" line="130"/>
-        <location filename="mainwindow.cpp" line="204"/>
+        <location filename="mainwindow.cpp" line="192"/>
         <source>QComicsViewer %1</source>
         <translation>QComicsViewer %1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="427"/>
+        <location filename="mainwindow.cpp" line="414"/>
         <source>Open File/Folder</source>
         <translation>打开文件/文件夹</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="202"/>
+        <location filename="mainwindow.cpp" line="190"/>
         <source>QComicsViewer %1 [%2]</source>
         <translation>QComicsViewer %1 [%2]</translation>
     </message>
@@ -410,9 +410,8 @@
         <translation>外观</translation>
     </message>
     <message>
-        <location filename="settingsdialog/settingsdialog.cpp" line="92"/>
         <source>View</source>
-        <translation>视图</translation>
+        <translation type="vanished">视图</translation>
     </message>
     <message>
         <location filename="settingsdialog/settingsdialog.cpp" line="153"/>
