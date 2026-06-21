@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QClipboard>
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QStyle>
@@ -541,6 +542,15 @@ void MainWindow::on_actionFull_Screen_triggered()
         ui->statusbar->setVisible(false);
         showFullScreen();
         mInFullScreen = true;
+    }
+}
+
+
+void MainWindow::on_actionCopy_triggered()
+{
+    QPixmap pixmap = mImageWidget->image();
+    if (!pixmap.isNull()) {
+        QApplication::clipboard()->setPixmap(pixmap);
     }
 }
 

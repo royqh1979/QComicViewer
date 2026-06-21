@@ -39,6 +39,8 @@
     <addaction name="actionShow_Contents"/>
     <addaction name="actionFull_Screen"/>
     <addaction name="separator"/>
+    <addaction name="actionCopy"/>
+    <addaction name="separator"/>
     <addaction name="actionFirst_Page"/>
     <addaction name="actionLast_Page"/>
     <addaction name="actionPrev_Page"/>
@@ -435,6 +437,14 @@
    </property>
    <property name="text">
     <string>Auto Single Page</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

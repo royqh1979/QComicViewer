@@ -87,6 +87,8 @@ private slots:
 
     void on_actionFull_Screen_triggered();
 
+    void on_actionCopy_triggered();
+
 private:
     void onCurrentPageChanged();
 private:
