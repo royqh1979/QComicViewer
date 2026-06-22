@@ -236,34 +236,32 @@ void BookPagesModel::setBookPath(QString newBookPath)
             fileName = info.fileName();
         }
     }
-    if (mBookPath != newBookPath) {
-        if (!mBookPath.isEmpty())
-            mFileSystemWatcher->removePath(mBookPath);
-        mBookPath = newBookPath;
-        beginResetModel();
-        QMutexLocker locker(&mMutex);
-        mThumbnailCache.clear();
-        mIsPageShouldSingle.clear();
+    if (!mBookPath.isEmpty())
+        mFileSystemWatcher->removePath(mBookPath);
+    mBookPath = newBookPath;
+    beginResetModel();
+    QMutexLocker locker(&mMutex);
+    mThumbnailCache.clear();
+    mIsPageShouldSingle.clear();
 
-        mCurrentPage = -1;
-        QStringList newPageList;
-        foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
-            if (archiveReader->supportArchive(newBookPath)) {
-                newPageList = archiveReader->pageList(newBookPath, mImageSuffice);
-                break;
-            }
+    mCurrentPage = -1;
+    QStringList newPageList;
+    foreach (const std::shared_ptr<ArchiveReader> &archiveReader, mArchiveReaders) {
+        if (archiveReader->supportArchive(newBookPath)) {
+            newPageList = archiveReader->pageList(newBookPath, mImageSuffice);
+            break;
         }
-        mPageList = newPageList;
-
-        //mDoublePagesStart = 0;
-        mDoublePagesEnd = pageCount();
-        endResetModel();
-        emit bookChanged(mBookPath);
-
-        if (!mBookPath.isEmpty())
-            mFileSystemWatcher->addPath(mBookPath);
-        loadThumbnails();
     }
+    mPageList = newPageList;
+
+    //mDoublePagesStart = 0;
+    mDoublePagesEnd = pageCount();
+    endResetModel();
+    emit bookChanged(mBookPath);
+
+    if (!mBookPath.isEmpty())
+        mFileSystemWatcher->addPath(mBookPath);
+    loadThumbnails();
     if (!fileName.isEmpty()){
         int page = mPageList.indexOf(fileName);
         int oldPage = mCurrentPage;
