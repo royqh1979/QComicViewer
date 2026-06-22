@@ -236,6 +236,8 @@ void BookPagesModel::setBookPath(QString newBookPath)
             fileName = info.fileName();
         }
     }
+    if (mBookPath != newBookPath)
+        mCurrentPage = -1;
     if (!mBookPath.isEmpty())
         mFileSystemWatcher->removePath(mBookPath);
     mBookPath = newBookPath;
